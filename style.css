@@ -1,0 +1,104 @@
+:root {
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
+  --rgb-blurple: 101, 114, 245;
+  --c-blurple: rgb(var(--rgb-blurple));
+
+  --rgb-fuchsia: 238, 69, 158;
+  --c-fuchsia: rgb(var(--rgb-fuchsia));
+
+  --rgb-green: 35, 165, 89;
+  --c-green: rgb(var(--rgb-green));
+
+  --rgb-yellow: 240, 178, 50;
+  --c-yellow: rgb(var(--rgb-yellow));
+
+  --rgb-orange: 255, 144, 0;
+  --c-orange: rgb(var(--rgb-orange));
+
+  --rgb-red: 218, 55, 60;
+  --c-red: rgb(var(--rgb-red));
+
+  --rgb-cyan: 95, 205, 228;
+  --c-cyan: rgb(var(--rgb-cyan));
+
+  --rgb-pink: 246, 42, 245;
+  --c-pink: rgb(var(--rgb-pink));
+
+  --rgb-gray: 117, 126, 138;
+  --c-gray: rgb(var(--rgb-gray));
+
+  --rgb-white: 255, 255, 255;
+  --c-white: rgb(var(--rgb-white));
+
+  --rgb-black: 30, 31, 34;
+  --c-black: rgb(var(--rgb-black));
+
+  --c-bg-0: rgb(30, 31, 34);
+  --c-bg-1: rgb(43, 45, 49);
+  --c-bg-2: rgb(49, 51, 56);
+  --c-bg-3: rgb(64, 66, 73);
+
+  --c-fg-0: rgb(255 255 225);
+  --c-fg-1: rgb(219 222 225);
+  --c-fg-2: rgb(181 186 193);
+  --c-fg-3: rgb(113 116 120);
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+  --sp-5: 32px;
+  --sp-6: 48px;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+*:focus {
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--c-cyan);
+}
+
+body {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  font-size: 16px;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url(/hex-grid.svg);
+
+  &.sans {
+    font-family: var(--font-sans);
+  }
+  &.serif {
+    font-family: var(--font-serif);
+  }
+  &.mono {
+    font-family: var(--font-mono);
+  }
+}
+
+canvas {
+  image-rendering: pixelated;
+  display: block;
+}
+
+.game-container {
+  background: #161616;
+  position: relative;
+}

@@ -1,0 +1,21 @@
+import { tileSize } from "../constants.ts";
+import { viewport, pointer } from "../../main.ts";
+import { type Scene } from "../../lib/Scene.ts";
+import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
+
+const grid = createGrid(tileSize, 16, 8);
+const width = grid.tileSize * grid.xSize;
+const height = grid.tileSize * grid.ySize;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const asyncData = {} as any;
+
+function process(delta: number) {
+  highlightGridTile(grid, pointer.position, viewport.ctx);
+  drawGrid(grid, viewport.ctx);
+}
+
+export default async function (): Promise<Scene> {
+  console.log("load testSceneThree");
+
+  return { width, height, process };
+}
