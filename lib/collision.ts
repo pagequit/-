@@ -29,14 +29,14 @@ export function isPointInRectangle(
   point: Vector,
   rectangle: Rectangle,
 ): boolean {
-  const rectX = rectangle.position.x;
-  const rectY = rectangle.position.y;
+  const rx = rectangle.position.x;
+  const ry = rectangle.position.y;
 
   return (
-    point.x >= rectX &&
-    point.x <= rectX + rectangle.width &&
-    point.y >= rectY &&
-    point.y <= rectY + rectangle.height
+    point.x >= rx &&
+    point.x <= rx + rectangle.width &&
+    point.y >= ry &&
+    point.y <= ry + rectangle.height
   );
 }
 
@@ -52,4 +52,19 @@ export function rectangleCollideRectangle(a: Rectangle, b: Rectangle): boolean {
     ay <= by + b.height &&
     ay + a.height >= by
   );
+}
+
+export function circleCollideRectangle(
+  circle: Circle,
+  rectangle: Rectangle,
+): boolean {
+  const rx = rectangle.position.x;
+  const ry = rectangle.position.y;
+  const cx = circle.position.x;
+  const cy = circle.position.y;
+
+  const dx = cx - Math.max(rx, Math.min(cx, rx + rectangle.width));
+  const dy = cy - Math.max(ry, Math.min(cy, ry + rectangle.height));
+
+  return dx * dx + dy * dy <= Math.pow(circle.radius, 2);
 }

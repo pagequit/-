@@ -9,11 +9,9 @@ export const hero = {
   velocity: { x: 0, y: 0 },
   spriteOffset: {
     x: pixelBase * 2,
-    y: pixelBase * 2.5,
+    y: pixelBase * 3,
   },
-  radius: pixelBase,
-  width: pixelBase,
-  height: pixelBase,
+  radius: pixelBase / 2,
 };
 
 const pointing = {

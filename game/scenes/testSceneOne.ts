@@ -1,17 +1,15 @@
-import { tileSize } from "../constants.ts";
+import { pixelBase, tileSize } from "../constants.ts";
 import { focusViewport } from "../../lib/Viewport.ts";
 import { viewport, pointer } from "../../main.ts";
 import { type Scene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
 import { drawCircle, drawPoint, drawRectangle } from "../misc.ts";
 import { hero, getHeroGraphics, processHero } from "../Hero.ts";
-import { createVector, getSquared } from "../../lib/Vector.ts";
 import { animateSprite } from "../../lib/Sprite.ts";
 import {
-  circleCollideCircle,
+  circleCollideRectangle,
   isPointInCircle,
   isPointInRectangle,
-  rectangleCollideRectangle,
   type Circle,
   type Rectangle,
 } from "../../lib/collision.ts";
@@ -82,13 +80,8 @@ function process(delta: number) {
     delta,
   );
   drawPoint(ctx, hero.position);
-  drawRectangle(
-    ctx,
-    hero.position,
-    hero.width,
-    hero.height,
-    "rgba(128, 0, 0, 0.5)",
-  );
+
+  drawCircle(ctx, hero.position, hero.radius, "rgba(128, 0, 0, 0.5)");
 
   drawTileSet(tileSet, ctx);
 
@@ -108,13 +101,14 @@ function process(delta: number) {
       "rgba(0, 0, 128, 0.5)",
     );
   }
-  if (rectangleCollideRectangle(hero, aThing)) {
+
+  if (circleCollideRectangle(hero, aThing)) {
     drawRectangle(
       ctx,
       aThing.position,
       aThing.width,
       aThing.height,
-      "rgba(128, 0, 0,  0.5)",
+      "rgba(128, 0, 0, 0.5)",
     );
   }
 
