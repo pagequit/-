@@ -4,13 +4,11 @@ import { viewport, pointer } from "../../main.ts";
 import { type Scene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
 import { drawCircle, drawPoint, drawRectangle } from "../misc.ts";
-import { hero, getHeroGraphics, processHero } from "../Hero.ts";
+import { hero, getHeroGraphics, processHero, drawHeroStuff } from "../Hero.ts";
 import { animateSprite } from "../../lib/Sprite.ts";
 import {
   circleCollideRectangle,
-  isPointInCircle,
   isPointInRectangle,
-  type Circle,
   type Rectangle,
 } from "../../lib/collision.ts";
 
@@ -79,39 +77,18 @@ function process(delta: number) {
     ctx,
     delta,
   );
-  drawPoint(ctx, hero.position);
+  drawHeroStuff(ctx);
 
-  drawCircle(ctx, hero.position, hero.radius, "rgba(128, 0, 0, 0.5)");
+  let color = "rgba(128, 128, 128, 0.5)";
+  if (isPointInRectangle(pointer.position, aThing)) {
+    color = "rgba(0, 0, 128, 0.5)";
+  }
+  if (circleCollideRectangle(hero.collisionShape, aThing)) {
+    color = "rgba(128, 0, 0, 0.5)";
+  }
+  drawRectangle(ctx, aThing.position, aThing.width, aThing.height, color);
 
   drawTileSet(tileSet, ctx);
-
-  drawRectangle(
-    ctx,
-    aThing.position,
-    aThing.width,
-    aThing.height,
-    "rgba(128, 128, 128, 0.5)",
-  );
-  if (isPointInRectangle(pointer.position, aThing)) {
-    drawRectangle(
-      ctx,
-      aThing.position,
-      aThing.width,
-      aThing.height,
-      "rgba(0, 0, 128, 0.5)",
-    );
-  }
-
-  if (circleCollideRectangle(hero, aThing)) {
-    drawRectangle(
-      ctx,
-      aThing.position,
-      aThing.width,
-      aThing.height,
-      "rgba(128, 0, 0, 0.5)",
-    );
-  }
-
   drawGrid(grid, ctx);
   highlightGridTile(grid, hero.position, ctx);
 }

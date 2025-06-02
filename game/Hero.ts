@@ -3,15 +3,23 @@ import { createVector, isBelowThreshold, normalize } from "../lib/Vector.ts";
 import { tileSize, pixelBase } from "./constants.ts";
 import { type Sprite, createSprite } from "../lib/Sprite.ts";
 import { loadImage } from "../lib/loadImage.ts";
+import { drawCircle, drawPoint } from "./misc.ts";
 
 export const hero = {
-  position: { x: 0, y: 0 },
-  velocity: { x: 0, y: 0 },
+  position: createVector(),
+  velocity: createVector(),
+  collisionShape: {
+    position: createVector(),
+    radius: pixelBase,
+  },
+  collisionOffset: {
+    x: 0,
+    y: pixelBase / 2,
+  },
   spriteOffset: {
     x: pixelBase * 2,
     y: pixelBase * 3,
   },
-  radius: pixelBase / 2,
 };
 
 const pointing = {
@@ -19,6 +27,13 @@ const pointing = {
   delta: createVector(),
   normal: createVector(),
 };
+
+export function updateHeroPosition(x: number, y: number): void {
+  hero.position.x = x;
+  hero.position.y = y;
+  hero.collisionShape.position.x = x - hero.collisionOffset.x;
+  hero.collisionShape.position.y = y - hero.collisionOffset.y;
+}
 
 export function processHero(delta: number): void {
   if (pointer.isDown) {
@@ -40,8 +55,10 @@ export function processHero(delta: number): void {
   hero.velocity.x = pointing.normal.x * 0.5;
   hero.velocity.y = pointing.normal.y * 0.5;
 
-  hero.position.x += hero.velocity.x * delta;
-  hero.position.y += hero.velocity.y * delta;
+  updateHeroPosition(
+    hero.position.x + hero.velocity.x * delta,
+    hero.position.y + hero.velocity.y * delta,
+  );
 }
 
 export function getHeroGraphics(): {
@@ -78,4 +95,22 @@ async function getWalkSprite(): Promise<Sprite> {
     yFrames: 4,
     animationTime: 5 * 200,
   });
+}
+
+export function drawHeroStuff(ctx: CanvasRenderingContext2D): void {
+  drawCircle(
+    ctx,
+    hero.collisionShape.position,
+    hero.collisionShape.radius,
+    "rgba(128, 0, 0, 0.5)",
+  );
+
+  drawPoint(ctx, hero.position);
+  drawPoint(ctx, pointing.position);
+
+  ctx.strokeStyle = "white";
+  ctx.beginPath();
+  ctx.moveTo(hero.position.x, hero.position.y);
+  ctx.lineTo(pointing.position.x, pointing.position.y);
+  ctx.stroke();
 }

@@ -1,0 +1,13 @@
+
+Monolog #1
+Imagine that the rules of the entire universe had been programmed into your system.
+But a tiny error has crept in during that process.
+If then you are the only one who applies these rules, how could you notice the error?
+Imagine further, that these rules, are the universe for that kind of system.
+Whould it be an error?
+One might came to the conclusion that the only way to detect an error is to define them as such.
+It boils down to the meaning of unintended behaviour.
+So then, when ever onee defines a system, the system must behave in that way.
+... linear vs non-linear systems (chaotic systems)
+
+I say, the universe is consecutive unintended behaviour.

@@ -58,10 +58,10 @@ export function circleCollideRectangle(
   circle: Circle,
   rectangle: Rectangle,
 ): boolean {
-  const rx = rectangle.position.x;
-  const ry = rectangle.position.y;
   const cx = circle.position.x;
   const cy = circle.position.y;
+  const rx = rectangle.position.x;
+  const ry = rectangle.position.y;
 
   const dx = cx - Math.max(rx, Math.min(cx, rx + rectangle.width));
   const dy = cy - Math.max(ry, Math.min(cy, ry + rectangle.height));

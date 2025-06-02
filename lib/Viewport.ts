@@ -25,12 +25,12 @@ export function createViewport(
 }
 
 export function resetViewport(viewport: Viewport): void {
-  const { ctx, translation: position, scale } = viewport;
+  const { ctx, translation, scale } = viewport;
 
   ctx.restore();
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.save();
-  ctx.translate(-position.x, -position.y);
+  ctx.translate(-translation.x, -translation.y);
   ctx.scale(scale.x, scale.y);
 }
 
