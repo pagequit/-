@@ -1,2 +1,3 @@
-export const pixelBase = 32;
-export const tileSize = pixelBase * 2;
+export const pixelBase = 16;
+export const scaleBase = 4;
+export const tileSize = pixelBase * scaleBase;

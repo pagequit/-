@@ -37,8 +37,10 @@ function process(delta: number) {
 export default async function (): Promise<Scene> {
   asyncData.hero.walk = await getHeroGraphics().walk;
 
-  hero.position.x = width / 2 - 32;
-  hero.position.y = height / 2 - 44;
+  // FIXME:
+  // that is a huge problem
+  // hero.position.x = width / 2 - 32;
+  // hero.position.y = height / 2 - 44;
 
   console.log("load testSceneTwo");
 

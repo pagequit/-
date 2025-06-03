@@ -42,20 +42,20 @@ export function withAsyncCache<
 export function useWithCache<T>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: (...args: any[]) => T,
-): [(src: string) => T, Cache<T>] {
+): [(uri: string) => T, Cache<T>] {
   const cache: Cache<T> = new Map();
 
-  return [(src: string) => withCache(callback, src, cache)(src), cache];
+  return [(uri: string) => withCache(callback, uri, cache)(uri), cache];
 }
 
 export function useWithAsyncCache<T>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callback: (...args: any[]) => Promise<T>,
-): [(src: string) => Promise<T>, AsyncCache<T>] {
+): [(uri: string) => Promise<T>, AsyncCache<T>] {
   const cache: AsyncCache<T> = new Map();
 
   return [
-    async (src: string) => withAsyncCache(callback, src, cache)(src),
+    async (uri: string) => withAsyncCache(callback, uri, cache)(uri),
     cache,
   ];
 }

@@ -78,3 +78,7 @@ export function isZero(vector: Vector): boolean {
 export function isBelowThreshold(vector: Vector, threshold: number): boolean {
   return Math.abs(vector.x) < threshold && Math.abs(vector.y) < threshold;
 }
+
+export function equals(a: Vector, b: Vector): boolean {
+  return a.x === b.x && a.y === b.y;
+}
