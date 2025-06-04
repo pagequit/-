@@ -2,13 +2,13 @@ import { type Vector } from "./Vector";
 
 export type Grid = {
   tileSize: number;
-  xSize: number;
-  ySize: number;
+  xCount: number;
+  yCount: number;
 };
 
 export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
-  for (let x = 0; x < grid.xSize; x++) {
-    for (let y = 0; y < grid.ySize; y++) {
+  for (let x = 0; x < grid.xCount; x++) {
+    for (let y = 0; y < grid.yCount; y++) {
       ctx.fillStyle =
         x % 2 === y % 2 ? "rgba(32, 32, 32, 0.1)" : "rgba(32, 32, 32, 0.2)";
       ctx.fillRect(
@@ -23,14 +23,10 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
 
 export function createGrid(
   tileSize: number,
-  xSize: number,
-  ySize: number,
+  xCount: number,
+  yCount: number,
 ): Grid {
-  return {
-    tileSize,
-    xSize,
-    ySize,
-  };
+  return { tileSize, xCount, yCount };
 }
 
 export function highlightGridTile(

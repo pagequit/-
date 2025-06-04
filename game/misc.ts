@@ -1,6 +1,6 @@
 import { type Viewport } from "../lib/Viewport.ts";
-import { type Vector, createVector } from "../lib/Vector.ts";
-import { tileSize, pixelBase, scaleBase } from "./constants.ts";
+import { type Vector } from "../lib/Vector.ts";
+import { tileSize, scaleBase } from "./constants.ts";
 
 export function drawDelta(viewport: Viewport, delta: number): void {
   const { ctx, translation, scale } = viewport;
@@ -17,11 +17,11 @@ export function drawDelta(viewport: Viewport, delta: number): void {
 export function drawPoint(
   ctx: CanvasRenderingContext2D,
   position: Vector,
-  size: number = 4,
+  radius: number = 4,
   color: string = "white",
 ): void {
   ctx.beginPath();
-  ctx.arc(position.x, position.y, size, 0, 2 * Math.PI);
+  ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
   ctx.strokeStyle = color;
   ctx.stroke();
 }
@@ -29,11 +29,11 @@ export function drawPoint(
 export function drawCircle(
   ctx: CanvasRenderingContext2D,
   position: Vector,
-  size: number = 4,
+  radius: number = 4,
   color: string = "white",
 ): void {
   ctx.beginPath();
-  ctx.arc(position.x, position.y, size, 0, 2 * Math.PI);
+  ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
   ctx.fillStyle = color;
   ctx.fill();
 }
@@ -84,18 +84,12 @@ export function plotLine(
   }
 }
 
-// FIXME - object creation
-export function getGridCoord(position: Vector): Vector {
-  return createVector(
-    Math.floor(position.x / tileSize),
-    Math.floor(position.y / tileSize),
-  );
+export function toGridCoord(position: Vector, coord: Vector): void {
+  coord.x = Math.floor(position.x / tileSize);
+  coord.y = Math.floor(position.y / tileSize);
 }
 
-// FIXME - object creation
-export function getPixelCoord(position: Vector): Vector {
-  return createVector(
-    Math.floor(position.x / scaleBase),
-    Math.floor(position.y / scaleBase),
-  );
+export function toPixelCoord(position: Vector, coord: Vector): void {
+  coord.x = Math.floor(position.x / scaleBase);
+  coord.y = Math.floor(position.y / scaleBase);
 }

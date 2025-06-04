@@ -9,8 +9,8 @@ import { hero, getHeroGraphics, processHero } from "../Hero.ts";
 
 const { ctx } = viewport;
 const grid = createGrid(tileSize, 20, 15);
-const width = grid.tileSize * grid.xSize;
-const height = grid.tileSize * grid.ySize;
+const width = grid.tileSize * grid.xCount;
+const height = grid.tileSize * grid.yCount;
 
 const asyncData = {
   hero: {},

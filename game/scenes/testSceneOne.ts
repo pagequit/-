@@ -3,14 +3,7 @@ import { focusViewport } from "../../lib/Viewport.ts";
 import { viewport, pointer } from "../../main.ts";
 import { type Scene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
-import {
-  drawCircle,
-  drawPoint,
-  drawRectangle,
-  getGridCoord,
-  getPixelCoord,
-  plotLine,
-} from "../misc.ts";
+import { drawCircle, drawRectangle, toPixelCoord, plotLine } from "../misc.ts";
 import {
   hero,
   getHeroGraphics,
@@ -24,7 +17,7 @@ import {
   isPointInRectangle,
   type Rectangle,
 } from "../../lib/collision.ts";
-import { createVector, equals, scale, type Vector } from "../../lib/Vector.ts";
+import { createVector, type Vector } from "../../lib/Vector.ts";
 import {
   createSegmentIntersection,
   drawSegment,
@@ -54,8 +47,8 @@ const tileSet = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 const grid = createGrid(tileSize, tileSet[0].length, tileSet.length);
-const width = grid.tileSize * grid.xSize;
-const height = grid.tileSize * grid.ySize;
+const width = grid.cellSize * grid.xCount;
+const height = grid.cellSize * grid.yCount;
 
 const asyncData = {
   hero: {},
@@ -65,8 +58,8 @@ const aThing: Rectangle = {
   width: tileSize,
   height: tileSize,
   position: {
-    x: (grid.xSize - 8) * grid.tileSize,
-    y: (grid.ySize - 12) * grid.tileSize,
+    x: (grid.xCount - 8) * grid.cellSize,
+    y: (grid.yCount - 12) * grid.cellSize,
   },
 };
 
@@ -117,6 +110,25 @@ function getTileByPosition(position: Vector): number {
 
 const intersection = createSegmentIntersection();
 
+const pixelCoordStart = createVector();
+const pixelCoordTarget = createVector();
+
+const pixelCoord = createVector();
+function drawPixel(x: number, y: number): void {
+  pixelCoord.x = x * scaleBase;
+  pixelCoord.y = y * scaleBase;
+
+  drawRectangle(
+    ctx,
+    pixelCoord,
+    scaleBase,
+    scaleBase,
+    "rgba(219, 39, 235, 0.3)",
+  );
+}
+
+const segment: Segment = [hero.collisionShape.position, hero.targetPosition];
+
 function process(delta: number) {
   drawTileSet(tileSet, ctx);
 
@@ -133,28 +145,10 @@ function process(delta: number) {
   );
   drawHeroStuff(ctx);
   highlightGridTile(grid, hero.position, ctx);
-  {
-    if (getTileByPosition(hero.targetPosition) > 0) {
-      hero.targetPosition.x = hero.position.x;
-      hero.targetPosition.y = hero.position.y;
-    } else {
-      const start = getPixelCoord(hero.collisionShape.position);
-      const target = getPixelCoord(hero.targetPosition);
-      // findPath(start, target);
-      plotLine(start, target, (x, y) => {
-        drawRectangle(
-          ctx,
-          {
-            x: x * scaleBase,
-            y: y * scaleBase,
-          },
-          scaleBase,
-          scaleBase,
-          "rgba(176, 235, 39, 0.2)",
-        );
-      });
-    }
-  }
+
+  toPixelCoord(hero.collisionShape.position, pixelCoordStart);
+  toPixelCoord(hero.targetPosition, pixelCoordTarget);
+  plotLine(pixelCoordStart, pixelCoordTarget, drawPixel);
 
   {
     let color = "rgba(128, 128, 128, 0.5)";
@@ -167,7 +161,9 @@ function process(delta: number) {
     drawRectangle(ctx, aThing.position, aThing.width, aThing.height, color);
   }
 
-  const segment: Segment = [hero.collisionShape.position, hero.targetPosition];
+  segment[0] = hero.collisionShape.position;
+  segment[1] = hero.targetPosition;
+
   for (const wall of walls) {
     drawCircle(ctx, wall, 4, "orange");
 
