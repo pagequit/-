@@ -18,12 +18,6 @@ import {
   type Rectangle,
 } from "../../lib/collision.ts";
 import { createVector, type Vector } from "../../lib/Vector.ts";
-import {
-  createSegmentIntersection,
-  drawSegment,
-  setSegmentIntersection,
-  type Segment,
-} from "../../lib/Segment.ts";
 
 const { ctx } = viewport;
 
@@ -47,8 +41,8 @@ const tileSet = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 const grid = createGrid(tileSize, tileSet[0].length, tileSet.length);
-const width = grid.cellSize * grid.xCount;
-const height = grid.cellSize * grid.yCount;
+const width = grid.tileSize * grid.xCount;
+const height = grid.tileSize * grid.yCount;
 
 const asyncData = {
   hero: {},
@@ -58,8 +52,8 @@ const aThing: Rectangle = {
   width: tileSize,
   height: tileSize,
   position: {
-    x: (grid.xCount - 8) * grid.cellSize,
-    y: (grid.yCount - 12) * grid.cellSize,
+    x: (grid.xCount - 8) * grid.tileSize,
+    y: (grid.yCount - 12) * grid.tileSize,
   },
 };
 
@@ -108,8 +102,6 @@ function getTileByPosition(position: Vector): number {
   ];
 }
 
-const intersection = createSegmentIntersection();
-
 const pixelCoordStart = createVector();
 const pixelCoordTarget = createVector();
 
@@ -127,11 +119,7 @@ function drawPixel(x: number, y: number): void {
   );
 }
 
-const segment: Segment = [hero.collisionShape.position, hero.targetPosition];
-
 function process(delta: number) {
-  drawTileSet(tileSet, ctx);
-
   // inject the target position ?
   processHero(delta);
 
@@ -161,37 +149,8 @@ function process(delta: number) {
     drawRectangle(ctx, aThing.position, aThing.width, aThing.height, color);
   }
 
-  segment[0] = hero.collisionShape.position;
-  segment[1] = hero.targetPosition;
-
-  for (const wall of walls) {
-    drawCircle(ctx, wall, 4, "orange");
-
-    const localCenter = createVector(wall.x + pixelBase, wall.y);
-    const localSegment: Segment = [
-      localCenter,
-      createVector(localCenter.x, localCenter.y + tileSize),
-    ];
-    drawSegment(localSegment, ctx, "white");
-    setSegmentIntersection(intersection, segment, localSegment);
-
-    if (isNaN(intersection.offset)) {
-      const localCenter = createVector(wall.x, wall.y + pixelBase);
-      const localSegment: Segment = [
-        localCenter,
-        createVector(localCenter.x + tileSize, localCenter.y),
-      ];
-      drawSegment(localSegment, ctx, "white");
-      setSegmentIntersection(intersection, segment, localSegment);
-    }
-
-    if (!isNaN(intersection.offset)) {
-      drawRectangle(ctx, wall, tileSize, tileSize, "orange");
-      break;
-    }
-  }
-
   drawGrid(grid, ctx);
+  drawTileSet(tileSet, ctx);
 }
 
 export default async function (): Promise<Scene> {

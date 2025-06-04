@@ -21,12 +21,8 @@ export const hero = {
     y: pixelBase * scaleBase * 1.5,
   },
   targetPosition: createVector(),
-};
-
-const pointing = {
-  position: hero.targetPosition,
-  delta: createVector(),
-  normal: createVector(),
+  targetDelta: createVector(),
+  targetNormal: createVector(),
 };
 
 export function updateHeroPosition(x: number, y: number): void {
@@ -38,28 +34,25 @@ export function updateHeroPosition(x: number, y: number): void {
 
 export function processHero(delta: number): void {
   if (pointer.isDown) {
-    pointing.position.x = pointer.position.x;
-    pointing.position.y = pointer.position.y;
+    hero.targetPosition.x = pointer.position.x;
+    hero.targetPosition.y = pointer.position.y;
   }
 
-  // TODO: improve that stupid pointing thing
-  // make it a hero property or something...
-  pointing.delta.x = pointing.position.x - hero.collisionShape.position.x;
-  pointing.delta.y = pointing.position.y - hero.collisionShape.position.y;
+  hero.targetDelta.x = hero.targetPosition.x - hero.collisionShape.position.x;
+  hero.targetDelta.y = hero.targetPosition.y - hero.collisionShape.position.y;
 
-  if (isBelowThreshold(pointing.delta, 4)) {
+  if (isBelowThreshold(hero.targetDelta, 4)) {
     return;
   }
 
-  pointing.normal.x = pointing.delta.x;
-  pointing.normal.y = pointing.delta.y;
+  hero.targetNormal.x = hero.targetDelta.x;
+  hero.targetNormal.y = hero.targetDelta.y;
   // TODO: there is probably a faster/cheaper solution to that
-  normalize(pointing.normal);
+  normalize(hero.targetNormal);
 
-  hero.velocity.x = pointing.normal.x * 0.5;
-  hero.velocity.y = pointing.normal.y * 0.5;
+  hero.velocity.x = hero.targetNormal.x * 0.5;
+  hero.velocity.y = hero.targetNormal.y * 0.5;
 
-  return;
   updateHeroPosition(
     hero.position.x + hero.velocity.x * delta,
     hero.position.y + hero.velocity.y * delta,
