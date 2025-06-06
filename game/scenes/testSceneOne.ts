@@ -1,9 +1,9 @@
-import { pixelBase, scaleBase, tileSize } from "../constants.ts";
+import { scaleBase, tileSize } from "../constants.ts";
 import { focusViewport } from "../../lib/Viewport.ts";
 import { viewport, pointer } from "../../main.ts";
 import { type Scene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
-import { drawCircle, drawRectangle, toPixelCoord, plotLine } from "../misc.ts";
+import { drawRectangle, toPixelCoord, plotLine } from "../misc.ts";
 import {
   hero,
   getHeroGraphics,
@@ -14,7 +14,6 @@ import {
 import { animateSprite } from "../../lib/Sprite.ts";
 import {
   circleCollideRectangle,
-  circleContainsCircle,
   isPointInRectangle,
   type Circle,
   type Rectangle,
@@ -53,14 +52,6 @@ const asyncData = {
 const aThing: Rectangle = {
   width: tileSize,
   height: tileSize,
-  position: {
-    x: (grid.xCount - 8) * grid.tileSize,
-    y: (grid.yCount - 12) * grid.tileSize,
-  },
-};
-
-const bThing: Circle = {
-  radius: tileSize,
   position: {
     x: (grid.xCount - 8) * grid.tileSize,
     y: (grid.yCount - 12) * grid.tileSize,
@@ -151,14 +142,6 @@ function process(delta: number) {
       color = "rgba(128, 0, 0, 0.5)";
     }
     drawRectangle(ctx, aThing.position, aThing.width, aThing.height, color);
-  }
-
-  {
-    let color = "rgba(128, 128, 128, 0.5)";
-    if (circleContainsCircle(hero.collisionShape, bThing)) {
-      color = "rgba(0, 0, 128, 0.5)";
-    }
-    drawCircle(ctx, bThing.position, bThing.radius, color);
   }
 
   drawGrid(grid, ctx);

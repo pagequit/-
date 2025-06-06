@@ -74,7 +74,7 @@ export function circleContainsCircle(a: Circle, b: Circle): boolean {
   const dy = a.position.y - b.position.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
 
-  return distance + b.radius <= a.radius;
+  return a.radius >= b.radius + distance;
 }
 
 export function rectangleContainsRectangle(
