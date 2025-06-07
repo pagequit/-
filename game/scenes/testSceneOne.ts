@@ -152,6 +152,8 @@ export default async function (): Promise<Scene> {
   asyncData.hero.idle = await getHeroGraphics().idle;
 
   updateHeroPosition(tileSize * 15, tileSize * 5);
+  hero.targetPosition.x = hero.collisionShape.position.x;
+  hero.targetPosition.y = hero.collisionShape.position.y;
 
   console.log("load testSceneOne");
 
