@@ -30,16 +30,14 @@ export function createGrid(
 }
 
 export function highlightGridTile(
-  grid: Grid,
+  { tileSize }: Grid,
   position: Vector,
   ctx: CanvasRenderingContext2D,
 ): void {
-  const { tileSize } = grid;
-
-  ctx.fillStyle = "rgba(128, 128, 128, 0.4)";
+  ctx.fillStyle = "rgba(32, 32, 32, 0.4)";
   ctx.fillRect(
-    Math.floor(position.x / tileSize) * tileSize,
-    Math.floor(position.y / tileSize) * tileSize,
+    ((position.x / tileSize) | 0) * tileSize,
+    ((position.y / tileSize) | 0) * tileSize,
     tileSize,
     tileSize,
   );

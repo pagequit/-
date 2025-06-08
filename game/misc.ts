@@ -1,12 +1,16 @@
+import { tileSize, scaleBase } from "./constants.ts";
 import { type Viewport } from "../lib/Viewport.ts";
 import { type Vector } from "../lib/Vector.ts";
-import { tileSize, scaleBase } from "./constants.ts";
+import { createColor } from "../lib/Color.ts";
 
-export function drawDelta(viewport: Viewport, delta: number): void {
-  const { ctx, translation, scale } = viewport;
+const defaultColor = createColor(255, 255, 255);
 
+export function drawDelta(
+  { ctx, translation, scale }: Viewport,
+  delta: number,
+): void {
   ctx.font = "16px monospace";
-  ctx.fillStyle = "white";
+  ctx.fillStyle = defaultColor.value;
   ctx.fillText(
     delta.toFixed(1),
     translation.x / scale.x + 8,
@@ -18,7 +22,7 @@ export function drawPoint(
   ctx: CanvasRenderingContext2D,
   position: Vector,
   radius: number = 4,
-  color: string = "white",
+  color: string = defaultColor.value,
 ): void {
   ctx.beginPath();
   ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
@@ -30,7 +34,7 @@ export function drawCircle(
   ctx: CanvasRenderingContext2D,
   position: Vector,
   radius: number = 4,
-  color: string = "white",
+  color: string = defaultColor.value,
 ): void {
   ctx.beginPath();
   ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI);
@@ -43,7 +47,7 @@ export function drawRectangle(
   position: Vector,
   width: number,
   height: number,
-  color: string = "white",
+  color: string = defaultColor.value,
 ): void {
   ctx.fillStyle = color;
   ctx.fillRect(position.x, position.y, width, height);
@@ -72,12 +76,12 @@ export function plotLine(
       break;
     }
 
-    const da2 = dda + dda;
-    if (da2 > -day) {
+    const dda2 = dda + dda;
+    if (dda2 > -day) {
       dda -= day;
       ax += dsx;
     }
-    if (da2 < dax) {
+    if (dda2 < dax) {
       dda += dax;
       ay += dsy;
     }
@@ -85,11 +89,11 @@ export function plotLine(
 }
 
 export function toGridCoord(position: Vector, coord: Vector): void {
-  coord.x = Math.floor(position.x / tileSize);
-  coord.y = Math.floor(position.y / tileSize);
+  coord.x = (position.x / tileSize) | 0;
+  coord.y = (position.y / tileSize) | 0;
 }
 
 export function toPixelCoord(position: Vector, coord: Vector): void {
-  coord.x = Math.floor(position.x / scaleBase);
-  coord.y = Math.floor(position.y / scaleBase);
+  coord.x = (position.x / scaleBase) | 0;
+  coord.y = (position.y / scaleBase) | 0;
 }

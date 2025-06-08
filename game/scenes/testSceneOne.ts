@@ -15,7 +15,6 @@ import { animateSprite } from "../../lib/Sprite.ts";
 import {
   circleCollideRectangle,
   isPointInRectangle,
-  type Circle,
   type Rectangle,
 } from "../../lib/collision.ts";
 import { createVector, type Vector } from "../../lib/Vector.ts";
@@ -98,9 +97,7 @@ function isTileFree(coord: Vector): boolean {
 }
 
 function getTileByPosition(position: Vector): number {
-  return tileSet[Math.floor(position.y / tileSize)][
-    Math.floor(position.x / tileSize)
-  ];
+  return tileSet[(position.y / tileSize) | 0][(position.x / tileSize) | 0];
 }
 
 const pixelCoordStart = createVector();
@@ -113,6 +110,9 @@ function drawPixel(x: number, y: number): void {
 
   drawRectangle(ctx, pixelCoord, scaleBase, scaleBase, "rgba(128, 0, 0, 0.5)");
 }
+
+const activeObjects: object[] = [];
+function update(objects: Array<object>, delta: number): void {}
 
 function process(delta: number) {
   // inject the target position ?

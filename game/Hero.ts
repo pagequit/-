@@ -32,6 +32,8 @@ export function updateHeroPosition(x: number, y: number): void {
   hero.collisionShape.position.y = y - hero.collisionOffset.y;
 }
 
+function updateHero(hero: object, delta: number): void {}
+
 export function processHero(delta: number): void {
   if (pointer.isDown) {
     hero.targetPosition.x = pointer.position.x;
