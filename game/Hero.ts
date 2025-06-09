@@ -1,79 +1,113 @@
-import { pointer } from "../main.ts";
-import { createVector, isBelowThreshold, normalize } from "../lib/Vector.ts";
+import { pointer, viewport } from "../main.ts";
+import {
+  createVector,
+  isBelowThreshold,
+  normalize,
+  type Vector,
+} from "../lib/Vector.ts";
 import { tileSize, pixelBase, scaleBase } from "./constants.ts";
 import { type Sprite, createSprite } from "../lib/Sprite.ts";
 import { loadImage } from "../lib/loadImage.ts";
-import { drawCircle, drawPoint } from "./misc.ts";
+import {
+  drawCircle,
+  drawPoint,
+  drawRectangle,
+  toPixelCoord,
+  plotLine,
+} from "./misc.ts";
+import { animateSprite } from "../lib/Sprite.ts";
+import type { Circle } from "../lib/collision.ts";
 
-export const hero = {
+const { ctx } = viewport;
+
+const position = createVector();
+const velocity = createVector();
+const collisionShape = {
   position: createVector(),
-  velocity: createVector(),
-  collisionShape: {
-    position: createVector(),
-    radius: (pixelBase / 2) * scaleBase - scaleBase,
-  },
-  collisionOffset: {
-    x: 0,
-    y: (pixelBase * scaleBase) / 3 - scaleBase,
-  },
-  spriteOffset: {
-    x: pixelBase * scaleBase,
-    y: pixelBase * scaleBase * 1.5,
-  },
-  targetPosition: createVector(),
-  targetDelta: createVector(),
-  targetNormal: createVector(),
+  radius: (pixelBase / 2) * scaleBase - scaleBase,
+};
+const collisionOffset = {
+  x: 0,
+  y: (pixelBase * scaleBase) / 3 - scaleBase,
+};
+const graphics = {
+  idle: null as unknown as Sprite,
+  walk: null as unknown as Sprite,
+};
+const spriteOffset = {
+  x: pixelBase * scaleBase,
+  y: pixelBase * scaleBase * 1.5,
+};
+const targetPosition = createVector();
+const targetDelta = createVector();
+const targetNormal = createVector();
+
+export type Hero = {
+  position: Vector;
+  collisionShape: Circle;
 };
 
-export function updateHeroPosition(x: number, y: number): void {
-  hero.position.x = x;
-  hero.position.y = y;
-  hero.collisionShape.position.x = x - hero.collisionOffset.x;
-  hero.collisionShape.position.y = y - hero.collisionOffset.y;
-}
+export async function loadHero(): Promise<Hero> {
+  graphics.idle = await loadIdleSprite();
+  graphics.walk = await loadWalkSprite();
 
-function updateHero(hero: object, delta: number): void {}
+  console.log(graphics);
 
-export function processHero(delta: number): void {
-  if (pointer.isDown) {
-    hero.targetPosition.x = pointer.position.x;
-    hero.targetPosition.y = pointer.position.y;
-  }
-
-  hero.targetDelta.x = hero.targetPosition.x - hero.collisionShape.position.x;
-  hero.targetDelta.y = hero.targetPosition.y - hero.collisionShape.position.y;
-
-  if (isBelowThreshold(hero.targetDelta, 4)) {
-    return;
-  }
-
-  hero.targetNormal.x = hero.targetDelta.x;
-  hero.targetNormal.y = hero.targetDelta.y;
-  // TODO: there is probably a faster/cheaper solution to that
-  normalize(hero.targetNormal);
-
-  hero.velocity.x = hero.targetNormal.x * 0.5;
-  hero.velocity.y = hero.targetNormal.y * 0.5;
-
-  updateHeroPosition(
-    hero.position.x + hero.velocity.x * delta,
-    hero.position.y + hero.velocity.y * delta,
-  );
-}
-
-export function getHeroGraphics(): {
-  idle: Promise<Sprite>;
-  walk: Promise<Sprite>;
-} {
   return {
-    idle: getIdleSprite(),
-    walk: getWalkSprite(),
+    position,
+    collisionShape,
   };
 }
 
-async function getIdleSprite(): Promise<Sprite> {
+export function updateHeroPosition(x: number, y: number): void {
+  position.x = x;
+  position.y = y;
+  collisionShape.position.x = x - collisionOffset.x;
+  collisionShape.position.y = y - collisionOffset.y;
+}
+
+export function setHeroPosition(x: number, y: number): void {
+  updateHeroPosition(x, y);
+  targetPosition.x = collisionShape.position.x;
+  targetPosition.y = collisionShape.position.y;
+}
+
+export function processHero(delta: number): void {
+  if (pointer.isDown) {
+    targetPosition.x = pointer.position.x;
+    targetPosition.y = pointer.position.y;
+  }
+
+  targetDelta.x = targetPosition.x - collisionShape.position.x;
+  targetDelta.y = targetPosition.y - collisionShape.position.y;
+
+  if (!isBelowThreshold(targetDelta, 4)) {
+    targetNormal.x = targetDelta.x;
+    targetNormal.y = targetDelta.y;
+    normalize(targetNormal);
+
+    velocity.x = targetNormal.x * 0.5;
+    velocity.y = targetNormal.y * 0.5;
+
+    updateHeroPosition(
+      position.x + velocity.x * delta,
+      position.y + velocity.y * delta,
+    );
+  }
+
+  animateSprite(
+    graphics.idle,
+    position.x - spriteOffset.x,
+    position.y - spriteOffset.y,
+    ctx,
+    delta,
+  );
+  drawHeroStuff(ctx);
+}
+
+async function loadIdleSprite(): Promise<Sprite> {
   return createSprite({
-    image: await loadImage("assets/hero/hero-idle.png"),
+    image: await loadImage("/assets/hero/idle.png"),
     width: tileSize * 2,
     height: tileSize * 2,
     frameWidth: pixelBase * 2,
@@ -84,9 +118,9 @@ async function getIdleSprite(): Promise<Sprite> {
   });
 }
 
-async function getWalkSprite(): Promise<Sprite> {
+async function loadWalkSprite(): Promise<Sprite> {
   return createSprite({
-    image: await loadImage("assets/hero/hero-walk.png"),
+    image: await loadImage("/assets/hero/walk.png"),
     width: tileSize * 2,
     height: tileSize * 2,
     frameWidth: pixelBase * 2,
@@ -97,13 +131,28 @@ async function getWalkSprite(): Promise<Sprite> {
   });
 }
 
+const pixelCoordStart = createVector();
+const pixelCoordTarget = createVector();
+
+const pixelCoord = createVector();
+function drawPixel(x: number, y: number): void {
+  pixelCoord.x = x * scaleBase;
+  pixelCoord.y = y * scaleBase;
+
+  drawRectangle(ctx, pixelCoord, scaleBase, scaleBase, "rgba(128, 0, 0, 0.5)");
+}
+
 export function drawHeroStuff(ctx: CanvasRenderingContext2D): void {
   drawCircle(
     ctx,
-    hero.collisionShape.position,
-    hero.collisionShape.radius,
+    collisionShape.position,
+    collisionShape.radius,
     "rgba(128, 0, 0, 0.5)",
   );
 
-  drawPoint(ctx, hero.position);
+  drawPoint(ctx, position);
+
+  toPixelCoord(collisionShape.position, pixelCoordStart);
+  toPixelCoord(targetPosition, pixelCoordTarget);
+  plotLine(pixelCoordStart, pixelCoordTarget, drawPixel);
 }

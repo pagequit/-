@@ -83,8 +83,6 @@ function collide(
   b.collide[a.type](b, a);
 }
 
-console.log(collide());
-
 export function isPointInCircle(point: Vector, circle: Circle): boolean {
   const dx = point.x - circle.position.x;
   const dy = point.y - circle.position.y;

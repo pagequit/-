@@ -4,14 +4,7 @@ import { viewport, pointer } from "../../main.ts";
 import { type Scene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
 import { drawRectangle, toPixelCoord, plotLine } from "../misc.ts";
-import {
-  hero,
-  getHeroGraphics,
-  processHero,
-  drawHeroStuff,
-  updateHeroPosition,
-} from "../Hero.ts";
-import { animateSprite } from "../../lib/Sprite.ts";
+import { processHero, loadHero, setHeroPosition } from "../Hero.ts";
 import {
   circleCollideRectangle,
   isPointInRectangle,
@@ -90,8 +83,6 @@ function mapTiles(tileSet: Array<Array<number>>): Array<Vector> {
   return map;
 }
 
-const walls = mapTiles(tileSet);
-
 function isTileFree(coord: Vector): boolean {
   return !tileSet[coord.y][coord.x];
 }
@@ -100,45 +91,27 @@ function getTileByPosition(position: Vector): number {
   return tileSet[(position.y / tileSize) | 0][(position.x / tileSize) | 0];
 }
 
-const pixelCoordStart = createVector();
-const pixelCoordTarget = createVector();
-
-const pixelCoord = createVector();
-function drawPixel(x: number, y: number): void {
-  pixelCoord.x = x * scaleBase;
-  pixelCoord.y = y * scaleBase;
-
-  drawRectangle(ctx, pixelCoord, scaleBase, scaleBase, "rgba(128, 0, 0, 0.5)");
-}
-
 const activeObjects: object[] = [];
 function update(objects: Array<object>, delta: number): void {}
 
 function process(delta: number) {
-  // inject the target position ?
   processHero(delta);
-
-  focusViewport(viewport, hero.position.x, hero.position.y, width, height);
-  animateSprite(
-    asyncData.hero.idle,
-    hero.position.x - hero.spriteOffset.x,
-    hero.position.y - hero.spriteOffset.y,
-    ctx,
-    delta,
+  focusViewport(
+    viewport,
+    asyncData.hero.position.x,
+    asyncData.hero.position.y,
+    width,
+    height,
   );
-  drawHeroStuff(ctx);
-  highlightGridTile(grid, hero.position, ctx);
 
-  toPixelCoord(hero.collisionShape.position, pixelCoordStart);
-  toPixelCoord(hero.targetPosition, pixelCoordTarget);
-  plotLine(pixelCoordStart, pixelCoordTarget, drawPixel);
+  highlightGridTile(grid, asyncData.hero.position, ctx);
 
   {
     let color = "rgba(128, 128, 128, 0.5)";
     if (isPointInRectangle(pointer.position, aThing)) {
       color = "rgba(0, 0, 128, 0.5)";
     }
-    if (circleCollideRectangle(hero.collisionShape, aThing)) {
+    if (circleCollideRectangle(asyncData.hero.collisionShape, aThing)) {
       color = "rgba(128, 0, 0, 0.5)";
     }
     drawRectangle(ctx, aThing.position, aThing.width, aThing.height, color);
@@ -149,11 +122,8 @@ function process(delta: number) {
 }
 
 export default async function (): Promise<Scene> {
-  asyncData.hero.idle = await getHeroGraphics().idle;
-
-  updateHeroPosition(tileSize * 15, tileSize * 5);
-  hero.targetPosition.x = hero.collisionShape.position.x;
-  hero.targetPosition.y = hero.collisionShape.position.y;
+  asyncData.hero = await loadHero();
+  setHeroPosition(tileSize * 15, tileSize * 5);
 
   console.log("load testSceneOne");
 
