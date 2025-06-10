@@ -1,9 +1,9 @@
-import { scaleBase, tileSize } from "../constants.ts";
+import { tileSize } from "../constants.ts";
 import { focusViewport } from "../../lib/Viewport.ts";
 import { viewport, pointer } from "../../main.ts";
-import { type Scene } from "../../lib/Scene.ts";
+import { createScene, type Scene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
-import { drawRectangle, toPixelCoord, plotLine } from "../misc.ts";
+import { drawRectangle } from "../misc.ts";
 import { processHero, loadHero, setHeroPosition } from "../Hero.ts";
 import {
   circleCollideRectangle,
@@ -11,8 +11,6 @@ import {
   type Rectangle,
 } from "../../lib/collision.ts";
 import { createVector, type Vector } from "../../lib/Vector.ts";
-
-const { ctx } = viewport;
 
 // prettier-ignore
 const tileSet = [
@@ -40,6 +38,8 @@ const height = grid.tileSize * grid.yCount;
 const asyncData = {
   hero: {},
 } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+const { ctx } = viewport;
 
 const aThing: Rectangle = {
   width: tileSize,
@@ -122,10 +122,16 @@ function process(delta: number) {
 }
 
 export default async function (): Promise<Scene> {
-  asyncData.hero = await loadHero();
-  setHeroPosition(tileSize * 15, tileSize * 5);
-
   console.log("load testSceneOne");
 
-  return { width, height, process };
+  asyncData.hero = await loadHero();
+
+  return createScene({
+    width,
+    height,
+    process,
+    preProcess() {
+      setHeroPosition(tileSize * 15, tileSize * 5);
+    },
+  });
 }

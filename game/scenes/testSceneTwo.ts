@@ -1,6 +1,6 @@
 import { tileSize } from "../constants.ts";
 import { viewport } from "../../main.ts";
-import { type Scene } from "../../lib/Scene.ts";
+import { type Scene, createScene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid } from "../../lib/Grid.ts";
 import { focusViewport } from "../../lib/Viewport.ts";
 import { loadHero, processHero } from "../Hero.ts";
@@ -32,5 +32,5 @@ export default async function (): Promise<Scene> {
 
   console.log("load testSceneTwo");
 
-  return { width, height, process };
+  return createScene({ width, height, process });
 }

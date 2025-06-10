@@ -17,6 +17,7 @@ import {
 } from "./misc.ts";
 import { animateSprite } from "../lib/Sprite.ts";
 import type { Circle } from "../lib/collision.ts";
+import { useWithAsyncCache } from "../lib/cache.ts";
 
 const { ctx } = viewport;
 
@@ -47,16 +48,18 @@ export type Hero = {
   collisionShape: Circle;
 };
 
-export async function loadHero(): Promise<Hero> {
+const [heroLoader] = useWithAsyncCache(async () => {
   graphics.idle = await loadIdleSprite();
   graphics.walk = await loadWalkSprite();
-
-  console.log(graphics);
 
   return {
     position,
     collisionShape,
   };
+});
+
+export function loadHero() {
+  return heroLoader("/");
 }
 
 export function updateHeroPosition(x: number, y: number): void {

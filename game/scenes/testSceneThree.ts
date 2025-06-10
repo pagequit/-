@@ -1,6 +1,6 @@
 import { tileSize } from "../constants.ts";
 import { viewport, pointer } from "../../main.ts";
-import { type Scene } from "../../lib/Scene.ts";
+import { createScene, type Scene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
 
 const grid = createGrid(tileSize, 16, 8);
@@ -17,5 +17,5 @@ function process(delta: number) {
 export default async function (): Promise<Scene> {
   console.log("load testSceneThree");
 
-  return { width, height, process };
+  return createScene({ width, height, process });
 }
