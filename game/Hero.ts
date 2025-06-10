@@ -6,7 +6,7 @@ import {
   type Vector,
 } from "../lib/Vector.ts";
 import { tileSize, pixelBase, scaleBase } from "./constants.ts";
-import { type Sprite, createSprite } from "../lib/Sprite.ts";
+import { type Sprite, createSprite, setSpriteYFrame } from "../lib/Sprite.ts";
 import { loadImage } from "../lib/loadImage.ts";
 import {
   drawCircle,
@@ -48,7 +48,7 @@ export type Hero = {
   collisionShape: Circle;
 };
 
-const [heroLoader] = useWithAsyncCache(async () => {
+const [heroLoader] = useWithAsyncCache(async (): Promise<Hero> => {
   graphics.idle = await loadIdleSprite();
   graphics.walk = await loadWalkSprite();
 
@@ -58,7 +58,7 @@ const [heroLoader] = useWithAsyncCache(async () => {
   };
 });
 
-export function loadHero() {
+export function loadHero(): Promise<Hero> {
   return heroLoader("/");
 }
 
@@ -75,6 +75,24 @@ export function setHeroPosition(x: number, y: number): void {
   targetPosition.y = collisionShape.position.y;
 }
 
+let direction = 0;
+let lastDirection = 0;
+function setDirection(): void {
+  if (Math.abs(targetDelta.x) > Math.abs(targetDelta.y)) {
+    if (targetDelta.x < 0) {
+      direction = 1;
+    } else {
+      direction = 3;
+    }
+  } else {
+    if (targetDelta.y < 0) {
+      direction = 2;
+    } else {
+      direction = 0;
+    }
+  }
+}
+
 export function processHero(delta: number): void {
   if (pointer.isDown) {
     targetPosition.x = pointer.position.x;
@@ -89,23 +107,42 @@ export function processHero(delta: number): void {
     targetNormal.y = targetDelta.y;
     normalize(targetNormal);
 
-    velocity.x = targetNormal.x * 0.5;
-    velocity.y = targetNormal.y * 0.5;
+    velocity.x = targetNormal.x * 0.3;
+    velocity.y = targetNormal.y * 0.3;
 
     updateHeroPosition(
       position.x + velocity.x * delta,
       position.y + velocity.y * delta,
     );
+
+    // TODO: save the hero state
+    setDirection();
+    if (lastDirection !== direction) {
+      lastDirection = direction;
+      setSpriteYFrame(graphics.walk, direction);
+    }
+    animateSprite(
+      graphics.walk,
+      position.x - spriteOffset.x,
+      position.y - spriteOffset.y,
+      ctx,
+      delta,
+    );
+  } else {
+    if (lastDirection !== direction) {
+      lastDirection = direction;
+      setSpriteYFrame(graphics.idle, direction);
+    }
+    animateSprite(
+      graphics.idle,
+      position.x - spriteOffset.x,
+      position.y - spriteOffset.y,
+      ctx,
+      delta,
+    );
   }
 
-  animateSprite(
-    graphics.idle,
-    position.x - spriteOffset.x,
-    position.y - spriteOffset.y,
-    ctx,
-    delta,
-  );
-  drawHeroStuff(ctx);
+  // drawHeroStuff(ctx);
 }
 
 async function loadIdleSprite(): Promise<Sprite> {

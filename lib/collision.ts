@@ -1,5 +1,4 @@
-import { isJSDocUnknownTag } from "typescript";
-import { createVector, type Vector } from "./Vector.ts";
+import { type Vector } from "./Vector.ts";
 
 export type Circle = {
   position: Vector;
