@@ -28,9 +28,9 @@ function process(delta: number) {
 }
 
 export default async function (): Promise<Scene> {
-  asyncData.hero = await loadHero();
-
   console.log("load testSceneTwo");
+
+  asyncData.hero = await loadHero();
 
   return createScene({ width, height, process });
 }
