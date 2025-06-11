@@ -32,6 +32,7 @@ const collisionOffset = {
   y: (pixelBase * scaleBase) / 3 - scaleBase,
 };
 const graphics = {
+  current: null as unknown as Sprite,
   idle: null as unknown as Sprite,
   walk: null as unknown as Sprite,
 };
@@ -102,7 +103,11 @@ export function processHero(delta: number): void {
   targetDelta.x = targetPosition.x - collisionShape.position.x;
   targetDelta.y = targetPosition.y - collisionShape.position.y;
 
-  if (!isBelowThreshold(targetDelta, 4)) {
+  if (isBelowThreshold(targetDelta, 4)) {
+    graphics.current = graphics.idle;
+  } else {
+    graphics.current = graphics.walk;
+
     targetNormal.x = targetDelta.x;
     targetNormal.y = targetDelta.y;
     normalize(targetNormal);
@@ -114,35 +119,22 @@ export function processHero(delta: number): void {
       position.x + velocity.x * delta,
       position.y + velocity.y * delta,
     );
-
-    // TODO: save the hero state
-    setDirection();
-    if (lastDirection !== direction) {
-      lastDirection = direction;
-      setSpriteYFrame(graphics.walk, direction);
-    }
-    animateSprite(
-      graphics.walk,
-      position.x - spriteOffset.x,
-      position.y - spriteOffset.y,
-      ctx,
-      delta,
-    );
-  } else {
-    if (lastDirection !== direction) {
-      lastDirection = direction;
-      setSpriteYFrame(graphics.idle, direction);
-    }
-    animateSprite(
-      graphics.idle,
-      position.x - spriteOffset.x,
-      position.y - spriteOffset.y,
-      ctx,
-      delta,
-    );
   }
 
-  // drawHeroStuff(ctx);
+  setDirection();
+  if (lastDirection !== direction) {
+    lastDirection = direction;
+    setSpriteYFrame(graphics.current, direction);
+  }
+
+  drawHeroStuff(ctx);
+  animateSprite(
+    graphics.current,
+    position.x - spriteOffset.x,
+    position.y - spriteOffset.y,
+    ctx,
+    delta,
+  );
 }
 
 async function loadIdleSprite(): Promise<Sprite> {
