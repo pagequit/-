@@ -58,7 +58,7 @@ const sprites = {
   idle: null as unknown as Sprite,
   walk: null as unknown as Sprite,
 };
-const spriteOffset = {
+const spritesOffset = {
   x: pixelBase * scaleBase,
   y: pixelBase * scaleBase * 1.5,
 };
@@ -99,26 +99,7 @@ export function setHeroPosition(x: number, y: number): void {
   targetPosition.y = collisionShape.position.y;
 }
 
-function getDirection(): Direction {
-  let localDirection: Direction;
-  if (Math.abs(targetDelta.x) > Math.abs(targetDelta.y)) {
-    if (targetDelta.x < 0) {
-      localDirection = Direction.Left;
-    } else {
-      localDirection = Direction.Right;
-    }
-  } else {
-    if (targetDelta.y < 0) {
-      localDirection = Direction.Up;
-    } else {
-      localDirection = Direction.Down;
-    }
-  }
-
-  return localDirection;
-}
-
-function setState(newState: State): void {
+export function setHeroState(newState: State): void {
   if (newState === state) {
     return;
   }
@@ -139,7 +120,7 @@ function setState(newState: State): void {
   }
 }
 
-function setDirection(newDirection: Direction): void {
+export function setHeroDirection(newDirection: Direction): void {
   if (newDirection === direction) {
     return;
   }
@@ -159,9 +140,9 @@ export function processHero(delta: number): void {
   targetDelta.y = targetPosition.y - collisionShape.position.y;
 
   if (isBelowThreshold(targetDelta, 4)) {
-    setState(State.Idle);
+    setHeroState(State.Idle);
   } else {
-    setState(State.Walk);
+    setHeroState(State.Walk);
 
     targetNormal.x = targetDelta.x;
     targetNormal.y = targetDelta.y;
@@ -176,13 +157,25 @@ export function processHero(delta: number): void {
     );
   }
 
-  setDirection(getDirection());
+  if (Math.abs(targetDelta.x) > Math.abs(targetDelta.y)) {
+    if (targetDelta.x < 0) {
+      setHeroDirection(Direction.Left);
+    } else {
+      setHeroDirection(Direction.Right);
+    }
+  } else {
+    if (targetDelta.y < 0) {
+      setHeroDirection(Direction.Up);
+    } else {
+      setHeroDirection(Direction.Down);
+    }
+  }
 
   drawHeroStuff(ctx);
   animateSprite(
     sprites.current,
-    position.x - spriteOffset.x,
-    position.y - spriteOffset.y,
+    position.x - spritesOffset.x,
+    position.y - spritesOffset.y,
     ctx,
     delta,
   );
