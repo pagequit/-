@@ -6,7 +6,12 @@ import {
   type Vector,
 } from "../lib/Vector.ts";
 import { tileSize, pixelBase, scaleBase } from "./constants.ts";
-import { type Sprite, createSprite, setSpriteYFrame } from "../lib/Sprite.ts";
+import {
+  type Sprite,
+  createSprite,
+  setSpriteXFrame,
+  setSpriteYFrame,
+} from "../lib/Sprite.ts";
 import { loadImage } from "../lib/loadImage.ts";
 import {
   drawCircle,
@@ -19,10 +24,26 @@ import { animateSprite } from "../lib/Sprite.ts";
 import type { Circle } from "../lib/collision.ts";
 import { useWithAsyncCache } from "../lib/cache.ts";
 
+enum State {
+  Idle,
+  Walk,
+}
+
+enum Direction {
+  Down,
+  Left,
+  Up,
+  Right,
+}
+
 const { ctx } = viewport;
+
+let state = -1;
+let direction = -1;
 
 const position = createVector();
 const velocity = createVector();
+
 const collisionShape = {
   position: createVector(),
   radius: (pixelBase / 2) * scaleBase - scaleBase,
@@ -31,7 +52,8 @@ const collisionOffset = {
   x: 0,
   y: (pixelBase * scaleBase) / 3 - scaleBase,
 };
-const graphics = {
+
+const sprites = {
   current: null as unknown as Sprite,
   idle: null as unknown as Sprite,
   walk: null as unknown as Sprite,
@@ -40,6 +62,7 @@ const spriteOffset = {
   x: pixelBase * scaleBase,
   y: pixelBase * scaleBase * 1.5,
 };
+
 const targetPosition = createVector();
 const targetDelta = createVector();
 const targetNormal = createVector();
@@ -50,8 +73,8 @@ export type Hero = {
 };
 
 const [heroLoader] = useWithAsyncCache(async (): Promise<Hero> => {
-  graphics.idle = await loadIdleSprite();
-  graphics.walk = await loadWalkSprite();
+  sprites.idle = await loadIdleSprite();
+  sprites.walk = await loadWalkSprite();
 
   return {
     position,
@@ -76,22 +99,54 @@ export function setHeroPosition(x: number, y: number): void {
   targetPosition.y = collisionShape.position.y;
 }
 
-let direction = 0;
-let lastDirection = 0;
-function setDirection(): void {
+function getDirection(): Direction {
+  let localDirection: Direction;
   if (Math.abs(targetDelta.x) > Math.abs(targetDelta.y)) {
     if (targetDelta.x < 0) {
-      direction = 1;
+      localDirection = Direction.Left;
     } else {
-      direction = 3;
+      localDirection = Direction.Right;
     }
   } else {
     if (targetDelta.y < 0) {
-      direction = 2;
+      localDirection = Direction.Up;
     } else {
-      direction = 0;
+      localDirection = Direction.Down;
     }
   }
+
+  return localDirection;
+}
+
+function setState(newState: State): void {
+  if (newState === state) {
+    return;
+  }
+  state = newState;
+
+  setSpriteXFrame(sprites.idle, 0);
+  setSpriteXFrame(sprites.walk, 0);
+
+  switch (state) {
+    case State.Idle: {
+      sprites.current = sprites.idle;
+      break;
+    }
+    case State.Walk: {
+      sprites.current = sprites.walk;
+      break;
+    }
+  }
+}
+
+function setDirection(newDirection: Direction): void {
+  if (newDirection === direction) {
+    return;
+  }
+  direction = newDirection;
+
+  setSpriteYFrame(sprites.idle, direction);
+  setSpriteYFrame(sprites.walk, direction);
 }
 
 export function processHero(delta: number): void {
@@ -104,9 +159,9 @@ export function processHero(delta: number): void {
   targetDelta.y = targetPosition.y - collisionShape.position.y;
 
   if (isBelowThreshold(targetDelta, 4)) {
-    graphics.current = graphics.idle;
+    setState(State.Idle);
   } else {
-    graphics.current = graphics.walk;
+    setState(State.Walk);
 
     targetNormal.x = targetDelta.x;
     targetNormal.y = targetDelta.y;
@@ -121,15 +176,11 @@ export function processHero(delta: number): void {
     );
   }
 
-  setDirection();
-  if (lastDirection !== direction) {
-    lastDirection = direction;
-    setSpriteYFrame(graphics.current, direction);
-  }
+  setDirection(getDirection());
 
   drawHeroStuff(ctx);
   animateSprite(
-    graphics.current,
+    sprites.current,
     position.x - spriteOffset.x,
     position.y - spriteOffset.y,
     ctx,
