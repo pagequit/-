@@ -16,23 +16,6 @@ export enum ShapeType {
   Rectangle,
 }
 
-export type UnionShape = Circle | Rectangle;
-
-export type CollisionShape<Shape extends UnionShape> = {
-  type: ShapeType;
-  shape: Shape;
-  collide: {
-    [ShapeType.Circle]: (
-      a: CollisionShape<Shape>,
-      b: CollisionShape<Circle>,
-    ) => boolean;
-    [ShapeType.Rectangle]: (
-      a: CollisionShape<Shape>,
-      b: CollisionShape<Rectangle>,
-    ) => boolean;
-  };
-};
-
 export function createCircle(position: Vector, radius: number): Circle {
   return { position, radius };
 }
@@ -43,43 +26,6 @@ export function createRectangle(
   height: number,
 ): Rectangle {
   return { position, width, height };
-}
-
-export function createCollisionShape<Shape extends UnionShape>(
-  type: ShapeType,
-  shape: Shape,
-): CollisionShape<Shape> {
-  const collisionShape = {
-    type,
-    shape,
-    collide: {
-      [ShapeType.Circle]: () => false,
-      [ShapeType.Rectangle]: () => false,
-    },
-  };
-
-  switch (type) {
-    case ShapeType.Circle: {
-      collisionShape.collide[ShapeType.Circle] = () => true;
-      collisionShape.collide[ShapeType.Rectangle] = () => true;
-
-      return collisionShape as CollisionShape<Shape>;
-    }
-    case ShapeType.Rectangle: {
-      collisionShape.collide[ShapeType.Circle] = () => true;
-      collisionShape.collide[ShapeType.Rectangle] = () => true;
-
-      return collisionShape as CollisionShape<Shape>;
-    }
-  }
-}
-
-function collide(
-  a: CollisionShape<UnionShape>,
-  b: CollisionShape<UnionShape>,
-): void {
-  a.collide[b.type](a, b);
-  b.collide[a.type](b, a);
 }
 
 export function isPointInCircle(point: Vector, circle: Circle): boolean {

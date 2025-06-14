@@ -88,6 +88,11 @@ export function plotLine(
   }
 }
 
+export function fromGridCoord(coord: Vector, position: Vector): void {
+  position.x = coord.x * tileSize;
+  position.y = coord.y * tileSize;
+}
+
 export function toGridCoord(position: Vector, coord: Vector): void {
   coord.x = (position.x / tileSize) | 0;
   coord.y = (position.y / tileSize) | 0;

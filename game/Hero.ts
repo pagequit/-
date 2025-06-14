@@ -21,7 +21,7 @@ import {
   plotLine,
 } from "./misc.ts";
 import { animateSprite } from "../lib/Sprite.ts";
-import type { Circle } from "../lib/collision.ts";
+import { isPointInCircle, type Circle } from "../lib/collision.ts";
 import { useWithAsyncCache } from "../lib/cache.ts";
 
 enum State {
@@ -72,18 +72,13 @@ export type Hero = {
   collisionShape: Circle;
 };
 
-const [heroLoader] = useWithAsyncCache(async (): Promise<Hero> => {
-  sprites.idle = await loadIdleSprite();
-  sprites.walk = await loadWalkSprite();
-
-  return {
-    position,
-    collisionShape,
-  };
-});
-
 export function loadHero(): Promise<Hero> {
-  return heroLoader("/");
+  return useWithAsyncCache(async (): Promise<Hero> => {
+    sprites.idle = await loadIdleSprite();
+    sprites.walk = await loadWalkSprite();
+
+    return { position, collisionShape };
+  })[0]("/");
 }
 
 export function updateHeroPosition(x: number, y: number): void {
@@ -131,7 +126,7 @@ export function setHeroDirection(newDirection: Direction): void {
 }
 
 export function processHero(delta: number): void {
-  if (pointer.isDown) {
+  if (pointer.isDown && !isPointInCircle(pointer.position, collisionShape)) {
     targetPosition.x = pointer.position.x;
     targetPosition.y = pointer.position.y;
   }
@@ -144,10 +139,23 @@ export function processHero(delta: number): void {
   } else {
     setHeroState(State.Walk);
 
+    if (Math.abs(targetDelta.x) > Math.abs(targetDelta.y)) {
+      if (targetDelta.x < 0) {
+        setHeroDirection(Direction.Left);
+      } else {
+        setHeroDirection(Direction.Right);
+      }
+    } else {
+      if (targetDelta.y < 0) {
+        setHeroDirection(Direction.Up);
+      } else {
+        setHeroDirection(Direction.Down);
+      }
+    }
+
     targetNormal.x = targetDelta.x;
     targetNormal.y = targetDelta.y;
     normalize(targetNormal);
-
     velocity.x = targetNormal.x * 0.3;
     velocity.y = targetNormal.y * 0.3;
 
@@ -155,20 +163,6 @@ export function processHero(delta: number): void {
       position.x + velocity.x * delta,
       position.y + velocity.y * delta,
     );
-  }
-
-  if (Math.abs(targetDelta.x) > Math.abs(targetDelta.y)) {
-    if (targetDelta.x < 0) {
-      setHeroDirection(Direction.Left);
-    } else {
-      setHeroDirection(Direction.Right);
-    }
-  } else {
-    if (targetDelta.y < 0) {
-      setHeroDirection(Direction.Up);
-    } else {
-      setHeroDirection(Direction.Down);
-    }
   }
 
   drawHeroStuff(ctx);
