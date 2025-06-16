@@ -34,7 +34,7 @@ export function highlightGridTile(
   position: Vector,
   ctx: CanvasRenderingContext2D,
 ): void {
-  ctx.fillStyle = "rgba(32, 32, 32, 0.4)";
+  ctx.fillStyle = "rgba(128, 128, 128, 0.3)";
   ctx.fillRect(
     ((position.x / tileSize) | 0) * tileSize,
     ((position.y / tileSize) | 0) * tileSize,

@@ -2,6 +2,7 @@ import { tileSize, scaleBase } from "./constants.ts";
 import { type Viewport } from "../lib/Viewport.ts";
 import { type Vector } from "../lib/Vector.ts";
 import { createColor } from "../lib/Color.ts";
+import { compileColor } from "../lib/Color.ts";
 
 const defaultColor = createColor(255, 255, 255);
 
@@ -101,4 +102,26 @@ export function toGridCoord(position: Vector, coord: Vector): void {
 export function toPixelCoord(position: Vector, coord: Vector): void {
   coord.x = (position.x / scaleBase) | 0;
   coord.y = (position.y / scaleBase) | 0;
+}
+
+export function getModThreeColor(index: number): string {
+  const color = createColor(0, 0, 0, 0.5);
+
+  switch (index % 3) {
+    case 0: {
+      color.r = 128;
+      break;
+    }
+    case 1: {
+      color.g = 128;
+      break;
+    }
+    case 2: {
+      color.b = 128;
+      break;
+    }
+  }
+  compileColor(color);
+
+  return color.value;
 }

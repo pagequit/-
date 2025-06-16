@@ -165,7 +165,7 @@ export function processHero(delta: number): void {
     );
   }
 
-  drawHeroStuff(ctx);
+  // drawHeroStuff(ctx);
   animateSprite(
     sprites.current,
     position.x - spritesOffset.x,
