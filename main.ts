@@ -14,12 +14,22 @@ import {
 import { useWithAsyncCache } from "./lib/cache.ts";
 import { usePointer, createPointer } from "./lib/usePointer.ts";
 import { drawDelta } from "./game/misc.ts";
+import { mountDevTools } from "./devTools/main.tsx";
 
-const gameContainer = document.querySelector(".game-container") as HTMLElement;
-const canvas = gameContainer.querySelector("canvas") as HTMLCanvasElement;
+const appContainer = document.getElementById("app") as HTMLElement;
+
+const gameContainer = document.createElement("div");
+gameContainer.classList.add("game-container");
+
+const canvas = document.createElement("canvas");
+
 const ctx = canvas.getContext("2d", {
   alpha: false,
 }) as CanvasRenderingContext2D;
+
+mountDevTools(appContainer);
+gameContainer.appendChild(canvas);
+appContainer.appendChild(gameContainer);
 
 export const viewport = createViewport(ctx);
 export const pointer = createPointer();

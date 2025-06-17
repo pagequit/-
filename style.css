@@ -1,4 +1,4 @@
-:root {
+#app {
   --font-sans:
     ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol", "Noto Color Emoji";
@@ -56,30 +56,14 @@
   --sp-4: 24px;
   --sp-5: 32px;
   --sp-6: 48px;
-}
 
-*,
-*::after,
-*::before {
-  box-sizing: border-box;
-}
-
-*:focus {
-  outline-width: 2px;
-  outline-style: solid;
-  outline-color: var(--c-cyan);
-}
-
-body {
   position: fixed;
   height: 100vh;
   width: 100vw;
   margin: 0;
   font-size: 16px;
-  background: black;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  background: black;
   background-image: url(/hex-grid.svg);
 
   &.sans {
@@ -91,14 +75,45 @@ body {
   &.mono {
     font-family: var(--font-mono);
   }
+
+  *,
+  *::after,
+  *::before {
+    box-sizing: border-box;
+  }
+
+  *:focus {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-color: var(--c-cyan);
+  }
 }
 
-canvas {
-  image-rendering: pixelated;
-  display: block;
+.dev-container {
+  height: 100%;
+  padding: var(--sp-3);
+  border-right: 2px solid var(--c-fg-3);
+  background: var(--c-bg-0);
+  color: var(--c-fg-1);
+}
+
+.asset-item {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .game-container {
-  background: #161616;
+  width: 100%;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  canvas {
+    image-rendering: pixelated;
+    display: block;
+  }
 }
