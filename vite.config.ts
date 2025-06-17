@@ -3,25 +3,25 @@ import solidPlugin from "vite-plugin-solid";
 import { readdirSync, writeFileSync } from "node:fs";
 
 function assetIndexer(): Plugin {
-  const indexName = "assetindex.json";
-  const publicDir = "public";
+  const indexName = "index.json";
+  const assetsDir = "public/assets";
 
   return {
     name: "asset-indexer",
     buildStart() {
-      const assets = readdirSync(publicDir, {
+      const assets = readdirSync(assetsDir, {
         withFileTypes: true,
         recursive: true,
       });
       const index = assets
         .filter((dirent) => dirent.isFile() && dirent.name !== indexName)
         .map((dirent) => {
-          const path = dirent.parentPath.substring(publicDir.length);
+          const path = dirent.parentPath.substring(assetsDir.length);
           return `${path}/${dirent.name}`;
         });
 
       writeFileSync(
-        `${publicDir}/${indexName}`,
+        `${assetsDir}/${indexName}`,
         JSON.stringify(index, null, 2),
         "utf8",
       );
@@ -34,9 +34,6 @@ export default defineConfig({
     port: 3033,
     hmr: false,
   },
-  build: {
-    target: "esnext",
-    manifest: "manifest.json",
-  },
+  build: { target: "esnext" },
   plugins: [solidPlugin(), assetIndexer()],
 });

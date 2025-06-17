@@ -91,17 +91,47 @@
 
 .dev-container {
   height: 100%;
-  padding: var(--sp-3);
-  border-right: 2px solid var(--c-fg-3);
+  border-right: 1px solid var(--c-fg-3);
   background: var(--c-bg-0);
   color: var(--c-fg-1);
+  font-size: 14px;
 }
 
-.asset-item {
-  cursor: pointer;
+.dev-tools {
+}
 
-  &:hover {
+.dev-tools-header {
+  background: var(--c-bg-3);
+  font-weight: bold;
+  color: var(--c-fg-1);
+  padding: var(--sp-2);
+}
+
+.asset-list {
+  list-style: none;
+  padding: 0 var(--sp-2);
+}
+
+.asset-label {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  svg {
+    margin-right: var(--sp-1);
+  }
+
+  span:hover {
+    cursor: pointer;
     text-decoration: underline;
+  }
+}
+
+.asset-preview {
+  margin: var(--sp-2);
+
+  img {
+    display: inline-block;
   }
 }
 
