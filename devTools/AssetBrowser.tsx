@@ -2,6 +2,8 @@ import {
   createResource,
   createSignal,
   Index,
+  Match,
+  Switch,
   Show,
   type Component,
 } from "solid-js";
@@ -10,6 +12,7 @@ import {
   FileDeltaIcon,
   FileMusicIcon,
   FileUnknownIcon,
+  FolderIcon,
 } from "./icons/index.ts";
 
 enum AssetType {
@@ -18,31 +21,31 @@ enum AssetType {
   Sound,
 }
 
-type Asset = {
+type AssetFile = {
   type: AssetType;
   name: string;
   path: string;
 };
 
-type Folder = Map<string, Asset | Folder>;
+type AssetFolder = Map<string, AssetFile | AssetFolder>;
 
-function treeBuilder(
-  current: Folder,
+function assetTreeBuilder(
+  current: AssetFolder,
   entries: string[],
   index: number,
   ref: string[],
 ) {
   const next = current.has(entries[0])
-    ? (current.get(entries[0]) as Folder)
-    : (new Map() as Folder);
+    ? (current.get(entries[0]) as AssetFolder)
+    : (new Map() as AssetFolder);
 
   if (entries.length > 1) {
     current.set(entries.shift() as string, next);
-    treeBuilder(next, entries, index, ref);
+    assetTreeBuilder(next, entries, index, ref);
   } else {
     current.set(entries[0], {
-      type: ((ext: string) => {
-        switch (ext) {
+      type: ((extension: string) => {
+        switch (extension) {
           case "wav":
           case "mp3": {
             return AssetType.Sound;
@@ -62,15 +65,15 @@ function treeBuilder(
   }
 }
 
-async function fetchAssetIndex(): Promise<Folder> {
-  const ref: string[] = await (await fetch("/assets/index.json")).json();
+async function fetchAssetIndex(): Promise<AssetFolder> {
+  const indexRef: string[] = await (await fetch("/assets/index.json")).json();
 
-  return ref.reduce((root, entry, index) => {
+  return indexRef.reduce((root, entry, index) => {
     const entries = `assets${entry}`.split("/");
-    treeBuilder(root, entries, index, ref);
+    assetTreeBuilder(root, entries, index, indexRef);
 
     return root;
-  }, new Map() as Folder);
+  }, new Map() as AssetFolder);
 }
 
 export const AssetBrowser: Component = () => {
@@ -78,63 +81,73 @@ export const AssetBrowser: Component = () => {
   const [index] = createResource(assetsIndex, fetchAssetIndex);
   const [previewItem, setPreviewItem] = createSignal("");
 
-  function preview(file: Asset): void {
-    switch (file.type) {
+  function preview(asset: AssetFile): void {
+    switch (asset.type) {
       case AssetType.Image: {
-        setPreviewItem(file.path);
+        setPreviewItem(asset.path);
+        break;
+      }
+      default: {
+        console.warn("TODO");
       }
     }
   }
 
-  const AssetFile: Component<{ file: Asset }> = ({ file }) => {
+  const AssetFile: Component<{ asset: AssetFile }> = ({ asset }) => {
     return (
       <div class="asset-label">
-        <Show when={file.type === AssetType.Sound}>
-          <FileMusicIcon />
-        </Show>
-        <Show when={file.type === AssetType.Image}>
-          <FileDeltaIcon />
-        </Show>
-        <Show when={file.type === AssetType.Unkown}>
-          <FileUnknownIcon />
-        </Show>
-        <span onClick={[preview, file]}>{file.name}</span>
+        <Switch fallback={<FileUnknownIcon />}>
+          <Match when={asset.type === AssetType.Sound}>
+            <FileMusicIcon />
+          </Match>
+          <Match when={asset.type === AssetType.Image}>
+            <FileDeltaIcon />
+          </Match>
+        </Switch>
+        <span onClick={[preview, asset]}>{asset.name}</span>
       </div>
     );
   };
 
-  function toggle(folder: Folder): void {
-    console.log(folder);
-  }
+  const AssetFolder: Component<{
+    folder: AssetFolder;
+    name: string;
+    index: number;
+  }> = ({ folder, name, index }) => {
+    const [isOpen, setIsOpen] = createSignal(index < 1);
 
-  const AssetFolder: Component<{ folder: Folder; name: string }> = ({
-    folder,
-    name,
-  }) => {
     return (
       <>
         <div class="asset-label">
-          <FolderOpenIcon />
-          <span onClick={[toggle, folder]}>{name}</span>
+          {isOpen() ? <FolderOpenIcon /> : <FolderIcon />}
+          <span onClick={() => setIsOpen(!isOpen())}>{name}</span>
         </div>
-        <AssetEntry folder={folder} />
+
+        <Show when={isOpen()}>
+          <AssetEntry folder={folder} />
+        </Show>
       </>
     );
   };
 
-  const AssetEntry: Component<{ folder: Folder }> = ({ folder }) => {
+  const AssetEntry: Component<{ folder: AssetFolder }> = ({ folder }) => {
     return (
       <ul class="asset-list">
         <Index each={[...folder.entries()]}>
-          {(item) => {
+          {(item, index) => {
             const [name, entry] = item();
 
             return (
               <li class="asset-item">
-                {typeof (entry as Folder)[Symbol.iterator] === "function" ? (
-                  <AssetFolder folder={entry as Folder} name={name} />
+                {typeof (entry as AssetFolder)[Symbol.iterator] ===
+                "function" ? (
+                  <AssetFolder
+                    folder={entry as AssetFolder}
+                    name={name}
+                    index={index}
+                  />
                 ) : (
-                  <AssetFile file={entry as Asset} />
+                  <AssetFile asset={entry as AssetFile} />
                 )}
               </li>
             );
@@ -153,7 +166,7 @@ export const AssetBrowser: Component = () => {
         <span>Error: {index.error}</span>
       </Show>
       <Show when={index()}>
-        <AssetEntry folder={index() as Folder} />
+        <AssetEntry folder={index() as AssetFolder} />
       </Show>
 
       <div class="asset-preview">
