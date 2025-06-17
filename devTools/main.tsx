@@ -43,11 +43,13 @@ enum FileType {
   Image,
   Sound,
 }
+
 type File = {
   type: FileType;
   name: string;
   path: string;
 };
+
 type Folder = Map<string, File | Folder>;
 
 function treeBuilder(
@@ -90,7 +92,7 @@ async function fetchAssetIndex(): Promise<Folder> {
   const ref: string[] = await (await fetch("/assets/index.json")).json();
 
   return ref.reduce((root, entry, index) => {
-    const entries = entry.split("/");
+    const entries = `assets${entry}`.split("/");
     treeBuilder(root, entries, index, ref);
 
     return root;
