@@ -1,3 +1,4 @@
+import { FolderOpenIcon } from "../devTools/icons/FolderOpen.tsx";
 import { type Vector } from "./Vector.ts";
 
 export type Sprite = {
