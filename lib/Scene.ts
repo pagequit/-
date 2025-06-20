@@ -1,14 +1,16 @@
-import { type Node } from "./Graph";
-
 export type Process = (delta: number) => void;
 
 export type PreProcess = () => void;
 
 export type PostProcess = () => void;
 
-export type SceneNode = Node<{ name: string }>;
+export type SceneData = {
+  name: string;
+  tileset: string;
+};
 
 export type Scene = {
+  data: SceneData;
   width: number;
   height: number;
   process: Process;
@@ -17,6 +19,7 @@ export type Scene = {
 };
 
 export type SceneOptions = {
+  data: SceneData;
   width: number;
   height: number;
   process: Process;
@@ -26,6 +29,7 @@ export type SceneOptions = {
 
 export function createScene(options: SceneOptions): Scene {
   return {
+    data: options.data,
     width: options.width,
     height: options.height,
     process: options.process,

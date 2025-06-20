@@ -1,6 +1,6 @@
 import { tileSize } from "../constants.ts";
 import { viewport } from "../../main.ts";
-import { type Scene, createScene } from "../../lib/Scene.ts";
+import { type Scene, type SceneData, createScene } from "../../lib/Scene.ts";
 import { createGrid, drawGrid } from "../../lib/Grid.ts";
 import { focusViewport } from "../../lib/Viewport.ts";
 import { loadHero, processHero } from "../Hero.ts";
@@ -13,6 +13,11 @@ const height = grid.tileSize * grid.yCount;
 const asyncData = {
   hero: {},
 } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+const data: SceneData = {
+  name: "testSceneTwo",
+  tileset: "/assets/tileset.png",
+};
 
 function process(delta: number) {
   processHero(delta);
@@ -32,5 +37,5 @@ export default async function (): Promise<Scene> {
 
   asyncData.hero = await loadHero();
 
-  return createScene({ width, height, process });
+  return createScene({ data, width, height, process });
 }

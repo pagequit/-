@@ -1,7 +1,7 @@
 import { tileSize } from "../constants.ts";
 import { focusViewport } from "../../lib/Viewport.ts";
 import { viewport, pointer } from "../../main.ts";
-import { createScene, type Scene } from "../../lib/Scene.ts";
+import { createScene, type Scene, type SceneData } from "../../lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
 import { processHero, loadHero, setHeroPosition } from "../Hero.ts";
 import {
@@ -12,10 +12,10 @@ import {
 import { type Vector } from "../../lib/Vector.ts";
 import { drawRectangle } from "../misc.ts";
 
-type TileSet = Array<Array<number>>;
+type Tilemap = Array<Array<number>>;
 
 // prettier-ignore
-const tileSet: TileSet = [
+const tilemap: Tilemap = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -33,13 +33,19 @@ const tileSet: TileSet = [
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
-const grid = createGrid(tileSize, tileSet[0].length, tileSet.length);
+const grid = createGrid(tileSize, tilemap[0].length, tilemap.length);
 const width = grid.tileSize * grid.xCount;
 const height = grid.tileSize * grid.yCount;
 
 const asyncData = {
   hero: {},
+  tilemap: null,
 } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+const data: SceneData = {
+  name: "testSceneOne",
+  tileset: "/assets/tileset.png",
+};
 
 const { ctx } = viewport;
 
@@ -52,15 +58,15 @@ const aThing: Rectangle = {
   },
 };
 
-function isTileFree(tileSet: TileSet, x: number, y: number): boolean {
+function isTileFree(tileSet: Tilemap, x: number, y: number): boolean {
   return !tileSet[y][x];
 }
 
 function getTileByPosition(position: Vector): number {
-  return tileSet[(position.y / tileSize) | 0][(position.x / tileSize) | 0];
+  return tilemap[(position.y / tileSize) | 0][(position.x / tileSize) | 0];
 }
 
-function drawTileSet(tileSet: TileSet, ctx: CanvasRenderingContext2D): void {
+function drawTileSet(tileSet: Tilemap, ctx: CanvasRenderingContext2D): void {
   ctx.fillStyle = "rgba(128, 128, 128, 1.0)";
   const ySize = tileSet.length;
   const xSize = tileSet[0].length;
@@ -97,7 +103,7 @@ function process(delta: number) {
   }
 
   drawGrid(grid, ctx);
-  drawTileSet(tileSet, ctx);
+  drawTileSet(tilemap, ctx);
 }
 
 export default async function (): Promise<Scene> {
@@ -106,6 +112,7 @@ export default async function (): Promise<Scene> {
   asyncData.hero = await loadHero();
 
   return createScene({
+    data,
     width,
     height,
     process,

@@ -34,7 +34,7 @@ function assetTreeBuilder(
   entries: string[],
   index: number,
   ref: string[],
-) {
+): void {
   const next = current.has(entries[0])
     ? (current.get(entries[0]) as AssetFolder)
     : (new Map() as AssetFolder);

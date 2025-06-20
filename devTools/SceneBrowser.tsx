@@ -6,17 +6,17 @@ import {
   type Component,
 } from "solid-js";
 import { FolderOpenIcon, ScriptIcon, FolderIcon } from "./icons/index.ts";
-import { type SceneNode } from "../lib/Scene.ts";
 import { swapScene } from "../main.ts";
 
-type SceneFolder = Map<string, SceneNode | SceneFolder>;
+type SceneEntry = { name: string };
+type SceneFolder = Map<string, SceneEntry | SceneFolder>;
 
 function sceneTreeBuilder(
   current: SceneFolder,
   entries: string[],
   index: number,
   ref: string[],
-) {
+): void {
   const next = current.has(entries[0])
     ? (current.get(entries[0]) as SceneFolder)
     : (new Map() as SceneFolder);
@@ -45,11 +45,11 @@ async function fetchSceneIndex(): Promise<SceneFolder> {
 export const SceneBrowser: Component = () => {
   const [sceneIndex] = createResource(createSignal([])[0], fetchSceneIndex);
 
-  const SceneNode: Component<{ scene: SceneNode }> = ({ scene }) => {
+  const SceneFile: Component<{ entry: SceneEntry }> = ({ entry }) => {
     return (
       <div class="file-label">
         <ScriptIcon />
-        <span onClick={[() => swapScene(scene.name), scene]}>{scene.name}</span>
+        <span onClick={() => swapScene(entry.name)}>{entry.name}</span>
       </div>
     );
   };
@@ -92,7 +92,7 @@ export const SceneBrowser: Component = () => {
                     index={index}
                   />
                 ) : (
-                  <SceneNode scene={entry as SceneNode} />
+                  <SceneFile entry={entry as SceneEntry} />
                 )}
               </li>
             );
@@ -103,16 +103,18 @@ export const SceneBrowser: Component = () => {
   };
 
   return (
-    <div class="file-browser">
-      <Show when={sceneIndex.loading}>
-        <span>Loading...</span>
-      </Show>
-      <Show when={sceneIndex.error}>
-        <span>Error: {sceneIndex.error}</span>
-      </Show>
-      <Show when={sceneIndex()}>
-        <SceneEntry folder={sceneIndex() as SceneFolder} />
-      </Show>
-    </div>
+    <>
+      <div class="file-browser">
+        <Show when={sceneIndex.loading}>
+          <span>Loading...</span>
+        </Show>
+        <Show when={sceneIndex.error}>
+          <span>Error: {sceneIndex.error}</span>
+        </Show>
+        <Show when={sceneIndex()}>
+          <SceneEntry folder={sceneIndex() as SceneFolder} />
+        </Show>
+      </div>
+    </>
   );
 };
