@@ -97,7 +97,6 @@
   justify-content: center;
 
   canvas {
-    image-rendering: pixelated;
     display: block;
   }
 }
@@ -133,13 +132,20 @@
   padding: var(--sp-2);
 }
 
-.asset-list {
+/* file-browser */
+
+.file-browser {
+  background: var(--c-bg-0);
+  padding: var(--sp-2);
+}
+
+.file-list {
   margin: 0 0 var(--sp-2);
   list-style: none;
   padding: 0 var(--sp-2);
 }
 
-.asset-label {
+.file-label {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -154,15 +160,13 @@
   }
 }
 
-/* asset-browser */
-
-.asset-browser {
-  background: var(--c-bg-0);
-  padding: var(--sp-2);
-}
+/* TODO */
 
 .asset-preview {
   img {
     display: inline-block;
+    image-rendering: pixelated;
+    width: 100%;
+    height: auto;
   }
 }

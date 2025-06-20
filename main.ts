@@ -56,7 +56,7 @@ export async function swapScene(name: string): Promise<void> {
   const nextScene = loadScene(name);
   const neighbours = getNeighbours(
     sceneGraph,
-    scenes.find((s) => s.name === name)!, // FIXME
+    scenes.find((s) => s.name === name)!, // TODO
   );
   for (const neighbour of neighbours) {
     if (!sceneCache.has(neighbour.name)) {

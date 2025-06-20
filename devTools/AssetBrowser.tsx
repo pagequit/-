@@ -94,7 +94,7 @@ export const AssetBrowser: Component = () => {
 
   const AssetFile: Component<{ asset: AssetFile }> = ({ asset }) => {
     return (
-      <div class="asset-label">
+      <div class="file-label">
         <Switch fallback={<FileUnknownIcon />}>
           <Match when={asset.type === AssetType.Sound}>
             <FileMusicIcon />
@@ -117,7 +117,7 @@ export const AssetBrowser: Component = () => {
 
     return (
       <>
-        <div class="asset-label">
+        <div class="file-label">
           {isOpen() ? <FolderOpenIcon /> : <FolderIcon />}
           <span onClick={() => setIsOpen(!isOpen())}>{name}</span>
         </div>
@@ -131,13 +131,13 @@ export const AssetBrowser: Component = () => {
 
   const AssetEntry: Component<{ folder: AssetFolder }> = ({ folder }) => {
     return (
-      <ul class="asset-list">
+      <ul class="file-list">
         <Index each={[...folder.entries()]}>
           {(item, index) => {
             const [name, entry] = item();
 
             return (
-              <li class="asset-item">
+              <li class="file-item">
                 {typeof (entry as AssetFolder)[Symbol.iterator] ===
                 "function" ? (
                   <AssetFolder
@@ -157,7 +157,7 @@ export const AssetBrowser: Component = () => {
   };
 
   return (
-    <div class="asset-browser">
+    <div class="file-browser">
       <Show when={assetIndex.loading}>
         <span>Loading...</span>
       </Show>

@@ -47,7 +47,7 @@ export const SceneBrowser: Component = () => {
 
   const SceneNode: Component<{ scene: SceneNode }> = ({ scene }) => {
     return (
-      <div class="asset-label">
+      <div class="file-label">
         <ScriptIcon />
         <span onClick={[() => swapScene(scene.name), scene]}>{scene.name}</span>
       </div>
@@ -63,7 +63,7 @@ export const SceneBrowser: Component = () => {
 
     return (
       <>
-        <div class="asset-label">
+        <div class="file-label">
           {isOpen() ? <FolderOpenIcon /> : <FolderIcon />}
           <span onClick={() => setIsOpen(!isOpen())}>{name}</span>
         </div>
@@ -77,13 +77,13 @@ export const SceneBrowser: Component = () => {
 
   const SceneEntry: Component<{ folder: SceneFolder }> = ({ folder }) => {
     return (
-      <ul class="asset-list">
+      <ul class="file-list">
         <Index each={[...folder.entries()]}>
           {(item, index) => {
             const [name, entry] = item();
 
             return (
-              <li class="asset-item">
+              <li class="file-item">
                 {typeof (entry as SceneFolder)[Symbol.iterator] ===
                 "function" ? (
                   <SceneFolder
@@ -103,7 +103,7 @@ export const SceneBrowser: Component = () => {
   };
 
   return (
-    <div class="asset-browser">
+    <div class="file-browser">
       <Show when={sceneIndex.loading}>
         <span>Loading...</span>
       </Show>
