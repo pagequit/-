@@ -1,6 +1,7 @@
 import { createSignal, onCleanup, onMount, type Component } from "solid-js";
 import { render } from "solid-js/web";
 import { AssetBrowser } from "./AssetBrowser.tsx";
+import { SceneBrowser } from "./SceneBrowser.tsx";
 
 export type MountableElement =
   | Element
@@ -47,6 +48,7 @@ const DevTools: Component = () => {
     <>
       <div class="dev-tools" style={`width: ${width()}px;`}>
         <div class="dev-tools-header">Dev-Tools</div>
+        <SceneBrowser />
         <AssetBrowser />
       </div>
       <div class="dev-tools-resize" on:mousedown={() => (resize = true)}></div>

@@ -1,0 +1,118 @@
+import {
+  createResource,
+  createSignal,
+  Index,
+  Show,
+  type Component,
+} from "solid-js";
+import { FolderOpenIcon, ScriptIcon, FolderIcon } from "./icons/index.ts";
+import { type SceneNode } from "../lib/Scene.ts";
+import { swapScene } from "../main.ts";
+
+type SceneFolder = Map<string, SceneNode | SceneFolder>;
+
+function sceneTreeBuilder(
+  current: SceneFolder,
+  entries: string[],
+  index: number,
+  ref: string[],
+) {
+  const next = current.has(entries[0])
+    ? (current.get(entries[0]) as SceneFolder)
+    : (new Map() as SceneFolder);
+
+  if (entries.length > 1) {
+    current.set(entries.shift() as string, next);
+    sceneTreeBuilder(next, entries, index, ref);
+  } else {
+    current.set(entries[0], {
+      name: entries[0].substring(0, entries[0].length - 3),
+    });
+  }
+}
+
+async function fetchSceneIndex(): Promise<SceneFolder> {
+  const indexRef: string[] = await (await fetch("/sceneindex.json")).json();
+
+  return indexRef.reduce((root, entry, index) => {
+    const entries = `scenes${entry}`.split("/");
+    sceneTreeBuilder(root, entries, index, indexRef);
+
+    return root;
+  }, new Map() as SceneFolder);
+}
+
+export const SceneBrowser: Component = () => {
+  const [sceneIndex] = createResource(createSignal([])[0], fetchSceneIndex);
+
+  const SceneNode: Component<{ scene: SceneNode }> = ({ scene }) => {
+    return (
+      <div class="asset-label">
+        <ScriptIcon />
+        <span onClick={[() => swapScene(scene.name), scene]}>{scene.name}</span>
+      </div>
+    );
+  };
+
+  const SceneFolder: Component<{
+    folder: SceneFolder;
+    name: string;
+    index: number;
+  }> = ({ folder, name, index }) => {
+    const [isOpen, setIsOpen] = createSignal(index < 1);
+
+    return (
+      <>
+        <div class="asset-label">
+          {isOpen() ? <FolderOpenIcon /> : <FolderIcon />}
+          <span onClick={() => setIsOpen(!isOpen())}>{name}</span>
+        </div>
+
+        <Show when={isOpen()}>
+          <SceneEntry folder={folder} />
+        </Show>
+      </>
+    );
+  };
+
+  const SceneEntry: Component<{ folder: SceneFolder }> = ({ folder }) => {
+    return (
+      <ul class="asset-list">
+        <Index each={[...folder.entries()]}>
+          {(item, index) => {
+            const [name, entry] = item();
+
+            return (
+              <li class="asset-item">
+                {typeof (entry as SceneFolder)[Symbol.iterator] ===
+                "function" ? (
+                  <SceneFolder
+                    folder={entry as SceneFolder}
+                    name={name}
+                    index={index}
+                  />
+                ) : (
+                  <SceneNode scene={entry as SceneNode} />
+                )}
+              </li>
+            );
+          }}
+        </Index>
+      </ul>
+    );
+  };
+
+  return (
+    <div class="asset-browser">
+      <Show when={sceneIndex.loading}>
+        <span>Loading...</span>
+      </Show>
+      <Show when={sceneIndex.error}>
+        <span>Error: {sceneIndex.error}</span>
+      </Show>
+      <Show when={sceneIndex()}>
+        <SceneEntry folder={sceneIndex() as SceneFolder} />
+      </Show>
+    </div>
+  );
+};

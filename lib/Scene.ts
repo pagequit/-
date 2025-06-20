@@ -1,8 +1,12 @@
+import { type Node } from "./Graph";
+
 export type Process = (delta: number) => void;
 
 export type PreProcess = () => void;
 
 export type PostProcess = () => void;
+
+export type SceneNode = Node<{ name: string }>;
 
 export type Scene = {
   width: number;

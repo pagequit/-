@@ -66,7 +66,7 @@ function assetTreeBuilder(
 }
 
 async function fetchAssetIndex(): Promise<AssetFolder> {
-  const indexRef: string[] = await (await fetch("/assets/index.json")).json();
+  const indexRef: string[] = await (await fetch("/assetindex.json")).json();
 
   return indexRef.reduce((root, entry, index) => {
     const entries = `assets${entry}`.split("/");
@@ -77,8 +77,7 @@ async function fetchAssetIndex(): Promise<AssetFolder> {
 }
 
 export const AssetBrowser: Component = () => {
-  const [assetsIndex] = createSignal([]);
-  const [index] = createResource(assetsIndex, fetchAssetIndex);
+  const [assetIndex] = createResource(createSignal([])[0], fetchAssetIndex);
   const [previewItem, setPreviewItem] = createSignal("");
 
   function preview(asset: AssetFile): void {
@@ -159,14 +158,14 @@ export const AssetBrowser: Component = () => {
 
   return (
     <div class="asset-browser">
-      <Show when={index.loading}>
+      <Show when={assetIndex.loading}>
         <span>Loading...</span>
       </Show>
-      <Show when={index.error}>
-        <span>Error: {index.error}</span>
+      <Show when={assetIndex.error}>
+        <span>Error: {assetIndex.error}</span>
       </Show>
-      <Show when={index()}>
-        <AssetEntry folder={index() as AssetFolder} />
+      <Show when={assetIndex()}>
+        <AssetEntry folder={assetIndex() as AssetFolder} />
       </Show>
 
       <div class="asset-preview">
