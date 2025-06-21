@@ -6,7 +6,7 @@ import {
   type Component,
 } from "solid-js";
 import { FolderOpenIcon, ScriptIcon, FolderIcon } from "./icons/index.ts";
-import { swapScene } from "../main.ts";
+import { swapScene } from "../game/scenes.ts";
 
 type SceneEntry = { name: string };
 type SceneFolder = Map<string, SceneEntry | SceneFolder>;

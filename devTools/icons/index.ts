@@ -4,3 +4,6 @@ export * from "./FileUnknown.tsx";
 export * from "./Folder.tsx";
 export * from "./FolderOpen.tsx";
 export * from "./Script.tsx";
+export * from "./Pencil.tsx";
+export * from "./StackBackward.tsx";
+export * from "./StackForward.tsx";

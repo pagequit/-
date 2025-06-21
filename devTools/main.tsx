@@ -3,6 +3,10 @@ import { render } from "solid-js/web";
 import { AssetBrowser } from "./AssetBrowser.tsx";
 import { SceneBrowser } from "./SceneBrowser.tsx";
 import { type SceneData } from "../lib/Scene.ts";
+import { FloppyDiscIcon } from "./icons/FloppyDisc.tsx";
+import { PencilIcon } from "./icons/Pencil.tsx";
+import { StackBackwardIcon } from "./icons/StackBackward.tsx";
+import { StackForwardIcon } from "./icons/StackForward.tsx";
 
 export type MountableElement =
   | Element
@@ -57,9 +61,26 @@ const DevTools: Component = () => {
       <div class="dev-tools" style={`width: ${width()}px;`}>
         <div class="dev-tools-header">Dev-Tools</div>
         <AssetBrowser />
-        <SceneBrowser />
+        <hr />
 
-        <div class="asset-preview">
+        <SceneBrowser />
+        <hr />
+
+        <div class="tile-window">
+          <div class="icon-bar">
+            <button class="btn">
+              <StackForwardIcon />
+            </button>
+            <button class="btn">
+              <StackBackwardIcon />
+            </button>
+            <button class="btn">
+              <FloppyDiscIcon />
+            </button>
+            <button class="btn">
+              <PencilIcon />
+            </button>
+          </div>
           <img src={tileset()} alt="" />
         </div>
       </div>
