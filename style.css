@@ -131,13 +131,6 @@
   }
 }
 
-.dev-tools-header {
-  background: var(--c-bg-2);
-  font-weight: bold;
-  color: var(--c-fg-1);
-  padding: var(--sp-2);
-}
-
 /* file-browser */
 
 .file-browser {

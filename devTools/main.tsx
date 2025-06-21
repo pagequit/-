@@ -59,13 +59,6 @@ const DevTools: Component = () => {
   return (
     <>
       <div class="dev-tools" style={`width: ${width()}px;`}>
-        <div class="dev-tools-header">Dev-Tools</div>
-        <AssetBrowser />
-        <hr />
-
-        <SceneBrowser />
-        <hr />
-
         <div class="tile-window">
           <div class="icon-bar">
             <button class="btn">
@@ -81,8 +74,14 @@ const DevTools: Component = () => {
               <PencilIcon />
             </button>
           </div>
+
           <img src={tileset()} alt="" />
         </div>
+
+        <SceneBrowser />
+        <hr />
+
+        <AssetBrowser />
       </div>
 
       <div class="dev-tools-resize" on:mousedown={() => (resize = true)}></div>
