@@ -19,12 +19,14 @@ const ctx = canvas.getContext("2d", {
   alpha: false,
 }) as CanvasRenderingContext2D;
 
-mountDevTools(appContainer);
 gameContainer.appendChild(canvas);
 appContainer.appendChild(gameContainer);
 
+mountDevTools(appContainer);
+
 export const viewport = createViewport(ctx);
 export const pointer = createPointer();
+
 usePointer(pointer, viewport)[0]();
 
 function viewportResizeHandler(): void {

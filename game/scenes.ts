@@ -14,33 +14,32 @@ const [loadScene, sceneCache] = useWithAsyncCache(async (name: string) => {
   return (await import(`./scenes/${name}.ts`)).default();
 });
 
-export const scenes: Array<SceneData> = [
+type SceneNode = { name: string };
+
+export const scenes: Array<SceneNode> = [
   {
     name: "testSceneOne",
-    tileset: "/assets/tileset.png",
   },
   {
     name: "testSceneTwo",
-    tileset: "/assets/tileset.png",
   },
   {
     name: "testSceneThree",
-    tileset: "/assets/tileset.png",
   },
 ];
 
-const sceneEdges: Array<Edge<SceneData>> = [
+const sceneEdges: Array<Edge<SceneNode>> = [
   [scenes[0], scenes[1]],
   [scenes[1], scenes[2]],
 ];
 
-const sceneGraph: Graph<SceneData> = createGraph(scenes, sceneEdges);
+const sceneGraph: Graph<SceneNode> = createGraph(scenes, sceneEdges);
 
 export async function swapScene(name: string): Promise<void> {
-  const sceneData = scenes.find((s) => s.name === name) as SceneData;
+  const sceneNode = scenes.find((s) => s.name === name) as SceneNode;
 
   const nextScene = loadScene(name);
-  const neighbours = getNeighbours(sceneGraph, sceneData);
+  const neighbours = getNeighbours(sceneGraph, sceneNode);
 
   for (const neighbour of neighbours) {
     if (!sceneCache.has(neighbour.name)) {
@@ -54,7 +53,7 @@ export async function swapScene(name: string): Promise<void> {
   scene.current = scene.next;
   resizeViewport(viewport, scene.current.width, scene.current.height);
 
-  provideScene(sceneData);
+  provideScene(scene.current);
 }
 
 export const scene: {
