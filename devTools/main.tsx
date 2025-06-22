@@ -19,14 +19,13 @@ export function useDevTools(
 
   const overlayContainer = document.createElement("div");
   overlayContainer.classList.add("dev-overlay");
-  canvasContainer.appendChild(overlayContainer);
+  // canvasContainer.appendChild(overlayContainer);
+  // render(() => <DevOverlay />, overlayContainer);
 
   render(
     () => <DevTools sceneProxy={sceneProxy} appContainer={appContainer} />,
     appContainer,
   );
-
-  render(() => <DevOverlay />, overlayContainer);
 }
 
 const DevOverlay: Component = () => <>FIXME</>;
