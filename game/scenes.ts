@@ -7,7 +7,6 @@ import {
   getNeighbours,
 } from "../lib/Graph.ts";
 import { useWithAsyncCache } from "../lib/cache.ts";
-import { provideScene } from "../devTools/main.tsx";
 import { viewport } from "../main.ts";
 
 const [loadScene, sceneCache] = useWithAsyncCache(async (name: string) => {
@@ -16,7 +15,12 @@ const [loadScene, sceneCache] = useWithAsyncCache(async (name: string) => {
 
 type SceneNode = { name: string };
 
-export const scenes: Array<SceneNode> = [
+export type SceneProxy = {
+  next: Scene;
+  current: Scene;
+};
+
+const scenes: Array<SceneNode> = [
   {
     name: "testSceneOne",
   },
@@ -35,6 +39,25 @@ const sceneEdges: Array<Edge<SceneNode>> = [
 
 const sceneGraph: Graph<SceneNode> = createGraph(scenes, sceneEdges);
 
+const scene: SceneProxy = {
+  next: createScene({
+    data: null as unknown as SceneData,
+    width: 0,
+    height: 0,
+    process: () => {},
+  }),
+  current: createScene({
+    data: null as unknown as SceneData,
+    width: 0,
+    height: 0,
+    process: () => {},
+  }),
+};
+
+export function getSceneProxy(): SceneProxy {
+  return scene;
+}
+
 export async function swapScene(name: string): Promise<void> {
   const sceneNode = scenes.find((s) => s.name === name) as SceneNode;
 
@@ -52,24 +75,4 @@ export async function swapScene(name: string): Promise<void> {
   scene.current.postProcess();
   scene.current = scene.next;
   resizeViewport(viewport, scene.current.width, scene.current.height);
-
-  provideScene(scene.current);
 }
-
-export const scene: {
-  next: Scene;
-  current: Scene;
-} = {
-  next: createScene({
-    data: null as unknown as SceneData,
-    width: 0,
-    height: 0,
-    process: () => {},
-  }),
-  current: createScene({
-    data: null as unknown as SceneData,
-    width: 0,
-    height: 0,
-    process: () => {},
-  }),
-};

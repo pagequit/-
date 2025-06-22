@@ -1,6 +1,7 @@
 import { type Vector } from "./Vector.ts";
 
 export type Viewport = {
+  container: HTMLElement;
   ctx: CanvasRenderingContext2D;
   translation: Vector;
   scale: Vector;
@@ -8,6 +9,7 @@ export type Viewport = {
 };
 
 export function createViewport(
+  container: HTMLElement,
   ctx: CanvasRenderingContext2D,
   imageSmoothing: CanvasImageSmoothing = {
     imageSmoothingEnabled: false,
@@ -15,6 +17,7 @@ export function createViewport(
   },
 ): Viewport {
   const viewport = {
+    container,
     ctx,
     translation: { x: 0, y: 0 },
     scale: { x: 1, y: 1 },
@@ -66,10 +69,16 @@ export function placeViewport(
   width: number,
   height: number,
 ): void {
-  const { translation, scale } = viewport;
+  const { container, translation, scale } = viewport;
 
-  translation.x = Math.max(0, Math.min(x, width * scale.x - self.innerWidth));
-  translation.y = Math.max(0, Math.min(y, height * scale.y - self.innerHeight));
+  translation.x = Math.max(
+    0,
+    Math.min(x, width * scale.x - container.offsetWidth),
+  );
+  translation.y = Math.max(
+    0,
+    Math.min(y, height * scale.y - container.offsetHeight),
+  );
 }
 
 export function focusViewport(
@@ -79,12 +88,12 @@ export function focusViewport(
   width: number,
   height: number,
 ): void {
-  const { scale } = viewport;
+  const { container, scale } = viewport;
 
   placeViewport(
     viewport,
-    x * scale.x - self.innerWidth / 2,
-    y * scale.y - self.innerHeight / 2,
+    x * scale.x - container.offsetWidth / 2,
+    y * scale.y - container.offsetHeight / 2,
     width,
     height,
   );
@@ -97,15 +106,15 @@ export function centerViewport(
   width: number,
   height: number,
 ): void {
-  const { translation, scale } = viewport;
+  const { container, translation, scale } = viewport;
 
-  const halfWidth = self.innerWidth / 2;
+  const halfWidth = container.offsetWidth / 2;
   translation.x = Math.max(
     -halfWidth,
     Math.min(x * scale.x - halfWidth, width * scale.x - halfWidth),
   );
 
-  const halfHeight = self.innerHeight / 2;
+  const halfHeight = container.offsetHeight / 2;
   translation.y = Math.max(
     -halfHeight,
     Math.min(y * scale.y - halfHeight, height * scale.y - halfHeight),

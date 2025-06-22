@@ -1,100 +1,82 @@
-import {
-  createSignal,
-  onCleanup,
-  onMount,
-  Show,
-  type Component,
-} from "solid-js";
+import "./styles.css";
+import { createSignal, onCleanup, onMount, type Component } from "solid-js";
 import { render } from "solid-js/web";
 import { AssetBrowser } from "./AssetBrowser.tsx";
 import { SceneBrowser } from "./SceneBrowser.tsx";
-import { type Scene } from "../lib/Scene.ts";
 import { FloppyDiscIcon } from "./icons/FloppyDisc.tsx";
 import { PencilIcon } from "./icons/Pencil.tsx";
 import { StackBackwardIcon } from "./icons/StackBackward.tsx";
 import { StackForwardIcon } from "./icons/StackForward.tsx";
-import {
-  createViewport,
-  resetViewport,
-  resizeViewport,
-} from "../lib/Viewport.ts";
-import { createPointer, usePointer } from "../lib/usePointer.ts";
+import { type SceneProxy } from "../game/scenes.ts";
 
-const devOverlay = document.createElement("div");
-devOverlay.classList.add("dev-overlay");
+export function useDevTools(
+  appContainer: HTMLElement,
+  sceneProxy: SceneProxy,
+): void {
+  const canvasContainer = appContainer.querySelector(
+    ".canvas-container",
+  ) as HTMLElement;
 
-const canvas = document.createElement("canvas");
+  const overlayContainer = document.createElement("div");
+  overlayContainer.classList.add("dev-overlay");
+  canvasContainer.appendChild(overlayContainer);
 
-const ctx = canvas.getContext("2d", {
-  alpha: true,
-}) as CanvasRenderingContext2D;
+  render(
+    () => <DevTools sceneProxy={sceneProxy} appContainer={appContainer} />,
+    appContainer,
+  );
 
-const [scene, setScene] = createSignal<Scene | null>(null);
-
-export function provideScene(scene: Scene): void {
-  setScene(scene);
-  resizeViewport(viewport, scene.width, scene.height);
+  render(() => <DevOverlay />, overlayContainer);
 }
 
-export function mountDevTools(appContainer: HTMLElement): void {
-  const devToolsContainer = document.createElement("div");
-  devToolsContainer.classList.add("dev-container");
-  appContainer.appendChild(devToolsContainer);
+const DevOverlay: Component = () => <>FIXME</>;
 
-  render(() => <DevTools container={appContainer} />, devToolsContainer);
-}
-
-const viewport = createViewport(ctx);
-const pointer = createPointer();
-
-usePointer(pointer, viewport)[0]();
-
-function viewportResizeHandler(): void {
-  resizeViewport(viewport, scene()!.width, scene()!.height);
-}
-self.addEventListener("resize", viewportResizeHandler);
-
-function animate(): void {
-  self.requestAnimationFrame(animate);
-  resetViewport(viewport);
-}
-
-const DevTools: Component<{ container: HTMLElement }> = ({ container }) => {
-  const gameContainer = container.querySelector(
+const DevTools: Component<{
+  sceneProxy: SceneProxy;
+  appContainer: HTMLElement;
+}> = ({ sceneProxy, appContainer }) => {
+  const gameContainer = appContainer.querySelector(
     ".game-container",
   ) as HTMLElement;
-  devOverlay.appendChild(canvas);
-  gameContainer.appendChild(devOverlay);
 
-  const [width, setWidth] = createSignal(240);
-  let resizeX = false;
+  function getGameContainerStyle(width: number): string {
+    return `position: absolute; top: 0; left: ${width}px; width: ${self.innerWidth - width}px;`;
+  }
 
   function stopResizeX() {
     resizeX = false;
   }
 
-  function handleResize(event: MouseEvent) {
-    if (!resizeX) {
-      return;
+  function handleResize(event: MouseEvent | UIEvent) {
+    let newWidth = width();
+    if (resizeX) {
+      newWidth = (event as MouseEvent).clientX;
     }
-    setWidth(event.clientX);
+    newWidth = Math.min(newWidth, self.innerWidth - 64);
+
+    setWidth(newWidth);
+    gameContainer.style = getGameContainerStyle(newWidth);
   }
 
-  onMount(() => {
-    animate();
+  const [width, setWidth] = createSignal(240);
+  gameContainer.style = getGameContainerStyle(width());
+  let resizeX = false;
 
-    document.addEventListener("mousemove", handleResize);
-    document.addEventListener("mouseup", stopResizeX);
+  onMount(() => {
+    self.addEventListener("mousemove", handleResize);
+    self.addEventListener("mouseup", stopResizeX);
+    self.addEventListener("resize", handleResize);
   });
 
   onCleanup(() => {
-    document.removeEventListener("mousemove", handleResize);
-    document.removeEventListener("mouseup", stopResizeX);
+    self.removeEventListener("mousemove", handleResize);
+    self.removeEventListener("mouseup", stopResizeX);
+    self.removeEventListener("resize", handleResize);
   });
 
   return (
-    <>
-      <div class="dev-tools" style={`width: ${width()}px;`}>
+    <div class="dev-container" style={`width: ${width()}px;`}>
+      <div class="dev-tools">
         <div class="tile-window">
           <div class="icon-bar">
             <button class="btn">
@@ -111,9 +93,7 @@ const DevTools: Component<{ container: HTMLElement }> = ({ container }) => {
             </button>
           </div>
 
-          <Show when={scene()}>
-            <img src={scene()!.data.tileset} alt="" />
-          </Show>
+          <img src={sceneProxy.current.data?.tileset} alt="" />
         </div>
 
         <SceneBrowser />
@@ -123,6 +103,6 @@ const DevTools: Component<{ container: HTMLElement }> = ({ container }) => {
       </div>
 
       <div class="dev-tools-resize" on:mousedown={() => (resizeX = true)}></div>
-    </>
+    </div>
   );
 };

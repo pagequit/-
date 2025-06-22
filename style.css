@@ -1,216 +1,22 @@
 #app {
-  --font-sans:
-    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
-
-  --rgb-blurple: 101, 114, 245;
-  --c-blurple: rgb(var(--rgb-blurple));
-
-  --rgb-fuchsia: 238, 69, 158;
-  --c-fuchsia: rgb(var(--rgb-fuchsia));
-
-  --rgb-green: 35, 165, 89;
-  --c-green: rgb(var(--rgb-green));
-
-  --rgb-yellow: 240, 178, 50;
-  --c-yellow: rgb(var(--rgb-yellow));
-
-  --rgb-orange: 255, 144, 0;
-  --c-orange: rgb(var(--rgb-orange));
-
-  --rgb-red: 218, 55, 60;
-  --c-red: rgb(var(--rgb-red));
-
-  --rgb-cyan: 95, 205, 228;
-  --c-cyan: rgb(var(--rgb-cyan));
-
-  --rgb-pink: 246, 42, 245;
-  --c-pink: rgb(var(--rgb-pink));
-
-  --rgb-gray: 117, 126, 138;
-  --c-gray: rgb(var(--rgb-gray));
-
-  --rgb-white: 255, 255, 255;
-  --c-white: rgb(var(--rgb-white));
-
-  --rgb-black: 30, 31, 34;
-  --c-black: rgb(var(--rgb-black));
-
-  --c-bg-0: rgb(30, 31, 34);
-  --c-bg-1: rgb(43, 45, 49);
-  --c-bg-2: rgb(49, 51, 56);
-  --c-bg-3: rgb(64, 66, 73);
-
-  --c-fg-0: rgb(255 255 225);
-  --c-fg-1: rgb(219 222 225);
-  --c-fg-2: rgb(181 186 193);
-  --c-fg-3: rgb(113 116 120);
-
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 16px;
-  --sp-4: 24px;
-  --sp-5: 32px;
-  --sp-6: 48px;
-
   position: fixed;
   height: 100vh;
   width: 100vw;
-  margin: 0;
-  font-size: 16px;
-  background: black;
   background-image: url(/hex-grid.svg);
-  display: flex;
-  flex-direction: row-reverse;
-
-  &.sans {
-    font-family: var(--font-sans);
-  }
-  &.serif {
-    font-family: var(--font-serif);
-  }
-  &.mono {
-    font-family: var(--font-mono);
-  }
-
-  *,
-  *::after,
-  *::before {
-    box-sizing: border-box;
-  }
-
-  *:focus {
-    outline-width: 2px;
-    outline-style: solid;
-    outline-color: var(--c-cyan);
-  }
 }
 
 .game-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  canvas {
-    display: block;
-  }
-}
-
-/* dev-tools */
-
-.dev-container {
   height: 100%;
-  border-right: 1px solid var(--c-fg-3);
-  background: var(--c-bg-1);
-  color: var(--c-fg-1);
-  font-size: 14px;
-  position: relative;
-}
-
-.dev-tools-resize {
-  position: absolute;
-  top: 0;
-  right: -2px;
-  height: 100%;
-  width: 4px;
-  cursor: ew-resize;
-}
-
-.dev-tools {
-  overflow: hidden;
-
-  hr {
-    border-top: 1px solid var(--c-fg-3);
-    border-bottom: none;
-    margin: 0;
-  }
-}
-
-/* file-browser */
-
-.file-browser {
-  background: var(--c-bg-0);
-  padding: var(--sp-2);
-}
-
-.file-list {
-  margin: 0 0 var(--sp-2);
-  list-style: none;
-  padding: 0 var(--sp-2);
-}
-
-.file-label {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-
-  svg {
-    margin-right: var(--sp-1);
-  }
-
-  span:hover {
-    cursor: pointer;
-    text-decoration: underline;
-  }
-}
-
-/* misc */
-
-.btn {
-  border-radius: var(--sp-2);
-  border: none;
-  background: var(--c-bg-2);
-  color: var(--c-fg-2);
-  cursor: pointer;
-  padding: var(--sp-2) var(--sp-3);
-}
-
-.btn:hover {
-  background: var(--c-bg-3);
-}
-
-.asset-preview {
-  img {
-    display: inline-block;
-    image-rendering: pixelated;
-    width: 100%;
-    height: auto;
-  }
-}
-
-.tile-window {
-  img {
-    display: inline-block;
-    image-rendering: pixelated;
-    width: 100%;
-    height: auto;
-  }
-}
-
-.icon-bar {
-  padding: var(--sp-1);
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.dev-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+}
+
+.canvas-container {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
 
   canvas {
     display: block;

@@ -5,13 +5,16 @@ import {
 } from "./lib/Viewport.ts";
 import { usePointer, createPointer } from "./lib/usePointer.ts";
 import { drawDelta } from "./game/misc.ts";
-import { mountDevTools } from "./devTools/main.tsx";
-import { scene, scenes, swapScene } from "./game/scenes.ts";
+import { useDevTools } from "./devTools/main.tsx";
+import { swapScene, getSceneProxy } from "./game/scenes.ts";
 
 const appContainer = document.getElementById("app") as HTMLElement;
 
 const gameContainer = document.createElement("div");
 gameContainer.classList.add("game-container");
+
+const canvasContainer = document.createElement("div");
+canvasContainer.classList.add("canvas-container");
 
 const canvas = document.createElement("canvas");
 
@@ -19,18 +22,19 @@ const ctx = canvas.getContext("2d", {
   alpha: false,
 }) as CanvasRenderingContext2D;
 
-gameContainer.appendChild(canvas);
+const sceneProxy = getSceneProxy();
+
+canvasContainer.appendChild(canvas);
+gameContainer.appendChild(canvasContainer);
 appContainer.appendChild(gameContainer);
 
-mountDevTools(appContainer);
-
-export const viewport = createViewport(ctx);
+export const viewport = createViewport(gameContainer, ctx);
 export const pointer = createPointer();
 
 usePointer(pointer, viewport)[0]();
 
 function viewportResizeHandler(): void {
-  resizeViewport(viewport, scene.current.width, scene.current.height);
+  resizeViewport(viewport, sceneProxy.current.width, sceneProxy.current.height);
 }
 self.addEventListener("resize", viewportResizeHandler);
 
@@ -40,13 +44,14 @@ function animate(timestamp: number): void {
   self.requestAnimationFrame(animate);
   resetViewport(viewport);
 
-  scene.current.process(delta);
+  sceneProxy.current.process(delta);
   drawDelta(viewport, delta);
 
   delta = timestamp - then;
   then = timestamp;
 }
 
-swapScene(scenes[0].name).then(() => {
+swapScene("testSceneOne").then(() => {
   animate(then);
+  useDevTools(appContainer, sceneProxy);
 });
