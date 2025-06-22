@@ -39,7 +39,7 @@ const sceneEdges: Array<Edge<SceneNode>> = [
 
 const sceneGraph: Graph<SceneNode> = createGraph(scenes, sceneEdges);
 
-const scene: SceneProxy = {
+const sceneProxy: SceneProxy = {
   next: createScene({
     data: null as unknown as SceneData,
     width: 0,
@@ -55,7 +55,7 @@ const scene: SceneProxy = {
 };
 
 export function getSceneProxy(): SceneProxy {
-  return scene;
+  return sceneProxy;
 }
 
 export async function swapScene(name: string): Promise<void> {
@@ -70,9 +70,9 @@ export async function swapScene(name: string): Promise<void> {
     }
   }
 
-  scene.next = await nextScene;
-  scene.next.preProcess();
-  scene.current.postProcess();
-  scene.current = scene.next;
-  resizeViewport(viewport, scene.current.width, scene.current.height);
+  sceneProxy.next = await nextScene;
+  sceneProxy.next.preProcess();
+  sceneProxy.current.postProcess();
+  sceneProxy.current = sceneProxy.next;
+  resizeViewport(viewport, sceneProxy.current.width, sceneProxy.current.height);
 }

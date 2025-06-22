@@ -156,19 +156,22 @@
   }
 }
 
-.tile-window {
-  img {
-    display: inline-block;
-    image-rendering: pixelated;
-    width: 100%;
-    height: auto;
-  }
-}
-
 .icon-bar {
   padding: var(--sp-1);
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
+}
+
+.tileset {
+  position: relative;
+  display: grid;
+
+  img {
+    display: inline-block;
+    image-rendering: pixelated;
+    width: 100%;
+    height: auto;
+  }
 }

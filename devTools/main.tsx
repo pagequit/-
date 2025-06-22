@@ -1,5 +1,12 @@
 import "./styles.css";
-import { createSignal, onCleanup, onMount, type Component } from "solid-js";
+import {
+  createSignal,
+  Index,
+  onCleanup,
+  onMount,
+  Show,
+  type Component,
+} from "solid-js";
 import { render } from "solid-js/web";
 import { AssetBrowser } from "./AssetBrowser.tsx";
 import { SceneBrowser } from "./SceneBrowser.tsx";
@@ -8,6 +15,8 @@ import { PencilIcon } from "./icons/Pencil.tsx";
 import { StackBackwardIcon } from "./icons/StackBackward.tsx";
 import { StackForwardIcon } from "./icons/StackForward.tsx";
 import { type SceneProxy } from "../game/scenes.ts";
+import { scaleBase, tileSize } from "../game/constants.ts";
+import { loadImage } from "../lib/loadImage.ts";
 
 export function useDevTools(
   appContainer: HTMLElement,
@@ -61,6 +70,16 @@ const DevTools: Component<{
   gameContainer.style = getGameContainerStyle(width());
   let resizeX = false;
 
+  const [tileset, setTileset] = createSignal<HTMLImageElement | null>(null);
+
+  let xCount = 0;
+  let yCount = 0;
+  loadImage(sceneProxy.current.data.tileset).then((image) => {
+    xCount = (image.naturalWidth * scaleBase) / tileSize;
+    yCount = (image.naturalHeight * scaleBase) / tileSize;
+    setTileset(image);
+  });
+
   onMount(() => {
     self.addEventListener("mousemove", handleResize);
     self.addEventListener("mouseup", stopResizeX);
@@ -79,10 +98,10 @@ const DevTools: Component<{
         <div class="tile-window">
           <div class="icon-bar">
             <button class="btn">
-              <StackForwardIcon />
+              <StackBackwardIcon />
             </button>
             <button class="btn">
-              <StackBackwardIcon />
+              <StackForwardIcon />
             </button>
             <button class="btn">
               <FloppyDiscIcon />
@@ -92,7 +111,19 @@ const DevTools: Component<{
             </button>
           </div>
 
-          <img src={sceneProxy.current.data?.tileset} alt="" />
+          <Show when={tileset()}>
+            <div class="tileset">
+              {[...Array(yCount)].map(() => (
+                <div class="tileset-row">
+                  {[...Array(xCount)].map(() => (
+                    <div class="tileset-tile"></div>
+                  ))}
+                </div>
+              ))}
+
+              <img src={sceneProxy.current.data.tileset} alt="" />
+            </div>
+          </Show>
         </div>
 
         <SceneBrowser />
