@@ -177,9 +177,14 @@
 .tileset-tile {
   cursor: pointer;
   image-rendering: pixelated;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  background-origin: border-box;
+  background-repeat: repeat;
 }
 
 .tileset-tile.active,
 .tileset-tile:hover {
-  border: 1px solid var(--c-fg-0);
+  border-color: var(--c-fg-0);
+  box-shadow: inset var(--c-bg-0) 0 0 1px 1px;
 }
