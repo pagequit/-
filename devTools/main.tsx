@@ -66,11 +66,12 @@ const DevTools: Component<{
     gameContainer.style = getGameContainerStyle(newWidth);
   }
 
-  const [width, setWidth] = createSignal(240);
+  const [width, setWidth] = createSignal(256);
   gameContainer.style = getGameContainerStyle(width());
   let resizeX = false;
 
   const [tileset, setTileset] = createSignal<HTMLImageElement | null>(null);
+  const [tileIndex, setTileIndex] = createSignal(0);
 
   let xCount = 0;
   let yCount = 0;
@@ -93,7 +94,7 @@ const DevTools: Component<{
   });
 
   return (
-    <div class="dev-container" style={`width: ${width()}px;`}>
+    <div class="dev-container" style={{ width: `${width()}px` }}>
       <div class="dev-tools">
         <div class="tile-window">
           <div class="icon-bar">
@@ -113,18 +114,26 @@ const DevTools: Component<{
 
           <Show when={tileset()}>
             <div class="tileset">
-              {[...Array(yCount)].map(() => (
-                <div class="tileset-row">
-                  {[...Array(xCount)].map(() => (
-                    <div class="tileset-tile"></div>
-                  ))}
-                </div>
+              {[...Array(xCount * yCount)].map((_, index) => (
+                <div
+                  class={
+                    "tileset-tile" + (tileIndex() === index ? " active" : "")
+                  }
+                  style={{
+                    ["width"]: `${tileSize}px`,
+                    ["height"]: `${tileSize}px`,
+                    ["background-image"]: `url(${tileset()!.src})`,
+                    ["background-position-x"]: `-${(index % xCount) * tileSize}px`,
+                    ["background-position-y"]: `-${((index / yCount) | 0) * tileSize}px`,
+                    ["background-size"]: `${tileset()!.naturalWidth * scaleBase}px ${tileset()!.naturalHeight * scaleBase}px`,
+                  }}
+                  on:click={() => setTileIndex(index)}
+                ></div>
               ))}
-
-              <img src={sceneProxy.current.data.tileset} alt="" />
             </div>
           </Show>
         </div>
+        <hr />
 
         <SceneBrowser />
         <hr />

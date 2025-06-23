@@ -162,16 +162,24 @@
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
+  background: var(--c-bg-1);
+}
+
+.tile-window {
+  background: var(--c-bg-0);
 }
 
 .tileset {
-  position: relative;
-  display: grid;
+  display: flex;
+  flex-flow: row wrap;
+}
 
-  img {
-    display: inline-block;
-    image-rendering: pixelated;
-    width: 100%;
-    height: auto;
-  }
+.tileset-tile {
+  cursor: pointer;
+  image-rendering: pixelated;
+}
+
+.tileset-tile.active,
+.tileset-tile:hover {
+  border: 1px solid var(--c-fg-0);
 }
