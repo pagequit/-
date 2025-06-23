@@ -1,7 +1,6 @@
 import "./styles.css";
 import {
   createSignal,
-  Index,
   onCleanup,
   onMount,
   Show,
@@ -28,8 +27,8 @@ export function useDevTools(
 
   const overlayContainer = document.createElement("div");
   overlayContainer.classList.add("dev-overlay");
-  // canvasContainer.appendChild(overlayContainer);
-  // render(() => <DevOverlay />, overlayContainer);
+  canvasContainer.appendChild(overlayContainer);
+  render(() => <DevOverlay />, overlayContainer);
 
   render(
     () => <DevTools sceneProxy={sceneProxy} appContainer={appContainer} />,
