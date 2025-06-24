@@ -20,22 +20,11 @@ export function useDevTools(
   appContainer: HTMLElement,
   sceneProxy: SceneProxy,
 ): void {
-  const canvasContainer = appContainer.querySelector(
-    ".canvas-container",
-  ) as HTMLElement;
-
-  const overlayContainer = document.createElement("div");
-  overlayContainer.classList.add("dev-overlay");
-  canvasContainer.appendChild(overlayContainer);
-  render(() => <DevOverlay />, overlayContainer);
-
   render(
     () => <DevTools sceneProxy={sceneProxy} appContainer={appContainer} />,
     appContainer,
   );
 }
-
-const DevOverlay: Component = () => <>FIXME</>;
 
 const DevTools: Component<{
   sceneProxy: SceneProxy;
@@ -83,8 +72,12 @@ const DevTools: Component<{
     self.removeEventListener("resize", handleResize);
   });
 
+  const [scene, setScene] = createSignal(sceneProxy.current);
+
   const [scale, setScale] = createSignal(1);
+
   createEffect(() => {
+    console.log(sceneProxy.current);
     zoomViewport(
       viewport,
       scale(),

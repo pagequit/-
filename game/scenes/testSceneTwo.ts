@@ -16,7 +16,7 @@ const asyncData = {
 
 const data: SceneData = {
   name: "testSceneTwo",
-  tileset: "/assets/tileset.png",
+  tileset: "/assets/hero/idle.png",
 };
 
 function process(delta: number) {

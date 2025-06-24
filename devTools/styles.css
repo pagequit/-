@@ -114,26 +114,38 @@
 .file-browser {
   background: var(--c-bg-0);
   padding: var(--sp-2);
+  margin-left: calc(var(--sp-2) * -1);
 }
 
 .file-list {
-  margin: 0 0 var(--sp-2);
+  margin: 0;
   list-style: none;
-  padding: 0 var(--sp-2);
+  padding: 0 0 0 var(--sp-2);
+}
+
+.file-item {
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .file-label {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  padding: var(--sp-1);
+  border-radius: var(--sp-1);
+  cursor: pointer;
+
+  span {
+    flex: 1 0 auto;
+  }
 
   svg {
     margin-right: var(--sp-1);
   }
 
-  span:hover {
-    cursor: pointer;
-    text-decoration: underline;
+  &:hover {
+    background: var(--c-bg-2);
   }
 }
 
