@@ -15,6 +15,7 @@ import { RangeSlider } from "./RangeSlider.tsx";
 import { ZoomScanIcon } from "./icons/index.ts";
 import { zoomViewport } from "../lib/Viewport.ts";
 import { viewport } from "../main.ts";
+import { type Scene } from "../lib/Scene.ts";
 
 export function useDevTools(
   appContainer: HTMLElement,
@@ -72,18 +73,11 @@ const DevTools: Component<{
     self.removeEventListener("resize", handleResize);
   });
 
-  const [scene, setScene] = createSignal(sceneProxy.current);
-
+  const [scene, setScene] = createSignal<Scene>(sceneProxy.current);
   const [scale, setScale] = createSignal(1);
 
   createEffect(() => {
-    console.log(sceneProxy.current);
-    zoomViewport(
-      viewport,
-      scale(),
-      sceneProxy.current.width,
-      sceneProxy.current.height,
-    );
+    zoomViewport(viewport, scale(), scene().width, scene().height);
   });
 
   return (
@@ -106,10 +100,10 @@ const DevTools: Component<{
         </div>
         <hr />
 
-        <TileWindow sceneProxy={sceneProxy} />
+        <TileWindow scene={scene} />
         <hr />
 
-        <SceneBrowser />
+        <SceneBrowser sceneProxy={sceneProxy} setScene={setScene} />
         <hr />
 
         <AssetBrowser />

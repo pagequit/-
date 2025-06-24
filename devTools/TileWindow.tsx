@@ -1,26 +1,34 @@
-import { createSignal, Show, type Component } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  Show,
+  type Accessor,
+  type Component,
+} from "solid-js";
 import {
   FloppyDiscIcon,
   PencilIcon,
   StackBackwardIcon,
   StackForwardIcon,
 } from "./icons/index.ts";
-import { type SceneProxy } from "../game/scenes.ts";
 import { scaleBase, tileSize } from "../game/constants.ts";
 import { loadImage } from "../lib/loadImage.ts";
+import { type Scene } from "../lib/Scene.ts";
 
-export const TileWindow: Component<{ sceneProxy: SceneProxy }> = ({
-  sceneProxy,
-}) => {
+export const TileWindow: Component<{
+  scene: Accessor<Scene>;
+}> = (props) => {
   const [tileset, setTileset] = createSignal<HTMLImageElement | null>(null);
   const [tileIndex, setTileIndex] = createSignal(0);
 
   let xCount = 0;
   let yCount = 0;
-  loadImage(sceneProxy.current.data.tileset).then((image) => {
-    xCount = (image.naturalWidth * scaleBase) / tileSize;
-    yCount = (image.naturalHeight * scaleBase) / tileSize;
-    setTileset(image);
+  createEffect(() => {
+    loadImage(props.scene().data.tileset).then((image) => {
+      xCount = (image.naturalWidth * scaleBase) / tileSize;
+      yCount = (image.naturalHeight * scaleBase) / tileSize;
+      setTileset(image);
+    });
   });
 
   return (

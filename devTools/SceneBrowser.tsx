@@ -4,9 +4,11 @@ import {
   Index,
   Show,
   type Component,
+  type Setter,
 } from "solid-js";
 import { FolderOpenIcon, ScriptIcon, FolderIcon } from "./icons/index.ts";
-import { swapScene } from "../game/scenes.ts";
+import { swapScene, type SceneProxy } from "../game/scenes.ts";
+import { type Scene } from "../lib/Scene.ts";
 
 type SceneEntry = { name: string };
 type SceneFolder = Map<string, SceneEntry | SceneFolder>;
@@ -42,14 +44,25 @@ async function fetchSceneIndex(): Promise<SceneFolder> {
   }, new Map() as SceneFolder);
 }
 
-export const SceneBrowser: Component = () => {
+export const SceneBrowser: Component<{
+  sceneProxy: SceneProxy;
+  setScene: Setter<Scene>;
+}> = (props) => {
   const [sceneIndex] = createResource(createSignal([])[0], fetchSceneIndex);
 
   const SceneFile: Component<{ entry: SceneEntry }> = ({ entry }) => {
     return (
       <div class="file-label">
         <ScriptIcon />
-        <span onClick={() => swapScene(entry.name)}>{entry.name}</span>
+        <span
+          onClick={() => {
+            swapScene(entry.name).then(() => {
+              props.setScene(props.sceneProxy.current);
+            });
+          }}
+        >
+          {entry.name}
+        </span>
       </div>
     );
   };
