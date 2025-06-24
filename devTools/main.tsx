@@ -1,21 +1,20 @@
 import "./styles.css";
 import {
+  createEffect,
   createSignal,
   onCleanup,
   onMount,
-  Show,
   type Component,
 } from "solid-js";
 import { render } from "solid-js/web";
 import { AssetBrowser } from "./AssetBrowser.tsx";
 import { SceneBrowser } from "./SceneBrowser.tsx";
-import { FloppyDiscIcon } from "./icons/FloppyDisc.tsx";
-import { PencilIcon } from "./icons/Pencil.tsx";
-import { StackBackwardIcon } from "./icons/StackBackward.tsx";
-import { StackForwardIcon } from "./icons/StackForward.tsx";
 import { type SceneProxy } from "../game/scenes.ts";
-import { scaleBase, tileSize } from "../game/constants.ts";
-import { loadImage } from "../lib/loadImage.ts";
+import { TileWindow } from "./TileWindow.tsx";
+import { RangeSlider } from "./RangeSlider.tsx";
+import { ZoomScanIcon } from "./icons/index.ts";
+import { zoomViewport } from "../lib/Viewport.ts";
+import { viewport } from "../main.ts";
 
 export function useDevTools(
   appContainer: HTMLElement,
@@ -46,8 +45,11 @@ const DevTools: Component<{
     ".game-container",
   ) as HTMLElement;
 
-  function getGameContainerStyle(width: number): string {
-    return `position: absolute; top: 0; left: ${width}px; width: ${self.innerWidth - width}px;`;
+  function adjustGameContainerStyle(
+    container: HTMLElement,
+    width: number,
+  ): void {
+    container.style = `position: absolute; top: 0; left: ${width}px; width: ${self.innerWidth - width}px;`;
   }
 
   function stopResizeX() {
@@ -62,23 +64,12 @@ const DevTools: Component<{
     newWidth = Math.min(newWidth, self.innerWidth - 64);
 
     setWidth(newWidth);
-    gameContainer.style = getGameContainerStyle(newWidth);
+    adjustGameContainerStyle(gameContainer, newWidth);
   }
 
   const [width, setWidth] = createSignal(256);
-  gameContainer.style = getGameContainerStyle(width());
+  adjustGameContainerStyle(gameContainer, width());
   let resizeX = false;
-
-  const [tileset, setTileset] = createSignal<HTMLImageElement | null>(null);
-  const [tileIndex, setTileIndex] = createSignal(0);
-
-  let xCount = 0;
-  let yCount = 0;
-  loadImage(sceneProxy.current.data.tileset).then((image) => {
-    xCount = (image.naturalWidth * scaleBase) / tileSize;
-    yCount = (image.naturalHeight * scaleBase) / tileSize;
-    setTileset(image);
-  });
 
   onMount(() => {
     self.addEventListener("mousemove", handleResize);
@@ -92,46 +83,37 @@ const DevTools: Component<{
     self.removeEventListener("resize", handleResize);
   });
 
+  const [scale, setScale] = createSignal(1);
+  createEffect(() => {
+    zoomViewport(
+      viewport,
+      scale(),
+      sceneProxy.current.width,
+      sceneProxy.current.height,
+    );
+  });
+
   return (
     <div class="dev-container" style={{ width: `${width()}px` }}>
       <div class="dev-tools">
-        <div class="tile-window">
-          <div class="icon-bar">
-            <button class="btn">
-              <StackBackwardIcon />
-            </button>
-            <button class="btn">
-              <StackForwardIcon />
-            </button>
-            <button class="btn">
-              <FloppyDiscIcon />
-            </button>
-            <button class="btn">
-              <PencilIcon />
-            </button>
-          </div>
-
-          <Show when={tileset()}>
-            <div class="tileset">
-              {[...Array(xCount * yCount)].map((_, index) => (
-                <div
-                  class={
-                    "tileset-tile" + (tileIndex() === index ? " active" : "")
-                  }
-                  style={{
-                    ["width"]: `${tileSize}px`,
-                    ["height"]: `${tileSize}px`,
-                    ["background-image"]: `url(${tileset()!.src})`,
-                    ["background-position-x"]: `-${(index % xCount) * tileSize}px`,
-                    ["background-position-y"]: `-${((index / yCount) | 0) * tileSize}px`,
-                    ["background-size"]: `${tileset()!.naturalWidth * scaleBase}px ${tileset()!.naturalHeight * scaleBase}px`,
-                  }}
-                  on:click={() => setTileIndex(index)}
-                ></div>
-              ))}
-            </div>
-          </Show>
+        <div class="dev-scale">
+          <RangeSlider
+            name="scale"
+            min={0.5}
+            max={1.5}
+            step={0.1}
+            value={scale()}
+            onInput={(value) => setScale(value)}
+          >
+            <span role="button" onClick={() => setScale(1)}>
+              <ZoomScanIcon />
+            </span>
+          </RangeSlider>
+          <span>{scale().toFixed(1)}</span>
         </div>
+        <hr />
+
+        <TileWindow sceneProxy={sceneProxy} />
         <hr />
 
         <SceneBrowser />
@@ -140,7 +122,7 @@ const DevTools: Component<{
         <AssetBrowser />
       </div>
 
-      <div class="dev-tools-resize" on:mousedown={() => (resizeX = true)}></div>
+      <div class="dev-tools-resize" onMouseDown={() => (resizeX = true)}></div>
     </div>
   );
 };

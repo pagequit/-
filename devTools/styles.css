@@ -40,6 +40,9 @@
   --rgb-black: 30, 31, 34;
   --c-black: rgb(var(--rgb-black));
 
+  --c-primary: var(--c-blurple);
+  --c-secondary: var(--c-fuchsia);
+
   --c-bg-0: rgb(30, 31, 34);
   --c-bg-1: rgb(43, 45, 49);
   --c-bg-2: rgb(49, 51, 56);
@@ -71,7 +74,7 @@
   *:focus {
     outline-width: 2px;
     outline-style: solid;
-    outline-color: var(--c-fuchsia);
+    outline-color: var(--c-primary);
   }
 }
 
@@ -187,4 +190,91 @@
 .tileset-tile:hover {
   border-color: var(--c-fg-0);
   box-shadow: inset var(--c-bg-0) 0 0 1px 1px;
+}
+
+.dev-scale {
+  display: flex;
+  width: 100%;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+  padding-right: var(--sp-2);
+}
+
+.range-slider {
+  width: 100%;
+  color: var(--c-fg-2);
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-sans);
+  font-weight: bold;
+  padding: var(--sp-2);
+}
+
+.range-slider [role="button"] {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.range-slider [type="range"] {
+  cursor: pointer;
+  appearance: none;
+  background: transparent;
+  border-radius: var(--sp-2);
+  height: var(--sp-3);
+  flex: auto;
+
+  &:focus {
+    outline: 0;
+  }
+
+  &::-webkit-slider-runnable-track {
+    width: 100%;
+    height: var(--sp-2);
+    border-radius: var(--sp-3);
+    color: transparent;
+    background: var(--c-bg-3);
+    border: none;
+  }
+  &::-webkit-slider-thumb {
+    height: var(--sp-3);
+    width: var(--sp-3);
+    border-radius: var(--sp-3);
+    border: none;
+    background: var(--c-fg-1);
+    margin-top: calc(var(--sp-1) * -1);
+    --webkit-appearance: none;
+    appearance: none;
+  }
+  &:focus::-webkit-slider-thumb {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-color: var(--c-primary);
+  }
+
+  &::-moz-range-track {
+    width: 100%;
+    height: var(--sp-2);
+    border-radius: var(--sp-3);
+    color: transparent;
+    background: var(--c-bg-3);
+    border: none;
+  }
+  &::-moz-range-thumb {
+    height: var(--sp-3);
+    width: var(--sp-3);
+    border-radius: var(--sp-3);
+    border: none;
+    background: var(--c-fg-1);
+  }
+  &:focus::-moz-range-thumb {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-color: var(--c-primary);
+  }
 }
