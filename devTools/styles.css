@@ -136,10 +136,6 @@
   border-radius: var(--sp-1);
   cursor: pointer;
 
-  span {
-    flex: 1 0 auto;
-  }
-
   svg {
     margin-right: var(--sp-1);
   }

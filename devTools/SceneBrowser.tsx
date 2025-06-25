@@ -52,17 +52,16 @@ export const SceneBrowser: Component<{
 
   const SceneFile: Component<{ entry: SceneEntry }> = ({ entry }) => {
     return (
-      <div class="file-label">
+      <div
+        class="file-label"
+        onClick={() => {
+          swapScene(entry.name).then(() => {
+            props.setScene(props.sceneProxy.current);
+          });
+        }}
+      >
         <ScriptIcon />
-        <span
-          onClick={() => {
-            swapScene(entry.name).then(() => {
-              props.setScene(props.sceneProxy.current);
-            });
-          }}
-        >
-          {entry.name}
-        </span>
+        <span> {entry.name} </span>
       </div>
     );
   };
@@ -76,9 +75,9 @@ export const SceneBrowser: Component<{
 
     return (
       <>
-        <div class="file-label">
+        <div class="file-label" onClick={() => setIsOpen(!isOpen())}>
           {isOpen() ? <FolderOpenIcon /> : <FolderIcon />}
-          <span onClick={() => setIsOpen(!isOpen())}>{name}</span>
+          <span>{name}</span>
         </div>
 
         <Show when={isOpen()}>

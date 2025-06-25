@@ -73,7 +73,7 @@ const DevTools: Component<{
     self.removeEventListener("resize", handleResize);
   });
 
-  const [scene, setScene] = createSignal<Scene>(sceneProxy.current);
+  const [scene, setScene] = createSignal(sceneProxy.current);
   const [scale, setScale] = createSignal(1);
 
   createEffect(() => {
