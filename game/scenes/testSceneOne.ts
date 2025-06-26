@@ -1,16 +1,16 @@
-import { tileSize } from "../constants.ts";
-import { focusViewport } from "../../lib/Viewport.ts";
-import { viewport, pointer } from "../../main.ts";
-import { createScene, type Scene, type SceneData } from "../../lib/Scene.ts";
-import { createGrid, drawGrid, highlightGridTile } from "../../lib/Grid.ts";
-import { processHero, loadHero, setHeroPosition } from "../Hero.ts";
+import { tileSize } from "#/game/constants.ts";
+import { focusViewport } from "#/lib/Viewport.ts";
+import { viewport, pointer } from "#/game/game.ts";
+import { createScene, type Scene, type SceneData } from "#/lib/Scene.ts";
+import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
+import { processHero, loadHero, setHeroPosition } from "#/game/Hero.ts";
 import {
   circleCollideRectangle,
   isPointInRectangle,
   type Rectangle,
-} from "../../lib/collision.ts";
-import { type Vector } from "../../lib/Vector.ts";
-import { drawRectangle } from "../misc.ts";
+} from "#/lib/collision.ts";
+import { type Vector } from "#/lib/Vector.ts";
+import { drawRectangle } from "#/game/misc.ts";
 
 type Tilemap = Array<Array<number>>;
 

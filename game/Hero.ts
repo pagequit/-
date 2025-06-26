@@ -1,28 +1,28 @@
-import { pointer, viewport } from "../main.ts";
+import { pointer, viewport } from "#/game/game.ts";
 import {
   createVector,
   isBelowThreshold,
   normalize,
   type Vector,
-} from "../lib/Vector.ts";
-import { tileSize, pixelBase, scaleBase } from "./constants.ts";
+} from "#/lib/Vector.ts";
+import { tileSize, pixelBase, scaleBase } from "#/game//constants.ts";
 import {
   type Sprite,
   createSprite,
   setSpriteXFrame,
   setSpriteYFrame,
-} from "../lib/Sprite.ts";
-import { loadImage } from "../lib/loadImage.ts";
+} from "#/lib/Sprite.ts";
+import { loadImage } from "#/lib/loadImage.ts";
 import {
   drawCircle,
   drawPoint,
   drawRectangle,
   toPixelCoord,
   plotLine,
-} from "./misc.ts";
-import { animateSprite } from "../lib/Sprite.ts";
-import { isPointInCircle, type Circle } from "../lib/collision.ts";
-import { useWithAsyncCache } from "../lib/cache.ts";
+} from "#/game/misc.ts";
+import { animateSprite } from "#/lib/Sprite.ts";
+import { isPointInCircle, type Circle } from "#/lib/collision.ts";
+import { useWithAsyncCache } from "#/lib/cache.ts";
 
 enum State {
   Idle,

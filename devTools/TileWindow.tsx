@@ -10,10 +10,10 @@ import {
   PencilIcon,
   StackBackwardIcon,
   StackForwardIcon,
-} from "./icons/index.ts";
-import { scaleBase, tileSize } from "../game/constants.ts";
-import { loadImage } from "../lib/loadImage.ts";
-import { type Scene } from "../lib/Scene.ts";
+} from "#/devTools/icons/index.ts";
+import { scaleBase, tileSize } from "#/game/constants.ts";
+import { loadImage } from "#/lib/loadImage.ts";
+import { type Scene } from "#/lib/Scene.ts";
 
 export const TileWindow: Component<{
   scene: Accessor<Scene>;

@@ -1,8 +1,8 @@
-import { tileSize, scaleBase } from "./constants.ts";
-import { type Viewport } from "../lib/Viewport.ts";
-import { type Vector } from "../lib/Vector.ts";
-import { createColor } from "../lib/Color.ts";
-import { compileColor } from "../lib/Color.ts";
+import { tileSize, scaleBase } from "#/game/constants.ts";
+import { type Viewport } from "#/lib/Viewport.ts";
+import { type Vector } from "#/lib/Vector.ts";
+import { createColor } from "#/lib/Color.ts";
+import { compileColor } from "#/lib/Color.ts";
 
 const defaultColor = createColor(255, 255, 255);
 

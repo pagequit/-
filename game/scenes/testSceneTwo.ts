@@ -1,9 +1,9 @@
-import { tileSize } from "../constants.ts";
-import { viewport } from "../../main.ts";
-import { type Scene, type SceneData, createScene } from "../../lib/Scene.ts";
-import { createGrid, drawGrid } from "../../lib/Grid.ts";
-import { focusViewport } from "../../lib/Viewport.ts";
-import { loadHero, processHero } from "../Hero.ts";
+import { tileSize } from "#/game/constants.ts";
+import { viewport } from "#/game/game.ts";
+import { type Scene, type SceneData, createScene } from "#/lib/Scene.ts";
+import { createGrid, drawGrid } from "#/lib/Grid.ts";
+import { focusViewport } from "#/lib/Viewport.ts";
+import { loadHero, processHero } from "#/game/Hero.ts";
 
 const { ctx } = viewport;
 const grid = createGrid(tileSize, 20, 15);

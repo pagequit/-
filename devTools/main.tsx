@@ -1,4 +1,4 @@
-import "./styles.css";
+import "#/devTools/styles.css";
 import {
   createEffect,
   createSignal,
@@ -7,20 +7,16 @@ import {
   type Component,
 } from "solid-js";
 import { render } from "solid-js/web";
-import { AssetBrowser } from "./AssetBrowser.tsx";
-import { SceneBrowser } from "./SceneBrowser.tsx";
-import { type SceneProxy } from "../game/scenes.ts";
-import { TileWindow } from "./TileWindow.tsx";
-import { RangeSlider } from "./RangeSlider.tsx";
-import { ZoomScanIcon } from "./icons/index.ts";
-import { zoomViewport } from "../lib/Viewport.ts";
-import { viewport } from "../main.ts";
-import { type Scene } from "../lib/Scene.ts";
+import { AssetBrowser } from "#/devTools/AssetBrowser.tsx";
+import { SceneBrowser } from "#/devTools/SceneBrowser.tsx";
+import { TileWindow } from "#/devTools/TileWindow.tsx";
+import { RangeSlider } from "#/devTools/RangeSlider.tsx";
+import { ZoomScanIcon } from "#/devTools/icons/index.ts";
+import { zoomViewport } from "#/lib/Viewport.ts";
+import { type SceneProxy } from "#/game/scenes.ts";
+import { viewport } from "#/game/game.ts";
 
-export function useDevTools(
-  appContainer: HTMLElement,
-  sceneProxy: SceneProxy,
-): void {
+export function use(appContainer: HTMLElement, sceneProxy: SceneProxy): void {
   render(
     () => <DevTools sceneProxy={sceneProxy} appContainer={appContainer} />,
     appContainer,

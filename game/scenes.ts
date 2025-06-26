@@ -1,13 +1,13 @@
-import { resizeViewport } from "../lib/Viewport.ts";
-import { createScene, type Scene, type SceneData } from "../lib/Scene.ts";
+import { resizeViewport } from "#/lib/Viewport.ts";
+import { createScene, type Scene, type SceneData } from "#/lib/Scene.ts";
 import {
   type Graph,
   type Edge,
   createGraph,
   getNeighbours,
-} from "../lib/Graph.ts";
-import { useWithAsyncCache } from "../lib/cache.ts";
-import { viewport } from "../main.ts";
+} from "#/lib/Graph.ts";
+import { useWithAsyncCache } from "#/lib/cache.ts";
+import { viewport } from "#/game/game.ts";
 
 const [loadScene, sceneCache] = useWithAsyncCache(async (name: string) => {
   return (await import(`./scenes/${name}.ts`)).default();
@@ -39,7 +39,7 @@ const sceneEdges: Array<Edge<SceneNode>> = [
 
 const sceneGraph: Graph<SceneNode> = createGraph(scenes, sceneEdges);
 
-const sceneProxy: SceneProxy = {
+export const sceneProxy: SceneProxy = {
   next: createScene({
     data: null as unknown as SceneData,
     width: 0,
@@ -53,10 +53,6 @@ const sceneProxy: SceneProxy = {
     process: () => {},
   }),
 };
-
-export function getSceneProxy(): SceneProxy {
-  return sceneProxy;
-}
 
 export async function swapScene(name: string): Promise<void> {
   const sceneNode = scenes.find((s) => s.name === name) as SceneNode;

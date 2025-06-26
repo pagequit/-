@@ -13,7 +13,7 @@ import {
   FileMusicIcon,
   FileUnknownIcon,
   FolderIcon,
-} from "./icons/index.ts";
+} from "#/devTools/icons/index.ts";
 
 enum AssetType {
   Unkown,
