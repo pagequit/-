@@ -19,16 +19,6 @@ const ctx = canvas.getContext("2d", {
   alpha: false,
 }) as CanvasRenderingContext2D;
 
-export function render(appContainer: HTMLElement, sceneName: string): void {
-  canvasContainer.appendChild(canvas);
-  gameContainer.appendChild(canvasContainer);
-  appContainer.appendChild(gameContainer);
-
-  swapScene(sceneName).then(() => {
-    animate(self.performance.now());
-  });
-}
-
 export const viewport = createViewport(gameContainer, ctx);
 export const pointer = createPointer();
 
@@ -41,7 +31,7 @@ self.addEventListener("resize", viewportResizeHandler);
 
 let then: number = self.performance.now();
 let delta: number = 0;
-export function animate(timestamp: number): void {
+function animate(timestamp: number): void {
   self.requestAnimationFrame(animate);
   resetViewport(viewport);
 
@@ -50,4 +40,17 @@ export function animate(timestamp: number): void {
 
   delta = timestamp - then;
   then = timestamp;
+}
+
+export function render(
+  appContainer: HTMLElement,
+  sceneName: string,
+): Promise<void> {
+  canvasContainer.appendChild(canvas);
+  gameContainer.appendChild(canvasContainer);
+  appContainer.appendChild(gameContainer);
+
+  return swapScene(sceneName).then(() => {
+    animate(self.performance.now());
+  });
 }
