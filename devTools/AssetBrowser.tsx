@@ -94,7 +94,7 @@ export const AssetBrowser: Component = () => {
 
   const AssetFile: Component<{ asset: AssetFile }> = ({ asset }) => {
     return (
-      <div class="file-label">
+      <div class="file-label" onClick={[preview, asset]}>
         <Switch fallback={<FileUnknownIcon />}>
           <Match when={asset.type === AssetType.Sound}>
             <FileMusicIcon />
@@ -103,7 +103,7 @@ export const AssetBrowser: Component = () => {
             <FileDeltaIcon />
           </Match>
         </Switch>
-        <span onClick={[preview, asset]}>{asset.name}</span>
+        <span>{asset.name}</span>
       </div>
     );
   };
@@ -117,9 +117,9 @@ export const AssetBrowser: Component = () => {
 
     return (
       <>
-        <div class="file-label">
+        <div class="file-label" onClick={() => setIsOpen(!isOpen())}>
           {isOpen() ? <FolderOpenIcon /> : <FolderIcon />}
-          <span onClick={() => setIsOpen(!isOpen())}>{name}</span>
+          <span>{name}</span>
         </div>
 
         <Show when={isOpen()}>
