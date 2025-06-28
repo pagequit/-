@@ -1,5 +1,4 @@
-import { render } from "#/game/game.ts";
-import { sceneProxy } from "#/game/scenes.ts";
+import { render, sceneProxy } from "#/game/game.ts";
 
 const container = document.getElementById("app") as HTMLElement;
 

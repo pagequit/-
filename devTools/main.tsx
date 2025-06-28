@@ -13,8 +13,7 @@ import { TileWindow } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { zoomViewport } from "#/lib/Viewport.ts";
-import { type SceneProxy } from "#/game/scenes.ts";
-import { viewport } from "#/game/game.ts";
+import { viewport, type SceneProxy } from "#/game/game.ts";
 
 export function use(appContainer: HTMLElement, sceneProxy: SceneProxy): void {
   render(

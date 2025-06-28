@@ -11,7 +11,7 @@ import {
   ScriptIcon,
   FolderIcon,
 } from "#/devTools/icons/index.ts";
-import { swapScene, type SceneProxy } from "#/game/scenes.ts";
+import { swapScene, type SceneProxy } from "#/game/game.ts";
 import { type Scene } from "#/lib/Scene.ts";
 
 type SceneEntry = { name: string };
