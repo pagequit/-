@@ -84,3 +84,5 @@ process((ctx, delta) => {
 preProcess(() => {
   setHeroPosition(tileSize * 15, tileSize * 5);
 });
+
+console.log("testSceneOne loaded");

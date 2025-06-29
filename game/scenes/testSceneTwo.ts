@@ -9,7 +9,7 @@ const grid = createGrid(tileSize, 20, 15);
 const width = grid.tileSize * grid.xCount;
 const height = grid.tileSize * grid.yCount;
 
-const { process } = useScene(viewport, {
+const { process, linkScenes } = useScene(viewport, {
   name: "testSceneTwo",
   tileset: "/assets/hero/idle.png",
   tilemap: [[]],
@@ -18,6 +18,8 @@ const { process } = useScene(viewport, {
   width,
   height,
 });
+
+linkScenes(["testSceneOne", "testSceneThree"]);
 
 const hero = await loadHero();
 
@@ -28,3 +30,5 @@ process((ctx, delta) => {
 
   drawGrid(grid, ctx);
 });
+
+console.log("testSceneTwo loaded");

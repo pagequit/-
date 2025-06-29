@@ -1,4 +1,4 @@
-import { getNeighbours, type Edge, type Graph } from "./Graph.ts";
+import { getNeighbours, type Graph } from "./Graph.ts";
 import { type Viewport, resizeViewport } from "./Viewport.ts";
 import { useWithAsyncCache } from "./cache.ts";
 
@@ -27,12 +27,9 @@ const processMap = new Map<string, Process>();
 const preProcessMap = new Map<string, PreProcess>();
 const postProcessMap = new Map<string, PostProcess>();
 
-const sceneEdges: Array<Edge<string>> = [];
 const sceneGraph: Graph<string> = new Map();
 
 function linkScenes(a: string, b: string): void {
-  sceneEdges.push([a, b]);
-
   if (sceneGraph.has(a)) {
     sceneGraph.get(a)!.push(b);
   } else {
@@ -60,13 +57,13 @@ export async function swapScene(
   viewport: Viewport,
   sceneName: string,
 ): Promise<void> {
+  await loadScene(sceneName);
+
   for (const neighbour of getNeighbours(sceneGraph, sceneName)) {
     if (!sceneCache.has(neighbour)) {
       sceneCache.set(neighbour, loadScene(neighbour));
     }
   }
-
-  await loadScene(sceneName);
 
   const preProcess = preProcessMap.get(sceneName);
   if (preProcess) {

@@ -7,7 +7,7 @@ const grid = createGrid(tileSize, 16, 8);
 const width = grid.tileSize * grid.xCount;
 const height = grid.tileSize * grid.yCount;
 
-const { process } = useScene(viewport, {
+const { process, linkScenes } = useScene(viewport, {
   name: "testSceneThree",
   tileset: "/assets/tileset.png",
   tilemap: [[]],
@@ -17,7 +17,11 @@ const { process } = useScene(viewport, {
   height,
 });
 
+linkScenes(["testSceneTwo"]);
+
 process((ctx, _delta) => {
   highlightGridTile(grid, pointer.position, ctx);
   drawGrid(grid, ctx);
 });
+
+console.log("testSceneThree loaded");
