@@ -13,19 +13,16 @@ import { TileWindow } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { zoomViewport } from "#/lib/Viewport.ts";
-import { viewport, type SceneProxy } from "#/game/game.ts";
+import { viewport } from "#/game/game.ts";
+import { currentScene } from "#/lib/Scene";
 
-export function use(appContainer: HTMLElement, sceneProxy: SceneProxy): void {
-  render(
-    () => <DevTools sceneProxy={sceneProxy} appContainer={appContainer} />,
-    appContainer,
-  );
+export function use(appContainer: HTMLElement): void {
+  render(() => <DevTools appContainer={appContainer} />, appContainer);
 }
 
 const DevTools: Component<{
-  sceneProxy: SceneProxy;
   appContainer: HTMLElement;
-}> = ({ sceneProxy, appContainer }) => {
+}> = ({ appContainer }) => {
   const gameContainer = appContainer.querySelector(
     ".game-container",
   ) as HTMLElement;
@@ -68,11 +65,11 @@ const DevTools: Component<{
     self.removeEventListener("resize", handleResize);
   });
 
-  const [scene, setScene] = createSignal(sceneProxy.current);
+  const [sceneData, setSceneData] = createSignal(currentScene.data);
   const [scale, setScale] = createSignal(1);
 
   createEffect(() => {
-    zoomViewport(viewport, scale(), scene().width, scene().height);
+    zoomViewport(viewport, scale(), sceneData().width, sceneData().height);
   });
 
   return (
@@ -95,10 +92,10 @@ const DevTools: Component<{
         </div>
         <hr />
 
-        <TileWindow scene={scene} />
+        <TileWindow sceneData={sceneData} />
         <hr />
 
-        <SceneBrowser sceneProxy={sceneProxy} setScene={setScene} />
+        <SceneBrowser setSceneData={setSceneData} />
         <hr />
 
         <AssetBrowser />

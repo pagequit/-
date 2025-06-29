@@ -88,6 +88,12 @@ export function updateHeroPosition(x: number, y: number): void {
   collisionShape.position.y = y - collisionOffset.y;
 }
 
+export function setHeroCoords(x: number, y: number): void {
+  updateHeroPosition(x * tileSize, y * tileSize);
+  targetPosition.x = collisionShape.position.x;
+  targetPosition.y = collisionShape.position.y;
+}
+
 export function setHeroPosition(x: number, y: number): void {
   updateHeroPosition(x, y);
   targetPosition.x = collisionShape.position.x;

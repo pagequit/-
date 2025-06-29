@@ -11,8 +11,8 @@ import {
   ScriptIcon,
   FolderIcon,
 } from "#/devTools/icons/index.ts";
-import { swapScene, type SceneProxy } from "#/game/game.ts";
-import { type Scene } from "#/lib/Scene.ts";
+import { swapScene, currentScene, type SceneData } from "#/lib/Scene.ts";
+import { viewport } from "#/game/game.ts";
 
 type SceneEntry = { name: string };
 type SceneFolder = Map<string, SceneEntry | SceneFolder>;
@@ -49,8 +49,7 @@ async function fetchSceneIndex(): Promise<SceneFolder> {
 }
 
 export const SceneBrowser: Component<{
-  sceneProxy: SceneProxy;
-  setScene: Setter<Scene>;
+  setSceneData: Setter<SceneData>;
 }> = (props) => {
   const [sceneIndex] = createResource(createSignal([])[0], fetchSceneIndex);
 
@@ -59,8 +58,8 @@ export const SceneBrowser: Component<{
       <div
         class="file-label"
         onClick={() => {
-          swapScene(entry.name).then(() => {
-            props.setScene(props.sceneProxy.current);
+          swapScene(viewport, entry.name).then(() => {
+            props.setSceneData(currentScene.data);
           });
         }}
       >

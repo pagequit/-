@@ -1,9 +1,9 @@
-import { render, sceneProxy } from "#/game/game.ts";
+import { start } from "#/game/game.ts";
 
 const container = document.getElementById("app") as HTMLElement;
 
-render(container, "testSceneOne").then(() => {
+start(container, "testSceneOne").then(() => {
   if (import.meta.env.DEV) {
-    import("#/devTools/main.tsx").then((dt) => dt.use(container, sceneProxy));
+    import("#/devTools/main.tsx").then((dt) => dt.use(container));
   }
 });

@@ -13,10 +13,10 @@ import {
 } from "#/devTools/icons/index.ts";
 import { scaleBase, tileSize } from "#/game/constants.ts";
 import { loadImage } from "#/lib/loadImage.ts";
-import { type Scene } from "#/lib/Scene.ts";
+import { type SceneData } from "#/lib/Scene.ts";
 
 export const TileWindow: Component<{
-  scene: Accessor<Scene>;
+  sceneData: Accessor<SceneData>;
 }> = (props) => {
   const [tileset, setTileset] = createSignal<HTMLImageElement | null>(null);
   const [tileIndex, setTileIndex] = createSignal(0);
@@ -24,7 +24,7 @@ export const TileWindow: Component<{
   let xCount = 0;
   let yCount = 0;
   createEffect(() => {
-    loadImage(props.scene().data.tileset).then((image) => {
+    loadImage(props.sceneData().tileset).then((image) => {
       xCount = (image.naturalWidth * scaleBase) / tileSize;
       yCount = (image.naturalHeight * scaleBase) / tileSize;
       setTileset(image);
