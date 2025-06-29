@@ -29,8 +29,8 @@ function viewportResizeHandler(): void {
 }
 self.addEventListener("resize", viewportResizeHandler);
 
-let then: number = self.performance.now();
-let delta: number = 0;
+let then = self.performance.now();
+let delta = 0;
 function animate(timestamp: number): void {
   self.requestAnimationFrame(animate);
   resetViewport(viewport);
@@ -51,5 +51,5 @@ export async function start(
   appContainer.appendChild(gameContainer);
 
   await swapScene(viewport, sceneName);
-  animate(self.performance.now());
+  animate(then);
 }
