@@ -1,1 +1,5 @@
-["/testSceneTwo.ts", "/testSceneThree.ts", "/testSceneOne.ts"]
+[
+  "/testSceneTwo.ts",
+  "/testSceneThree.ts",
+  "/testSceneOne.ts"
+]
