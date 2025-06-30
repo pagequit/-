@@ -1,10 +1,10 @@
 import {
   createViewport,
-  resizeViewport,
   resetViewport,
+  resizeViewport,
 } from "#/lib/Viewport.ts";
 import { currentScene, swapScene } from "#/lib/Scene.ts";
-import { usePointer, createPointer } from "#/lib/Pointer.ts";
+import { createPointer, usePointer } from "#/lib/Pointer.ts";
 import { drawDelta } from "#/game/misc.ts";
 
 const gameContainer = document.createElement("div");

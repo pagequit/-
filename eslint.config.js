@@ -12,6 +12,7 @@ export default [
   ...tseslint.configs.recommended,
   {
     rules: {
+      "prefer-const": "warn",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",

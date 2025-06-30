@@ -5,23 +5,23 @@ import {
   normalize,
   type Vector,
 } from "#/lib/Vector.ts";
-import { tileSize, pixelBase, scaleBase } from "#/game//constants.ts";
+import { pixelBase, scaleBase, tileSize } from "#/game//constants.ts";
 import {
-  type Sprite,
   createSprite,
   setSpriteXFrame,
   setSpriteYFrame,
+  type Sprite,
 } from "#/lib/Sprite.ts";
 import { loadImage } from "#/lib/loadImage.ts";
 import {
   drawCircle,
   drawPoint,
   drawRectangle,
-  toPixelCoord,
   plotLine,
+  toPixelCoord,
 } from "#/game/misc.ts";
 import { animateSprite } from "#/lib/Sprite.ts";
-import { isPointInCircle, type Circle } from "#/lib/collision.ts";
+import { type Circle, isPointInCircle } from "#/lib/collision.ts";
 import { useWithAsyncCache } from "#/lib/cache.ts";
 
 enum State {

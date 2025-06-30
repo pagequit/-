@@ -1,5 +1,5 @@
 import { tileSize } from "#/game/constants.ts";
-import { viewport, pointer } from "#/game/game.ts";
+import { pointer, viewport } from "#/game/game.ts";
 import { useScene } from "#/lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
 

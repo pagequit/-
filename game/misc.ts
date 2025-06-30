@@ -1,4 +1,4 @@
-import { tileSize, scaleBase } from "#/game/constants.ts";
+import { scaleBase, tileSize } from "#/game/constants.ts";
 import { type Viewport } from "#/lib/Viewport.ts";
 import { type Vector } from "#/lib/Vector.ts";
 import { createColor } from "#/lib/Color.ts";

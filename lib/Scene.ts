@@ -1,5 +1,5 @@
 import { getNeighbours, type Graph } from "./Graph.ts";
-import { type Viewport, resizeViewport } from "./Viewport.ts";
+import { resizeViewport, type Viewport } from "./Viewport.ts";
 import { useWithAsyncCache } from "./cache.ts";
 
 export type Process = (ctx: CanvasRenderingContext2D, delta: number) => void;

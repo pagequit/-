@@ -1,9 +1,9 @@
 import {
+  type Accessor,
+  type Component,
   createEffect,
   createSignal,
   Show,
-  type Accessor,
-  type Component,
 } from "solid-js";
 import {
   FloppyDiscIcon,
@@ -58,8 +58,12 @@ export const TileWindow: Component<{
                 ["height"]: `${tileSize}px`,
                 ["background-image"]: `url(${tileset()!.src})`,
                 ["background-position-x"]: `-${(index % xCount) * tileSize}px`,
-                ["background-position-y"]: `-${((index / yCount) | 0) * tileSize}px`,
-                ["background-size"]: `${tileset()!.naturalWidth * scaleBase}px ${tileset()!.naturalHeight * scaleBase}px`,
+                ["background-position-y"]: `-${
+                  ((index / yCount) | 0) * tileSize
+                }px`,
+                ["background-size"]: `${
+                  tileset()!.naturalWidth * scaleBase
+                }px ${tileset()!.naturalHeight * scaleBase}px`,
               }}
               on:click={() => setTileIndex(index)}
             ></div>

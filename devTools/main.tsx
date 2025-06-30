@@ -1,10 +1,10 @@
 import "#/devTools/styles.css";
 import {
+  type Component,
   createEffect,
   createSignal,
   onCleanup,
   onMount,
-  type Component,
 } from "solid-js";
 import { render } from "solid-js/web";
 import { AssetBrowser } from "#/devTools/AssetBrowser.tsx";
@@ -31,7 +31,9 @@ const DevTools: Component<{
     container: HTMLElement,
     width: number,
   ): void {
-    container.style = `position: absolute; top: 0; left: ${width}px; width: ${self.innerWidth - width}px;`;
+    container.style = `position: absolute; top: 0; left: ${width}px; width: ${
+      self.innerWidth - width
+    }px;`;
   }
 
   function stopResizeX() {

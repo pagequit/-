@@ -1,7 +1,7 @@
-import { URL, fileURLToPath } from "node:url";
+import { fileURLToPath, URL } from "node:url";
 import { readdirSync, writeFileSync } from "node:fs";
-import { type ServerResponse, IncomingMessage } from "node:http";
-import { defineConfig, type Plugin, type Connect } from "vite";
+import { IncomingMessage, type ServerResponse } from "node:http";
+import { type Connect, defineConfig, type Plugin } from "vite";
 import solidPlugin from "vite-plugin-solid";
 
 const publicDir = "public";

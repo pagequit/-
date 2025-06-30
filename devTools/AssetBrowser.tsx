@@ -1,18 +1,18 @@
 import {
+  type Component,
   createResource,
   createSignal,
   Index,
   Match,
-  Switch,
   Show,
-  type Component,
+  Switch,
 } from "solid-js";
 import {
-  FolderOpenIcon,
   FileDeltaIcon,
   FileMusicIcon,
   FileUnknownIcon,
   FolderIcon,
+  FolderOpenIcon,
 } from "#/devTools/icons/index.ts";
 
 enum AssetType {

@@ -1,17 +1,17 @@
 import {
+  type Component,
   createResource,
   createSignal,
   Index,
-  Show,
-  type Component,
   type Setter,
+  Show,
 } from "solid-js";
 import {
+  FolderIcon,
   FolderOpenIcon,
   ScriptIcon,
-  FolderIcon,
 } from "#/devTools/icons/index.ts";
-import { swapScene, currentScene, type SceneData } from "#/lib/Scene.ts";
+import { currentScene, type SceneData, swapScene } from "#/lib/Scene.ts";
 import { viewport } from "#/game/game.ts";
 
 type SceneEntry = { name: string };
@@ -64,7 +64,7 @@ export const SceneBrowser: Component<{
         }}
       >
         <ScriptIcon />
-        <span> {entry.name} </span>
+        <span>{entry.name}</span>
       </div>
     );
   };
