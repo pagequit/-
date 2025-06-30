@@ -26,6 +26,8 @@ createEffect(() => {
   setGrid(createGrid(tileSize, sceneData().xCount, sceneData().yCount));
 });
 
+export const [isDrawing, setIsDrawing] = createSignal(false);
+
 function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
   ctx.font = "16px monospace";
   ctx.fillStyle = "white";
@@ -39,9 +41,11 @@ function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
 function animate(): void {
   self.requestAnimationFrame(animate);
   drawDelta(viewport, delta.value);
-
-  highlightGridTile(grid(), pointer.position, viewport.ctx);
   drawGrid(grid(), viewport.ctx);
+
+  if (isDrawing()) {
+    highlightGridTile(grid(), pointer.position, viewport.ctx);
+  }
 }
 
 export function use(appContainer: HTMLElement): void {

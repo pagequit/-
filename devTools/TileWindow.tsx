@@ -14,6 +14,7 @@ import {
 import { scaleBase, tileSize } from "#/game/constants.ts";
 import { loadImage } from "#/lib/loadImage.ts";
 import { type SceneData } from "#/lib/Scene.ts";
+import { isDrawing, setIsDrawing } from "./main.tsx";
 
 export const TileWindow: Component<{
   sceneData: Accessor<SceneData>;
@@ -43,7 +44,11 @@ export const TileWindow: Component<{
         <button type="button" class="btn">
           <FloppyDiscIcon />
         </button>
-        <button type="button" class="btn">
+        <button
+          type="button"
+          class={"btn" + (isDrawing() ? " active" : "")}
+          onClick={() => setIsDrawing(!isDrawing())}
+        >
           <PencilIcon />
         </button>
       </div>
