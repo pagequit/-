@@ -78,7 +78,7 @@ process((ctx, delta) => {
     });
   }
 
-  drawGrid(grid, ctx);
+  // drawGrid(grid, ctx);
 });
 
 preProcess(() => {

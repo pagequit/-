@@ -20,8 +20,8 @@ const { process, linkScenes } = useScene(viewport, {
 linkScenes(["testSceneTwo"]);
 
 process((ctx, _delta) => {
-  highlightGridTile(grid, pointer.position, ctx);
-  drawGrid(grid, ctx);
+  // highlightGridTile(grid, pointer.position, ctx);
+  // drawGrid(grid, ctx);
 });
 
 console.log("testSceneThree loaded");

@@ -12,12 +12,41 @@ import { SceneBrowser } from "#/devTools/SceneBrowser.tsx";
 import { TileWindow } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
-import { zoomViewport } from "#/lib/Viewport.ts";
-import { viewport } from "#/game/game.ts";
-import { currentScene } from "#/lib/Scene";
+import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
+import { currentScene } from "#/lib/Scene.ts";
+import { viewport, pointer, delta } from "#/game/game.ts";
+import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
+import { tileSize } from "#/game/constants.ts";
+
+const [sceneData, setSceneData] = createSignal(currentScene.data);
+const [grid, setGrid] = createSignal(
+  createGrid(tileSize, sceneData().xCount, sceneData().yCount),
+);
+createEffect(() => {
+  setGrid(createGrid(tileSize, sceneData().xCount, sceneData().yCount));
+});
+
+function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
+  ctx.font = "16px monospace";
+  ctx.fillStyle = "white";
+  ctx.fillText(
+    delta.toFixed(1),
+    translation.x / scale.x + 8,
+    translation.y / scale.y + 16,
+  );
+}
+
+function animate(): void {
+  self.requestAnimationFrame(animate);
+  drawDelta(viewport, delta.value);
+
+  highlightGridTile(grid(), pointer.position, viewport.ctx);
+  drawGrid(grid(), viewport.ctx);
+}
 
 export function use(appContainer: HTMLElement): void {
   render(() => <DevTools appContainer={appContainer} />, appContainer);
+  animate();
 }
 
 const DevTools: Component<{
@@ -67,9 +96,7 @@ const DevTools: Component<{
     self.removeEventListener("resize", handleResize);
   });
 
-  const [sceneData, setSceneData] = createSignal(currentScene.data);
   const [scale, setScale] = createSignal(1);
-
   createEffect(() => {
     zoomViewport(viewport, scale(), sceneData().width, sceneData().height);
   });

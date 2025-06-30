@@ -1,23 +1,9 @@
 import { scaleBase, tileSize } from "#/game/constants.ts";
-import { type Viewport } from "#/lib/Viewport.ts";
 import { type Vector } from "#/lib/Vector.ts";
 import { createColor } from "#/lib/Color.ts";
 import { compileColor } from "#/lib/Color.ts";
 
 const defaultColor = createColor(255, 255, 255);
-
-export function drawDelta(
-  { ctx, translation, scale }: Viewport,
-  delta: number,
-): void {
-  ctx.font = "16px monospace";
-  ctx.fillStyle = defaultColor.value;
-  ctx.fillText(
-    delta.toFixed(1),
-    translation.x / scale.x + 8,
-    translation.y / scale.y + 16,
-  );
-}
 
 export function drawPoint(
   ctx: CanvasRenderingContext2D,

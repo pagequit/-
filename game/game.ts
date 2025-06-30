@@ -5,7 +5,6 @@ import {
 } from "#/lib/Viewport.ts";
 import { currentScene, swapScene } from "#/lib/Scene.ts";
 import { createPointer, usePointer } from "#/lib/Pointer.ts";
-import { drawDelta } from "#/game/misc.ts";
 
 const gameContainer = document.createElement("div");
 gameContainer.classList.add("game-container");
@@ -30,15 +29,15 @@ function viewportResizeHandler(): void {
 self.addEventListener("resize", viewportResizeHandler);
 
 let then = self.performance.now();
-let delta = 0;
+export const delta = { value: 0 };
+
 function animate(timestamp: number): void {
   self.requestAnimationFrame(animate);
   resetViewport(viewport);
 
-  currentScene.process(ctx, delta);
-  drawDelta(viewport, delta);
+  currentScene.process(ctx, delta.value);
 
-  delta = timestamp - then;
+  delta.value = timestamp - then;
   then = timestamp;
 }
 

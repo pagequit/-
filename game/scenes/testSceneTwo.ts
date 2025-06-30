@@ -28,7 +28,7 @@ process((ctx, delta) => {
 
   focusViewport(viewport, hero.position.x, hero.position.y, width, height);
 
-  drawGrid(grid, ctx);
+  // drawGrid(grid, ctx);
 });
 
 console.log("testSceneTwo loaded");
