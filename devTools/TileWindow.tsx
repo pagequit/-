@@ -34,16 +34,16 @@ export const TileWindow: Component<{
   return (
     <div class="tile-window">
       <div class="icon-bar">
-        <button class="btn">
+        <button type="button" class="btn">
           <StackBackwardIcon />
         </button>
-        <button class="btn">
+        <button type="button" class="btn">
           <StackForwardIcon />
         </button>
-        <button class="btn">
+        <button type="button" class="btn">
           <FloppyDiscIcon />
         </button>
-        <button class="btn">
+        <button type="button" class="btn">
           <PencilIcon />
         </button>
       </div>

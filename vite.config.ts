@@ -7,8 +7,8 @@ import solidPlugin from "vite-plugin-solid";
 const publicDir = "public";
 
 function devToolMiddleware(
-  req: IncomingMessage,
-  res: ServerResponse,
+  _req: IncomingMessage,
+  _res: ServerResponse,
   next: Connect.NextFunction,
 ): void {
   // console.log(req, res);

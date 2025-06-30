@@ -54,8 +54,5 @@ export function useWithAsyncCache<T>(
 ): [(uri: string) => Promise<T>, AsyncCache<T>] {
   const cache: AsyncCache<T> = new Map();
 
-  return [
-    async (uri: string) => withAsyncCache(callback, uri, cache)(uri),
-    cache,
-  ];
+  return [(uri: string) => withAsyncCache(callback, uri, cache)(uri), cache];
 }
