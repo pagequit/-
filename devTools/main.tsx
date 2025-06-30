@@ -16,7 +16,7 @@ import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
 import { currentScene } from "#/lib/Scene.ts";
 import { viewport, pointer, delta } from "#/game/game.ts";
 import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
-import { tileSize } from "#/game/constants.ts";
+import { pixelBase, tileSize } from "#/game/constants.ts";
 
 const [sceneData, setSceneData] = createSignal(currentScene.data);
 const [grid, setGrid] = createSignal(
@@ -27,6 +27,10 @@ createEffect(() => {
 });
 
 export const [isDrawing, setIsDrawing] = createSignal(false);
+export const [tileIndex, setTileIndex] = createSignal(0);
+export const [tileset, setTileset] = createSignal<HTMLImageElement | null>(
+  null,
+);
 
 function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
   ctx.font = "16px monospace";
@@ -41,10 +45,21 @@ function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
 function animate(): void {
   self.requestAnimationFrame(animate);
   drawDelta(viewport, delta.value);
-  drawGrid(grid(), viewport.ctx);
 
   if (isDrawing()) {
+    drawGrid(grid(), viewport.ctx);
     highlightGridTile(grid(), pointer.position, viewport.ctx);
+    viewport.ctx.drawImage(
+      tileset()!,
+      (tileIndex() % (tileset()!.naturalWidth / pixelBase)) * pixelBase,
+      ((tileIndex() / (tileset()!.naturalWidth / pixelBase)) | 0) * pixelBase,
+      pixelBase,
+      pixelBase,
+      pointer.position.x,
+      pointer.position.y,
+      tileSize,
+      tileSize,
+    );
   }
 }
 
