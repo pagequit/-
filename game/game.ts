@@ -30,12 +30,16 @@ self.addEventListener("resize", viewportResizeHandler);
 
 let then = self.performance.now();
 export const delta = { value: 0 };
+export const isPaused = { value: false };
 
 function animate(timestamp: number): void {
   self.requestAnimationFrame(animate);
   resetViewport(viewport);
 
-  currentScene.process(ctx, delta.value);
+  // FIXME
+  if (!isPaused.value) {
+    currentScene.process(ctx, delta.value);
+  }
 
   delta.value = timestamp - then;
   then = timestamp;

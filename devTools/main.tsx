@@ -14,7 +14,7 @@ import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
 import { currentScene } from "#/lib/Scene.ts";
-import { viewport, pointer, delta } from "#/game/game.ts";
+import { viewport, pointer, delta, isPaused } from "#/game/game.ts";
 import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/game/constants.ts";
 
@@ -22,9 +22,6 @@ const [sceneData, setSceneData] = createSignal(currentScene.data);
 const [grid, setGrid] = createSignal(
   createGrid(tileSize, sceneData().xCount, sceneData().yCount),
 );
-createEffect(() => {
-  setGrid(createGrid(tileSize, sceneData().xCount, sceneData().yCount));
-});
 
 export const [isDrawing, setIsDrawing] = createSignal(false);
 export const [tileIndex, setTileIndex] = createSignal(0);
@@ -71,6 +68,13 @@ export function use(appContainer: HTMLElement): void {
 const DevTools: Component<{
   appContainer: HTMLElement;
 }> = ({ appContainer }) => {
+  createEffect(() => {
+    setGrid(createGrid(tileSize, sceneData().xCount, sceneData().yCount));
+  });
+  createEffect(() => {
+    isPaused.value = isDrawing();
+  });
+
   const gameContainer = appContainer.querySelector(
     ".game-container",
   ) as HTMLElement;
