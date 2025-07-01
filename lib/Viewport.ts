@@ -33,7 +33,7 @@ export function resetViewport(viewport: Viewport): void {
   ctx.restore();
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.save();
-  ctx.translate(-translation.x, -translation.y);
+  ctx.translate(-(translation.x | 0), -(translation.y | 0));
   ctx.scale(scale.x, scale.y);
 }
 

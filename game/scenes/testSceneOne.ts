@@ -15,6 +15,7 @@ import {
 } from "#/lib/collision.ts";
 import { drawRectangle } from "#/game/misc.ts";
 import { loadImage } from "#/lib/loadImage";
+import { focusViewport } from "#/lib/Viewport";
 
 // prettier-ignore
 const tilemap: Tilemap = [
@@ -70,6 +71,7 @@ process((ctx, delta) => {
   highlightGridTile(grid, hero.position, ctx);
 
   processHero(delta);
+  focusViewport(viewport, hero.position.x, hero.position.y, width, height);
 
   let color = "rgba(128, 128, 128, 0.5)";
   if (isPointInRectangle(pointer.position, aThing)) {
