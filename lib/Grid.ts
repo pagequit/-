@@ -10,7 +10,7 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
   for (let x = 0; x < grid.xCount; x++) {
     for (let y = 0; y < grid.yCount; y++) {
       ctx.fillStyle =
-        x % 2 === y % 2 ? "rgba(32, 32, 32, 0.1)" : "rgba(32, 32, 32, 0.2)";
+        x % 2 === y % 2 ? "rgba(32, 32, 32, 0.1)" : "rgba(64, 64, 64, 0.2)";
       ctx.fillRect(
         x * grid.tileSize,
         y * grid.tileSize,

@@ -13,8 +13,12 @@ const canvasContainer = document.createElement("div");
 canvasContainer.classList.add("canvas-container");
 
 const canvas = document.createElement("canvas");
-
 const ctx = canvas.getContext("2d", {
+  alpha: false,
+}) as CanvasRenderingContext2D;
+
+const backCanvas = document.createElement("canvas");
+const backCtx = backCanvas.getContext("2d", {
   alpha: false,
 }) as CanvasRenderingContext2D;
 
@@ -30,14 +34,30 @@ self.addEventListener("resize", viewportResizeHandler);
 
 let then = self.performance.now();
 export const delta = { value: 0 };
-export const isPaused = { value: false };
+
+let paused = false;
+export function setIsPaused(value: boolean): boolean {
+  paused = value;
+  if (paused) {
+    backCanvas.width = canvas.width;
+    backCanvas.height = canvas.height;
+    backCtx.drawImage(canvas, 0, 0);
+  }
+
+  return paused;
+}
+
+export function isPaused(): boolean {
+  return paused;
+}
 
 function animate(timestamp: number): void {
   self.requestAnimationFrame(animate);
   resetViewport(viewport);
 
-  // FIXME
-  if (!isPaused.value) {
+  if (paused) {
+    ctx.drawImage(backCanvas, 0, 0);
+  } else {
     currentScene.process(ctx, delta.value);
   }
 

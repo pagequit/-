@@ -14,7 +14,7 @@ import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
 import { currentScene } from "#/lib/Scene.ts";
-import { viewport, pointer, delta, isPaused } from "#/game/game.ts";
+import { viewport, pointer, delta, setIsPaused } from "#/game/game.ts";
 import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/game/constants.ts";
 
@@ -72,7 +72,7 @@ const DevTools: Component<{
     setGrid(createGrid(tileSize, sceneData().xCount, sceneData().yCount));
   });
   createEffect(() => {
-    isPaused.value = isDrawing();
+    setIsPaused(isDrawing());
   });
 
   const gameContainer = appContainer.querySelector(
