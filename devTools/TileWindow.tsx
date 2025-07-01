@@ -15,7 +15,12 @@ import {
   setTileIndex,
   tileset,
   setTileset,
+  sceneData,
 } from "./main.tsx";
+
+function saveTilemap(): void {
+  console.log(JSON.stringify(sceneData().tilemap));
+}
 
 export const TileWindow: Component<{
   sceneData: Accessor<SceneData>;
@@ -39,7 +44,7 @@ export const TileWindow: Component<{
         <button type="button" class="btn">
           <StackForwardIcon />
         </button>
-        <button type="button" class="btn">
+        <button type="button" class="btn" onClick={saveTilemap}>
           <FloppyDiscIcon />
         </button>
         <button

@@ -18,15 +18,14 @@ import { viewport, pointer, delta, setIsPaused } from "#/game/game.ts";
 import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/game/constants.ts";
 
-const [sceneData, setSceneData] = createSignal(currentScene.data);
-const [grid, setGrid] = createSignal(
-  createGrid(tileSize, sceneData().xCount, sceneData().yCount),
-);
-
+export const [sceneData, setSceneData] = createSignal(currentScene.data);
 export const [isDrawing, setIsDrawing] = createSignal(false);
 export const [tileIndex, setTileIndex] = createSignal(0);
 export const [tileset, setTileset] = createSignal<HTMLImageElement | null>(
   null,
+);
+const [grid, setGrid] = createSignal(
+  createGrid(tileSize, sceneData().xCount, sceneData().yCount),
 );
 
 function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
