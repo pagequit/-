@@ -2,6 +2,8 @@ import { getNeighbours, type Graph } from "./Graph.ts";
 import { resizeViewport, type Viewport } from "./Viewport.ts";
 import { useWithAsyncCache } from "./cache.ts";
 
+import { pixelBase, tileSize } from "#/game/constants.ts";
+
 export type Process = (ctx: CanvasRenderingContext2D, delta: number) => void;
 export type PreProcess = () => void;
 export type PostProcess = () => void;
@@ -17,6 +19,35 @@ export type SceneData = {
   width: number;
   height: number;
 };
+
+export function drawTilemap(
+  tileset: HTMLImageElement,
+  { tilemap, width, height }: SceneData,
+  ctx: CanvasRenderingContext2D,
+): void {
+  const yCount = tilemap.length;
+  const xCount = tilemap[0].length;
+  const tileHeight = height / yCount;
+  const tileWidth = width / xCount;
+  const yBase = tileset.naturalHeight / yCount;
+  const xBase = tileset.naturalWidth / xCount;
+
+  for (let y = 0; yCount > y; y++) {
+    for (let x = 0; xCount > x; x++) {
+      ctx.drawImage(
+        tileset,
+        (tilemap[y][x] % (tileset.naturalWidth / pixelBase)) * pixelBase,
+        ((tilemap[y][x] / (tileset.naturalWidth / pixelBase)) | 0) * pixelBase,
+        pixelBase,
+        pixelBase,
+        x * tileSize,
+        y * tileSize,
+        tileSize,
+        tileSize,
+      );
+    }
+  }
+}
 
 const [loadScene, sceneCache] = useWithAsyncCache((name: string) => {
   return import(`#/game/scenes/${name}.ts`);

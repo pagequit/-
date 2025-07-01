@@ -1,6 +1,6 @@
 import { tileSize } from "#/game/constants.ts";
 import { pointer, viewport } from "#/game/game.ts";
-import { type Tilemap, useScene } from "#/lib/Scene.ts";
+import { drawTilemap, type Tilemap, useScene } from "#/lib/Scene.ts";
 import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
 import {
   loadHero,
@@ -14,6 +14,7 @@ import {
   type Rectangle,
 } from "#/lib/collision.ts";
 import { drawRectangle } from "#/game/misc.ts";
+import { loadImage } from "#/lib/loadImage";
 
 // prettier-ignore
 const tilemap: Tilemap = [
@@ -38,7 +39,7 @@ const grid = createGrid(tileSize, tilemap[0].length, tilemap.length);
 const width = grid.tileSize * grid.xCount;
 const height = grid.tileSize * grid.yCount;
 
-const { process, preProcess, linkScenes } = useScene(viewport, {
+const sceneData = {
   name: "testSceneOne",
   tileset: "/assets/tileset.png",
   tilemap,
@@ -46,7 +47,9 @@ const { process, preProcess, linkScenes } = useScene(viewport, {
   yCount: grid.yCount,
   width,
   height,
-});
+};
+
+const { process, preProcess, linkScenes } = useScene(viewport, sceneData);
 
 const swapScene = linkScenes(["testSceneTwo"]);
 
@@ -60,8 +63,10 @@ const aThing: Rectangle = {
 };
 
 const hero = await loadHero();
+const tileset = await loadImage("/assets/tileset.png");
 
 process((ctx, delta) => {
+  drawTilemap(tileset, sceneData, ctx);
   highlightGridTile(grid, hero.position, ctx);
 
   processHero(delta);

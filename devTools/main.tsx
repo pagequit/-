@@ -13,7 +13,7 @@ import { TileWindow } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
-import { currentScene } from "#/lib/Scene.ts";
+import { currentScene, drawTilemap } from "#/lib/Scene.ts";
 import { viewport, pointer, delta, setIsPaused } from "#/game/game.ts";
 import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/game/constants.ts";
@@ -44,6 +44,13 @@ function animate(): void {
   drawDelta(viewport, delta.value);
 
   if (isDrawing()) {
+    if (pointer.isDown) {
+      const x = (pointer.position.x / tileSize) | 0;
+      const y = (pointer.position.y / tileSize) | 0;
+      sceneData().tilemap[y][x] = tileIndex();
+    }
+
+    drawTilemap(tileset()!, sceneData(), viewport.ctx);
     drawGrid(grid(), viewport.ctx);
     highlightGridTile(grid(), pointer.position, viewport.ctx);
     viewport.ctx.drawImage(
