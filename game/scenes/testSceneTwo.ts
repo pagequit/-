@@ -1,7 +1,7 @@
 import { useScene } from "#/lib/Scene.ts";
 import { createGrid, drawGrid } from "#/lib/Grid.ts";
 import { focusViewport } from "#/lib/Viewport.ts";
-import { tileSize } from "#/game/constants.ts";
+import { tileSize } from "#/config.ts";
 import { viewport } from "#/game/game.ts";
 import { loadHero, processHero } from "#/game/Hero.ts";
 

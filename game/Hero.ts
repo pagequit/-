@@ -5,7 +5,7 @@ import {
   normalize,
   type Vector,
 } from "#/lib/Vector.ts";
-import { pixelBase, scaleBase, tileSize } from "#/game//constants.ts";
+import { pixelBase, scaleBase, tileSize } from "#/config.ts";
 import {
   createSprite,
   setSpriteXFrame,

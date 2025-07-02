@@ -5,7 +5,7 @@ import {
   StackBackwardIcon,
   StackForwardIcon,
 } from "#/devTools/icons/index.ts";
-import { pixelBase, scaleBase, tileSize } from "#/game/constants.ts";
+import { dev, pixelBase, scaleBase, tileSize } from "#/config.ts";
 import { loadImage } from "#/lib/loadImage.ts";
 import { type SceneData } from "#/lib/Scene.ts";
 import {
@@ -16,10 +16,15 @@ import {
   tileset,
   setTileset,
   sceneData,
-} from "./main.tsx";
+} from "#/devTools/main.tsx";
 
 function saveTilemap(): void {
-  console.log(JSON.stringify(sceneData().tilemap));
+  const tilemapJSON = JSON.stringify(sceneData().tilemap);
+  console.log(tilemapJSON);
+  fetch(`http://${dev.host}:${dev.port}/dev`, {
+    method: "POST",
+    body: tilemapJSON,
+  });
 }
 
 export const TileWindow: Component<{

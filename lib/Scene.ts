@@ -2,7 +2,7 @@ import { getNeighbours, type Graph } from "./Graph.ts";
 import { resizeViewport, type Viewport } from "./Viewport.ts";
 import { useWithAsyncCache } from "./cache.ts";
 
-import { pixelBase, tileSize } from "#/game/constants.ts";
+import { pixelBase, tileSize } from "#/config.ts";
 
 export type Process = (ctx: CanvasRenderingContext2D, delta: number) => void;
 export type PreProcess = () => void;
@@ -22,15 +22,11 @@ export type SceneData = {
 
 export function drawTilemap(
   tileset: HTMLImageElement,
-  { tilemap, width, height }: SceneData,
+  { tilemap }: SceneData,
   ctx: CanvasRenderingContext2D,
 ): void {
   const yCount = tilemap.length;
   const xCount = tilemap[0].length;
-  const tileHeight = height / yCount;
-  const tileWidth = width / xCount;
-  const yBase = tileset.naturalHeight / yCount;
-  const xBase = tileset.naturalWidth / xCount;
 
   for (let y = 0; yCount > y; y++) {
     for (let x = 0; xCount > x; x++) {

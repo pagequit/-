@@ -1,18 +1,21 @@
 import { fileURLToPath, URL } from "node:url";
 import { readdirSync, writeFileSync } from "node:fs";
 import { IncomingMessage, type ServerResponse } from "node:http";
-import { type Connect, defineConfig, type Plugin } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import solidPlugin from "vite-plugin-solid";
+import { dev } from "#/config";
 
-const publicDir = "public";
+function devToolMiddleware(req: IncomingMessage, res: ServerResponse): void {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+  req.on("end", () => {
+    console.log(body);
 
-function devToolMiddleware(
-  _req: IncomingMessage,
-  _res: ServerResponse,
-  next: Connect.NextFunction,
-): void {
-  // console.log(req, res);
-  next();
+    res.statusCode = 204;
+    res.end();
+  });
 }
 
 function buildFileIndex(name: string, dir: string): void {
@@ -29,7 +32,7 @@ function buildFileIndex(name: string, dir: string): void {
     });
 
   writeFileSync(
-    `${publicDir}/${name}`,
+    `${dev.publicDir}/${name}`,
     JSON.stringify(fileIndex, null, 2),
     "utf8",
   );
@@ -39,7 +42,7 @@ function devTools(): Plugin {
   return {
     name: "dev-tools",
     configureServer(server) {
-      server.middlewares.use(devToolMiddleware);
+      server.middlewares.use("/dev", devToolMiddleware);
     },
     buildStart() {
       buildFileIndex("assetindex.json", "public/assets");
@@ -49,9 +52,10 @@ function devTools(): Plugin {
 }
 
 export default defineConfig({
-  publicDir,
+  publicDir: dev.publicDir,
   server: {
-    port: 3033,
+    host: dev.host,
+    port: dev.port,
     hmr: false,
   },
   build: { target: "esnext" },

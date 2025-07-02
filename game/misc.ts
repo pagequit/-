@@ -1,4 +1,4 @@
-import { scaleBase, tileSize } from "#/game/constants.ts";
+import { scaleBase, tileSize } from "#/config.ts";
 import { type Vector } from "#/lib/Vector.ts";
 import { createColor } from "#/lib/Color.ts";
 import { compileColor } from "#/lib/Color.ts";
