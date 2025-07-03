@@ -16,32 +16,14 @@ import {
 import { drawRectangle } from "#/game/misc.ts";
 import { loadImage } from "#/lib/loadImage";
 import { focusViewport } from "#/lib/Viewport";
+import tilemap from "./testOne.json";
 
-// prettier-ignore
-const tilemap: Tilemap = [
-  [0,1,1,1,1,1,1,1,1,1,1,1,2,0,1,1,1,1,1,1,1,1,1,1,1,2],
-  [5,6,6,6,6,6,6,6,6,6,6,6,7,5,6,6,6,6,6,6,6,6,6,6,6,7],
-  [10,11,11,11,11,11,11,11,11,11,11,11,12,10,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,12,10,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,8,9,11,11,11,11,24,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,13,14,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,3,4,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,12,10,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,12,10,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,12,10,11,11,11,11,11,11,11,11,11,11,11,12],
-  [10,11,11,11,11,11,11,11,11,11,11,11,12,10,11,11,11,11,11,11,11,11,11,11,11,12],
-  [15,16,16,16,16,16,16,16,16,16,16,16,17,15,16,16,16,16,16,16,16,16,16,16,16,17],
-];
 const grid = createGrid(tileSize, tilemap[0].length, tilemap.length);
 const width = grid.tileSize * grid.xCount;
 const height = grid.tileSize * grid.yCount;
 
 const sceneData = {
-  name: "testSceneOne",
+  name: "testOne",
   tileset: "/assets/tileset.png",
   tilemap,
   xCount: grid.xCount,
@@ -52,7 +34,7 @@ const sceneData = {
 
 const { process, preProcess, linkScenes } = useScene(viewport, sceneData);
 
-const swapScene = linkScenes(["testSceneTwo"]);
+const swapScene = linkScenes(["testTwo"]);
 
 const aThing: Rectangle = {
   width: tileSize,
@@ -80,7 +62,7 @@ process((ctx, delta) => {
   drawRectangle(ctx, aThing.position, aThing.width, aThing.height, color);
 
   if (circleCollideRectangle(hero.collisionShape, aThing)) {
-    swapScene("testSceneTwo").then(() => {
+    swapScene("testTwo").then(() => {
       setHeroCoords(10, 7);
     });
   }
@@ -92,4 +74,4 @@ preProcess(() => {
   setHeroPosition(tileSize * 15, tileSize * 5);
 });
 
-console.log("testSceneOne loaded");
+console.log("testOne loaded");

@@ -23,6 +23,7 @@ function sceneTreeBuilder(
   index: number,
   ref: string[],
 ): void {
+  const suffix = ".scene.ts";
   const next = current.has(entries[0])
     ? (current.get(entries[0]) as SceneFolder)
     : (new Map() as SceneFolder);
@@ -31,8 +32,11 @@ function sceneTreeBuilder(
     current.set(entries.shift() as string, next);
     sceneTreeBuilder(next, entries, index, ref);
   } else {
+    if (!entries[0].endsWith(suffix)) {
+      return;
+    }
     current.set(entries[0], {
-      name: entries[0].substring(0, entries[0].length - 3),
+      name: entries[0].substring(0, entries[0].length - suffix.length),
     });
   }
 }

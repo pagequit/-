@@ -19,11 +19,14 @@ import {
 } from "#/devTools/main.tsx";
 
 function saveTilemap(): void {
-  const tilemapJSON = JSON.stringify(sceneData().tilemap);
-  console.log(tilemapJSON);
+  const body = JSON.stringify({
+    name: sceneData().name,
+    tilemap: sceneData().tilemap,
+  });
+
   fetch(`http://${dev.host}:${dev.port}/dev`, {
     method: "POST",
-    body: tilemapJSON,
+    body,
   });
 }
 

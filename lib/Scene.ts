@@ -46,7 +46,7 @@ export function drawTilemap(
 }
 
 const [loadScene, sceneCache] = useWithAsyncCache((name: string) => {
-  return import(`#/game/scenes/${name}.ts`);
+  return import(`#/game/scenes/${name}.scene.ts`);
 });
 
 const dataMap = new Map<string, SceneData>();

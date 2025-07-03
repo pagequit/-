@@ -11,7 +11,13 @@ function devToolMiddleware(req: IncomingMessage, res: ServerResponse): void {
     body += chunk.toString();
   });
   req.on("end", () => {
-    console.log(body);
+    const data = JSON.parse(body);
+
+    writeFileSync(
+      `${dev.scenesDir}/${data.name}.json`,
+      JSON.stringify(data.tilemap, null, 2),
+      "utf8",
+    );
 
     res.statusCode = 204;
     res.end();
@@ -45,8 +51,8 @@ function devTools(): Plugin {
       server.middlewares.use("/dev", devToolMiddleware);
     },
     buildStart() {
-      buildFileIndex("assetindex.json", "public/assets");
-      buildFileIndex("sceneindex.json", "game/scenes");
+      buildFileIndex("assetindex.json", dev.assetsDir);
+      buildFileIndex("sceneindex.json", dev.scenesDir);
     },
   };
 }

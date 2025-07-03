@@ -1,5 +1,8 @@
 [
-  "/testSceneTwo.ts",
-  "/testSceneThree.ts",
-  "/testSceneOne.ts"
+  "/testOne.json",
+  "/testTwo.json",
+  "/testThree.scene.ts",
+  "/testOne.scene.ts",
+  "/testThree.json",
+  "/testTwo.scene.ts"
 ]
