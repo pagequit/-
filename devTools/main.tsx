@@ -17,6 +17,7 @@ import { currentScene, drawTilemap } from "#/lib/Scene.ts";
 import { viewport, pointer, delta, setIsPaused } from "#/game/game.ts";
 import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/config.ts";
+import { setIsUnsynced } from "#/devTools/TileWindow.tsx";
 
 export const [sceneData, setSceneData] = createSignal(currentScene.data);
 export const [isDrawing, setIsDrawing] = createSignal(false);
@@ -46,6 +47,9 @@ function animate(): void {
     if (pointer.isDown) {
       const x = (pointer.position.x / tileSize) | 0;
       const y = (pointer.position.y / tileSize) | 0;
+      if (sceneData().tilemap[y][x] !== tileIndex()) {
+        setIsUnsynced(true);
+      }
       sceneData().tilemap[y][x] = tileIndex();
     }
 

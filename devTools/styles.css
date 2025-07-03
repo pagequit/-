@@ -42,6 +42,8 @@
 
   --c-primary: var(--c-blurple);
   --c-secondary: var(--c-fuchsia);
+  --c-alert: var(--c-orange);
+  --c-error: var(--c-red);
 
   --c-bg-0: rgb(30, 31, 34);
   --c-bg-1: rgb(43, 45, 49);
@@ -155,7 +157,6 @@
 
   &.active {
     color: var(--c-primary);
-    border-color: var(--c-primary);
   }
 
   &:active {
@@ -298,5 +299,23 @@
     outline-width: 2px;
     outline-style: solid;
     outline-color: var(--c-primary);
+  }
+}
+
+.error {
+  color: var(--c-error);
+}
+
+.alert {
+  color: var(--c-alert);
+}
+
+.rotate > * {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  100% {
+    rotate: -1turn;
   }
 }

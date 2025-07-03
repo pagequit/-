@@ -1,28 +1,9 @@
 import { fileURLToPath, URL } from "node:url";
 import { readdirSync, writeFileSync } from "node:fs";
-import { IncomingMessage, type ServerResponse } from "node:http";
 import { defineConfig, type Plugin } from "vite";
 import solidPlugin from "vite-plugin-solid";
-import { dev } from "#/config";
-
-function devToolMiddleware(req: IncomingMessage, res: ServerResponse): void {
-  let body = "";
-  req.on("data", (chunk) => {
-    body += chunk.toString();
-  });
-  req.on("end", () => {
-    const data = JSON.parse(body);
-
-    writeFileSync(
-      `${dev.scenesDir}/${data.name}.json`,
-      JSON.stringify(data.tilemap, null, 2),
-      "utf8",
-    );
-
-    res.statusCode = 204;
-    res.end();
-  });
-}
+import { dev } from "#/config.ts";
+import { devToolMiddleware } from "#/devTools/middleware.ts";
 
 function buildFileIndex(name: string, dir: string): void {
   const dirents = readdirSync(dir, {

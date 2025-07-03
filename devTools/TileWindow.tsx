@@ -1,6 +1,16 @@
-import { type Accessor, type Component, createEffect, Show } from "solid-js";
 import {
-  FloppyDiscIcon,
+  type Accessor,
+  type Component,
+  createEffect,
+  createSignal,
+  Match,
+  Show,
+  Switch,
+} from "solid-js";
+import {
+  RefreshIcon,
+  RefreshAlertIcon,
+  RefreshDotIcon,
   PencilIcon,
   StackBackwardIcon,
   StackForwardIcon,
@@ -18,21 +28,37 @@ import {
   sceneData,
 } from "#/devTools/main.tsx";
 
-function saveTilemap(): void {
-  const body = JSON.stringify({
-    name: sceneData().name,
-    tilemap: sceneData().tilemap,
-  });
-
-  fetch(`http://${dev.host}:${dev.port}/dev`, {
-    method: "POST",
-    body,
-  });
-}
+export const [isUnsynced, setIsUnsynced] = createSignal(false);
 
 export const TileWindow: Component<{
   sceneData: Accessor<SceneData>;
 }> = (props) => {
+  const [isSyncing, setIsSyncing] = createSignal(false);
+  const [syncError, setSyncError] = createSignal(null);
+
+  function saveTilemap(): void {
+    if (isSyncing()) {
+      return;
+    }
+
+    setIsSyncing(true);
+    setIsUnsynced(false);
+    setSyncError(null);
+
+    fetch(`http://${dev.host}:${dev.port}/dev`, {
+      method: "POST",
+      body: JSON.stringify(sceneData()),
+    })
+      .catch((error) => {
+        setIsUnsynced(true);
+        setSyncError(error);
+        console.error(error);
+      })
+      .finally(() => {
+        setIsSyncing(false);
+      });
+  }
+
   let xCount = 0;
   let yCount = 0;
   createEffect(() => {
@@ -53,7 +79,24 @@ export const TileWindow: Component<{
           <StackForwardIcon />
         </button>
         <button type="button" class="btn" onClick={saveTilemap}>
-          <FloppyDiscIcon />
+          <Switch
+            fallback={
+              <span class={isSyncing() ? "rotate" : ""}>
+                <RefreshIcon />
+              </span>
+            }
+          >
+            <Match when={syncError()}>
+              <span class="error">
+                <RefreshAlertIcon />
+              </span>
+            </Match>
+            <Match when={isUnsynced()}>
+              <span class="alert">
+                <RefreshDotIcon />
+              </span>
+            </Match>
+          </Switch>
         </button>
         <button
           type="button"
