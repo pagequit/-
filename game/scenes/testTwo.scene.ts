@@ -1,5 +1,5 @@
 import { useScene } from "#/lib/Scene.ts";
-import { createGrid, drawGrid } from "#/lib/Grid.ts";
+import { createGrid } from "#/lib/Grid.ts";
 import { focusViewport } from "#/lib/Viewport.ts";
 import { tileSize } from "#/config.ts";
 import { viewport } from "#/game/game.ts";
@@ -24,12 +24,10 @@ linkScenes(["testOne", "testThree"]);
 
 const hero = await loadHero();
 
-process((ctx, delta) => {
+process((_ctx, delta) => {
   processHero(delta);
 
   focusViewport(viewport, hero.position.x, hero.position.y, width, height);
-
-  // drawGrid(grid, ctx);
 });
 
 console.log("testTwo loaded");

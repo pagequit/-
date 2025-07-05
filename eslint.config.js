@@ -12,6 +12,7 @@ export default [
   ...tseslint.configs.recommended,
   {
     rules: {
+      "no-empty": "warn",
       "prefer-const": "warn",
       "no-unused-vars": "off",
       "@typescript-eslint/ban-ts-comment": "off",

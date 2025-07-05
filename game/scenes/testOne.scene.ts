@@ -1,7 +1,7 @@
 import { tileSize } from "#/config.ts";
 import { pointer, viewport } from "#/game/game.ts";
-import { drawTilemap, type Tilemap, useScene } from "#/lib/Scene.ts";
-import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
+import { drawTilemap, useScene } from "#/lib/Scene.ts";
+import { createGrid, highlightGridTile } from "#/lib/Grid.ts";
 import {
   loadHero,
   processHero,
@@ -66,8 +66,6 @@ process((ctx, delta) => {
       setHeroCoords(10, 7);
     });
   }
-
-  // drawGrid(grid, ctx);
 });
 
 preProcess(() => {

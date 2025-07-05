@@ -15,9 +15,15 @@ import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
 import { currentScene, drawTilemap } from "#/lib/Scene.ts";
 import { viewport, pointer, delta, setIsPaused } from "#/game/game.ts";
-import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
+import { createGrid, drawGrid } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/config.ts";
 import { setIsUnsynced } from "#/devTools/TileWindow.tsx";
+import { createVector, type Vector } from "#/lib/Vector";
+import {
+  createRectangle,
+  isPointInRectangle,
+  type Rectangle,
+} from "#/lib/collision";
 
 export const [sceneData, setSceneData] = createSignal(currentScene.data);
 export const [isDrawing, setIsDrawing] = createSignal(false);
@@ -28,6 +34,18 @@ export const [tileset, setTileset] = createSignal<HTMLImageElement | null>(
 const [grid, setGrid] = createSignal(
   createGrid(tileSize, sceneData().xCount, sceneData().yCount),
 );
+
+const mouse: Vector = createVector();
+
+const [boundingRectangle, setBoundingRectangle] = createSignal(
+  getBoundingRectangle(),
+);
+
+function getBoundingRectangle(): Rectangle {
+  const rect = viewport.ctx.canvas.getBoundingClientRect();
+
+  return createRectangle(createVector(rect.x, rect.y), rect.width, rect.height);
+}
 
 function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
   ctx.font = "16px monospace";
@@ -54,19 +72,20 @@ function animate(): void {
     }
 
     drawTilemap(tileset()!, sceneData(), viewport.ctx);
+    if (isPointInRectangle(mouse, boundingRectangle())) {
+      viewport.ctx.drawImage(
+        tileset()!,
+        (tileIndex() % (tileset()!.naturalWidth / pixelBase)) * pixelBase,
+        ((tileIndex() / (tileset()!.naturalWidth / pixelBase)) | 0) * pixelBase,
+        pixelBase,
+        pixelBase,
+        ((pointer.position.x / tileSize) | 0) * tileSize,
+        ((pointer.position.y / tileSize) | 0) * tileSize,
+        tileSize,
+        tileSize,
+      );
+    }
     drawGrid(grid(), viewport.ctx);
-    highlightGridTile(grid(), pointer.position, viewport.ctx);
-    viewport.ctx.drawImage(
-      tileset()!,
-      (tileIndex() % (tileset()!.naturalWidth / pixelBase)) * pixelBase,
-      ((tileIndex() / (tileset()!.naturalWidth / pixelBase)) | 0) * pixelBase,
-      pixelBase,
-      pixelBase,
-      pointer.position.x,
-      pointer.position.y,
-      tileSize,
-      tileSize,
-    );
   }
 }
 
@@ -80,6 +99,7 @@ const DevTools: Component<{
 }> = ({ appContainer }) => {
   createEffect(() => {
     setGrid(createGrid(tileSize, sceneData().xCount, sceneData().yCount));
+    setBoundingRectangle(getBoundingRectangle());
   });
   createEffect(() => {
     setIsPaused(isDrawing());
@@ -102,10 +122,13 @@ const DevTools: Component<{
     resizeX = false;
   }
 
-  function handleResize(event: MouseEvent | UIEvent) {
+  function handleMouseMove(event: MouseEvent | UIEvent) {
+    mouse.x = (event as MouseEvent).clientX;
+    mouse.y = (event as MouseEvent).clientY;
+
     let newWidth = width();
     if (resizeX) {
-      newWidth = (event as MouseEvent).clientX;
+      newWidth = mouse.x;
     }
     newWidth = Math.min(newWidth, self.innerWidth - 64);
 
@@ -118,20 +141,21 @@ const DevTools: Component<{
   let resizeX = false;
 
   onMount(() => {
-    self.addEventListener("mousemove", handleResize);
+    self.addEventListener("mousemove", handleMouseMove);
     self.addEventListener("mouseup", stopResizeX);
-    self.addEventListener("resize", handleResize);
+    self.addEventListener("resize", handleMouseMove);
   });
 
   onCleanup(() => {
-    self.removeEventListener("mousemove", handleResize);
+    self.removeEventListener("mousemove", handleMouseMove);
     self.removeEventListener("mouseup", stopResizeX);
-    self.removeEventListener("resize", handleResize);
+    self.removeEventListener("resize", handleMouseMove);
   });
 
   const [scale, setScale] = createSignal(1);
   createEffect(() => {
     zoomViewport(viewport, scale(), sceneData().width, sceneData().height);
+    setBoundingRectangle(getBoundingRectangle());
   });
 
   return (

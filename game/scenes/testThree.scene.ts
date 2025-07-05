@@ -1,7 +1,7 @@
 import { tileSize } from "#/config.ts";
-import { pointer, viewport } from "#/game/game.ts";
+import { viewport } from "#/game/game.ts";
 import { useScene } from "#/lib/Scene.ts";
-import { createGrid, drawGrid, highlightGridTile } from "#/lib/Grid.ts";
+import { createGrid } from "#/lib/Grid.ts";
 import tilemap from "./testThree.json";
 
 const grid = createGrid(tileSize, 16, 8);
@@ -20,9 +20,5 @@ const { process, linkScenes } = useScene(viewport, {
 
 linkScenes(["testTwo"]);
 
-process((ctx, _delta) => {
-  // highlightGridTile(grid, pointer.position, ctx);
-  // drawGrid(grid, ctx);
-});
-
+process((_ctx, _delta) => {});
 console.log("testThree loaded");

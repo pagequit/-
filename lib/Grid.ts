@@ -7,6 +7,48 @@ export type Grid = {
 };
 
 export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
+  const { tileSize, yCount, xCount } = grid;
+  const width = xCount * tileSize;
+  const height = yCount * tileSize;
+  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = "rgba(30, 31, 34, 0.3)";
+
+  for (let x = 0; x < xCount; x++) {
+    const xCoord = x * tileSize;
+    ctx.beginPath();
+    ctx.moveTo(xCoord, 0);
+    ctx.lineTo(xCoord, height);
+    ctx.stroke();
+  }
+
+  for (let y = 0; y < yCount; y++) {
+    const yCoord = y * tileSize;
+    ctx.beginPath();
+    ctx.moveTo(0, yCoord);
+    ctx.lineTo(width, yCoord);
+    ctx.stroke();
+  }
+  ctx.lineWidth = 1.0;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+
+  for (let x = 0; x < xCount; x++) {
+    const xCoord = x * tileSize - 0.5;
+    ctx.beginPath();
+    ctx.moveTo(xCoord, 0);
+    ctx.lineTo(xCoord, height);
+    ctx.stroke();
+  }
+
+  for (let y = 0; y < yCount; y++) {
+    const yCoord = y * tileSize - 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, yCoord);
+    ctx.lineTo(width, yCoord);
+    ctx.stroke();
+  }
+}
+
+export function drawGridTiles(grid: Grid, ctx: CanvasRenderingContext2D): void {
   for (let x = 0; x < grid.xCount; x++) {
     for (let y = 0; y < grid.yCount; y++) {
       ctx.fillStyle =
