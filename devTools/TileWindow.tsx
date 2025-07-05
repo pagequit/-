@@ -124,7 +124,7 @@ export const TileWindow: Component<{
                   tileset()!.naturalWidth * scaleBase
                 }px ${tileset()!.naturalHeight * scaleBase}px`,
               }}
-              on:click={() => setTileIndex(index)}
+              onClick={() => setTileIndex(index)}
             ></div>
           ))}
         </div>

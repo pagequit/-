@@ -1,7 +1,11 @@
 [
   "/hain.wav",
-  "/tileset.png",
+  "/portal.png",
+  "/tilemap.png",
   "/bgm.wav",
+  "/char-walk.png",
+  "/char-idle.png",
+  "/portal2.png",
   "/hero/walk.png",
   "/hero/idle.png"
 ]
