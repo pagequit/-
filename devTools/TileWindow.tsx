@@ -21,12 +21,13 @@ import { type SceneData } from "#/lib/Scene.ts";
 import {
   isDrawing,
   setIsDrawing,
-  tileIndex,
-  setTileIndex,
+  tileCoord,
+  setTileCoord,
   tileset,
   setTileset,
   sceneData,
 } from "#/devTools/main.tsx";
+import { createVector } from "#/lib/Vector";
 
 export const [isUnsynced, setIsUnsynced] = createSignal(false);
 
@@ -109,24 +110,30 @@ export const TileWindow: Component<{
 
       <Show when={tileset()}>
         <div class="tileset">
-          {[...Array(xCount * yCount)].map((_, index) => (
-            <div
-              class={"tileset-tile" + (tileIndex() === index ? " active" : "")}
-              style={{
-                ["width"]: `${tileSize}px`,
-                ["height"]: `${tileSize}px`,
-                ["background-image"]: `url(${tileset()!.src})`,
-                ["background-position-x"]: `-${(index % xCount) * tileSize}px`,
-                ["background-position-y"]: `-${
-                  ((index / yCount) | 0) * tileSize
-                }px`,
-                ["background-size"]: `${
-                  tileset()!.naturalWidth * scaleBase
-                }px ${tileset()!.naturalHeight * scaleBase}px`,
-              }}
-              onClick={() => setTileIndex(index)}
-            ></div>
-          ))}
+          {[...Array(xCount * yCount)].map((_, index) => {
+            const x = index % xCount;
+            const y = (index / yCount) | 0;
+
+            return (
+              <div
+                class={
+                  "tileset-tile" +
+                  (tileCoord().x === x && tileCoord().y === y ? " active" : "")
+                }
+                style={{
+                  ["width"]: `${tileSize}px`,
+                  ["height"]: `${tileSize}px`,
+                  ["background-image"]: `url(${tileset()!.src})`,
+                  ["background-position-x"]: `-${x * tileSize}px`,
+                  ["background-position-y"]: `-${y * tileSize}px`,
+                  ["background-size"]: `${
+                    tileset()!.naturalWidth * scaleBase
+                  }px ${tileset()!.naturalHeight * scaleBase}px`,
+                }}
+                onClick={() => setTileCoord(createVector(x, y))}
+              ></div>
+            );
+          })}
         </div>
       </Show>
     </div>

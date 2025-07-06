@@ -1,3 +1,4 @@
+import { type Vector } from "./Vector.ts";
 import { getNeighbours, type Graph } from "./Graph.ts";
 import { resizeViewport, type Viewport } from "./Viewport.ts";
 import { useWithAsyncCache } from "./cache.ts";
@@ -8,7 +9,7 @@ export type Process = (ctx: CanvasRenderingContext2D, delta: number) => void;
 export type PreProcess = () => void;
 export type PostProcess = () => void;
 
-export type Tilemap = Array<Array<number>>;
+export type Tilemap = Array<Array<Vector>>;
 
 export type SceneData = {
   name: string;
@@ -32,8 +33,8 @@ export function drawTilemap(
     for (let x = 0; xCount > x; x++) {
       ctx.drawImage(
         tileset,
-        (tilemap[y][x] % (tileset.naturalWidth / pixelBase)) * pixelBase,
-        ((tilemap[y][x] / (tileset.naturalWidth / pixelBase)) | 0) * pixelBase,
+        tilemap[y][x].x * pixelBase,
+        tilemap[y][x].y * pixelBase,
         pixelBase,
         pixelBase,
         x * tileSize,

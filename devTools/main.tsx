@@ -27,7 +27,7 @@ import {
 
 export const [sceneData, setSceneData] = createSignal(currentScene.data);
 export const [isDrawing, setIsDrawing] = createSignal(false);
-export const [tileIndex, setTileIndex] = createSignal(0);
+export const [tileCoord, setTileCoord] = createSignal(createVector());
 export const [tileset, setTileset] = createSignal<HTMLImageElement | null>(
   null,
 );
@@ -65,18 +65,18 @@ function animate(): void {
     if (pointer.isDown) {
       const x = (pointer.position.x / tileSize) | 0;
       const y = (pointer.position.y / tileSize) | 0;
-      if (sceneData().tilemap[y][x] !== tileIndex()) {
+      if (sceneData().tilemap[y][x] !== tileCoord()) {
         setIsUnsynced(true);
       }
-      sceneData().tilemap[y][x] = tileIndex();
+      sceneData().tilemap[y][x] = tileCoord();
     }
 
     drawTilemap(tileset()!, sceneData(), viewport.ctx);
     if (isPointInRectangle(mouse, boundingRectangle())) {
       viewport.ctx.drawImage(
         tileset()!,
-        (tileIndex() % (tileset()!.naturalWidth / pixelBase)) * pixelBase,
-        ((tileIndex() / (tileset()!.naturalWidth / pixelBase)) | 0) * pixelBase,
+        tileCoord().x * pixelBase,
+        tileCoord().y * pixelBase,
         pixelBase,
         pixelBase,
         ((pointer.position.x / tileSize) | 0) * tileSize,
