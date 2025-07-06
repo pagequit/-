@@ -10,6 +10,7 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
   const { tileSize, yCount, xCount } = grid;
   const width = xCount * tileSize;
   const height = yCount * tileSize;
+
   ctx.lineWidth = 0.5;
   ctx.strokeStyle = "rgba(30, 31, 34, 0.3)";
 
@@ -20,7 +21,6 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
     ctx.lineTo(xCoord, height);
     ctx.stroke();
   }
-
   for (let y = 0; y < yCount; y++) {
     const yCoord = y * tileSize;
     ctx.beginPath();
@@ -28,6 +28,7 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
     ctx.lineTo(width, yCoord);
     ctx.stroke();
   }
+
   ctx.lineWidth = 1.0;
   ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
 
@@ -38,7 +39,6 @@ export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
     ctx.lineTo(xCoord, height);
     ctx.stroke();
   }
-
   for (let y = 0; y < yCount; y++) {
     const yCoord = y * tileSize - 0.5;
     ctx.beginPath();

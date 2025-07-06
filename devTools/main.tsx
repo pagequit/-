@@ -166,7 +166,7 @@ const DevTools: Component<{
             name="scale"
             min={0.5}
             max={1.5}
-            step={0.1}
+            step={0.25}
             value={scale()}
             onInput={(value) => setScale(value)}
           >
@@ -174,7 +174,7 @@ const DevTools: Component<{
               <ZoomScanIcon />
             </span>
           </RangeSlider>
-          <span>{scale().toFixed(1)}</span>
+          <span>{scale().toFixed(2)}</span>
         </div>
         <hr />
 
