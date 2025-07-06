@@ -24,7 +24,7 @@ const height = grid.tileSize * grid.yCount;
 
 const sceneData = {
   name: "testOne",
-  tileset: "/assets/tileset.png",
+  tileset: "/assets/tiles.png",
   tilemap,
   xCount: grid.xCount,
   yCount: grid.yCount,
@@ -46,7 +46,7 @@ const aThing: Rectangle = {
 };
 
 const hero = await loadHero();
-const tileset = await loadImage("/assets/tileset.png");
+const tileset = await loadImage(sceneData.tileset);
 
 process((ctx, delta) => {
   drawTilemap(tileset, sceneData, ctx);
