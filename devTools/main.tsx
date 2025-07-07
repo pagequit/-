@@ -11,6 +11,7 @@ import { AssetBrowser } from "#/devTools/AssetBrowser.tsx";
 import { SceneBrowser } from "#/devTools/SceneBrowser.tsx";
 import { TileWindow, setIsUnsynced } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
+import { InputField } from "./InputField.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
 import { currentScene, drawTilemap } from "#/lib/Scene.ts";
@@ -23,7 +24,6 @@ import {
   isPointInRectangle,
   type Rectangle,
 } from "#/lib/collision.ts";
-import { InputField } from "./InputField";
 
 export const [sceneData, setSceneData] = createSignal(currentScene.data);
 export const [isDrawing, setIsDrawing] = createSignal(false);
