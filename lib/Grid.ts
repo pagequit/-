@@ -6,8 +6,10 @@ export type Grid = {
   yCount: number;
 };
 
-export function drawGrid(grid: Grid, ctx: CanvasRenderingContext2D): void {
-  const { tileSize, yCount, xCount } = grid;
+export function drawGrid(
+  { tileSize, yCount, xCount }: Grid,
+  ctx: CanvasRenderingContext2D,
+): void {
   const width = xCount * tileSize;
   const height = yCount * tileSize;
 

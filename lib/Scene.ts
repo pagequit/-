@@ -23,12 +23,9 @@ export type SceneData = {
 
 export function drawTilemap(
   tileset: HTMLImageElement,
-  { tilemap }: SceneData,
+  { tilemap, xCount, yCount }: SceneData,
   ctx: CanvasRenderingContext2D,
 ): void {
-  const yCount = tilemap.length;
-  const xCount = tilemap[0].length;
-
   for (let y = 0; yCount > y; y++) {
     for (let x = 0; xCount > x; x++) {
       ctx.drawImage(

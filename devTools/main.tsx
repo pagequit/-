@@ -9,7 +9,7 @@ import {
 import { render } from "solid-js/web";
 import { AssetBrowser } from "#/devTools/AssetBrowser.tsx";
 import { SceneBrowser } from "#/devTools/SceneBrowser.tsx";
-import { TileWindow } from "#/devTools/TileWindow.tsx";
+import { TileWindow, setIsUnsynced } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
@@ -17,13 +17,13 @@ import { currentScene, drawTilemap } from "#/lib/Scene.ts";
 import { viewport, pointer, delta, setIsPaused } from "#/game/game.ts";
 import { createGrid, drawGrid } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/config.ts";
-import { setIsUnsynced } from "#/devTools/TileWindow.tsx";
-import { createVector, type Vector } from "#/lib/Vector";
+import { createVector, type Vector } from "#/lib/Vector.ts";
 import {
   createRectangle,
   isPointInRectangle,
   type Rectangle,
-} from "#/lib/collision";
+} from "#/lib/collision.ts";
+import { InputField } from "./InputField";
 
 export const [sceneData, setSceneData] = createSignal(currentScene.data);
 export const [isDrawing, setIsDrawing] = createSignal(false);
@@ -99,7 +99,6 @@ const DevTools: Component<{
 }> = ({ appContainer }) => {
   createEffect(() => {
     setGrid(createGrid(tileSize, sceneData().xCount, sceneData().yCount));
-    setBoundingRectangle(getBoundingRectangle());
   });
   createEffect(() => {
     setIsPaused(isDrawing());
@@ -130,10 +129,11 @@ const DevTools: Component<{
     if (resizeX) {
       newWidth = mouse.x;
     }
-    newWidth = Math.min(newWidth, self.innerWidth - 64);
+    newWidth = Math.min(newWidth, self.innerWidth - tileSize);
 
     setWidth(newWidth);
     adjustGameContainerStyle(gameContainer, newWidth);
+    setBoundingRectangle(getBoundingRectangle());
   }
 
   const [width, setWidth] = createSignal(256);
@@ -179,6 +179,16 @@ const DevTools: Component<{
         <hr />
 
         <TileWindow sceneData={sceneData} />
+
+        <div class="tile-ratio">
+          <InputField name="xCount" type="number" value={20}>
+            <span>xCount</span>
+          </InputField>
+
+          <InputField name="yCount" type="number" value={15}>
+            <span>yCount</span>
+          </InputField>
+        </div>
         <hr />
 
         <SceneBrowser setSceneData={setSceneData} />

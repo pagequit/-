@@ -82,18 +82,18 @@ export const TileWindow: Component<{
         <button type="button" class="btn" onClick={saveTilemap}>
           <Switch
             fallback={
-              <span class={isSyncing() ? "rotate" : ""}>
+              <span class={isSyncing() ? "rotate" : undefined}>
                 <RefreshIcon />
               </span>
             }
           >
             <Match when={syncError()}>
-              <span class="error">
+              <span class="c-error">
                 <RefreshAlertIcon />
               </span>
             </Match>
             <Match when={isUnsynced()}>
-              <span class="alert">
+              <span class="c-alert">
                 <RefreshDotIcon />
               </span>
             </Match>
@@ -101,7 +101,10 @@ export const TileWindow: Component<{
         </button>
         <button
           type="button"
-          class={"btn" + (isDrawing() ? " active" : "")}
+          class={"btn"}
+          classList={{
+            active: isDrawing(),
+          }}
           onClick={() => setIsDrawing(!isDrawing())}
         >
           <PencilIcon />
@@ -116,10 +119,10 @@ export const TileWindow: Component<{
 
             return (
               <div
-                class={
-                  "tileset-tile" +
-                  (tileCoord().x === x && tileCoord().y === y ? " active" : "")
-                }
+                class={"tileset-tile"}
+                classList={{
+                  active: tileCoord().x === x && tileCoord().y === y,
+                }}
                 style={{
                   ["width"]: `${tileSize}px`,
                   ["height"]: `${tileSize}px`,

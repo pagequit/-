@@ -302,11 +302,40 @@
   }
 }
 
-.error {
+.tile-ratio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: row nowrap;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+}
+
+.tile-ratio .input-field {
+  flex: 0 1 50%;
+}
+
+.input-field {
+  width: 100%;
+  display: block;
+}
+
+.input-field input {
+  width: 100%;
+  font-size: medium;
+  margin: 0;
+  padding: var(--sp-2);
+  border: 1px solid var(--c-bg-2);
+  background: var(--c-bg-3);
+  color: var(--c-fg-1);
+  border-radius: var(--sp-2);
+}
+
+.c-error {
   color: var(--c-error);
 }
 
-.alert {
+.c-alert {
   color: var(--c-alert);
 }
 
