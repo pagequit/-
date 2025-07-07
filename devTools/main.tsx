@@ -136,7 +136,7 @@ const DevTools: Component<{
     setBoundingRectangle(getBoundingRectangle());
   }
 
-  const [width, setWidth] = createSignal(256);
+  const [width, setWidth] = createSignal(tileSize * 5);
   adjustGameContainerStyle(gameContainer, width());
   let resizeX = false;
 
@@ -180,12 +180,26 @@ const DevTools: Component<{
 
         <TileWindow sceneData={sceneData} />
 
+        <div class="tile-src">
+          <InputField name="tileset" type="text" value={sceneData().tileset}>
+            <span>tileset</span>
+          </InputField>
+        </div>
+
         <div class="tile-ratio">
-          <InputField name="xCount" type="number" value={20}>
+          <InputField
+            name="xCount"
+            type="number"
+            value={sceneData().xCount.toString()}
+          >
             <span>xCount</span>
           </InputField>
 
-          <InputField name="yCount" type="number" value={15}>
+          <InputField
+            name="yCount"
+            type="number"
+            value={sceneData().yCount.toString()}
+          >
             <span>yCount</span>
           </InputField>
         </div>

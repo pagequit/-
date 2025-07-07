@@ -179,16 +179,33 @@
     image-rendering: pixelated;
     width: 100%;
     height: auto;
+    background: var(--c-bg-1);
+  }
+
+  code {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    line-break: none;
+    color: var(--c-fg-1);
+    background: var(--c-bg-1);
+    padding: var(--sp-1);
   }
 }
 
 .icon-bar {
   padding: var(--sp-1);
+  gap: var(--sp-1);
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
   background: var(--c-bg-1);
+
+  .btn {
+    flex: 1 1 auto;
+  }
 }
 
 .tile-window {
@@ -302,6 +319,10 @@
   }
 }
 
+.tile-src {
+  padding: var(--sp-2);
+}
+
 .tile-ratio {
   display: flex;
   align-items: center;
@@ -324,11 +345,11 @@
   width: 100%;
   font-size: medium;
   margin: 0;
-  padding: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
   border: 1px solid var(--c-bg-2);
   background: var(--c-bg-3);
   color: var(--c-fg-1);
-  border-radius: var(--sp-2);
+  border-radius: var(--sp-1);
 }
 
 .c-error {

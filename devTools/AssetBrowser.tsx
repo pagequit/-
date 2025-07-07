@@ -157,22 +157,24 @@ export const AssetBrowser: Component = () => {
   };
 
   return (
-    <div class="file-browser">
-      <Show when={assetIndex.loading}>
-        <span>Loading...</span>
-      </Show>
-      <Show when={assetIndex.error}>
-        <span>Error: {assetIndex.error}</span>
-      </Show>
-      <Show when={assetIndex()}>
-        <AssetEntry folder={assetIndex() as AssetFolder} />
-      </Show>
-
+    <>
+      <div class="file-browser">
+        <Show when={assetIndex.loading}>
+          <span>Loading...</span>
+        </Show>
+        <Show when={assetIndex.error}>
+          <span>Error: {assetIndex.error}</span>
+        </Show>
+        <Show when={assetIndex()}>
+          <AssetEntry folder={assetIndex() as AssetFolder} />
+        </Show>
+      </div>
       <div class="asset-preview">
         <Show when={previewItem().length > 0}>
+          <code>{previewItem()}</code>
           <img src={previewItem()} alt="" />
         </Show>
       </div>
-    </div>
+    </>
   );
 };
