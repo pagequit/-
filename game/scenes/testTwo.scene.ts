@@ -1,33 +1,27 @@
-import { useScene } from "#/lib/Scene.ts";
-import { createGrid } from "#/lib/Grid.ts";
+import { drawTilemap, useScene } from "#/lib/Scene.ts";
 import { focusViewport } from "#/lib/Viewport.ts";
-import { tileSize } from "#/config.ts";
+import { loadImage } from "#/lib/loadImage";
 import { viewport } from "#/game/game.ts";
 import { loadHero, processHero } from "#/game/Hero.ts";
-import tilemap from "./testTwo.json";
+import sceneData from "./testTwo.json";
 
-const grid = createGrid(tileSize, 20, 15);
-const width = grid.tileSize * grid.xCount;
-const height = grid.tileSize * grid.yCount;
+const { process, linkScenes } = useScene(viewport, sceneData);
 
-const { process, linkScenes } = useScene(viewport, {
-  name: "testTwo",
-  tileset: "/assets/hero/idle.png",
-  tilemap: tilemap,
-  xCount: grid.xCount,
-  yCount: grid.yCount,
-  width,
-  height,
-});
+const tileset = await loadImage(sceneData.tileset);
+const hero = await loadHero();
 
 linkScenes(["testOne", "testThree"]);
 
-const hero = await loadHero();
-
-process((_ctx, delta) => {
+process((ctx, delta) => {
+  drawTilemap(tileset, sceneData, ctx);
   processHero(delta);
-
-  focusViewport(viewport, hero.position.x, hero.position.y, width, height);
+  focusViewport(
+    viewport,
+    hero.position.x,
+    hero.position.y,
+    sceneData.width,
+    sceneData.height,
+  );
 });
 
 console.log("testTwo loaded");

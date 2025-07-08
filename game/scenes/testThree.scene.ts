@@ -1,24 +1,16 @@
-import { tileSize } from "#/config.ts";
 import { viewport } from "#/game/game.ts";
-import { useScene } from "#/lib/Scene.ts";
-import { createGrid } from "#/lib/Grid.ts";
-import tilemap from "./testThree.json";
+import { loadImage } from "#/lib/loadImage";
+import { drawTilemap, useScene } from "#/lib/Scene.ts";
+import sceneData from "./testThree.json";
 
-const grid = createGrid(tileSize, 16, 8);
-const width = grid.tileSize * grid.xCount;
-const height = grid.tileSize * grid.yCount;
+const { process, linkScenes } = useScene(viewport, sceneData);
 
-const { process, linkScenes } = useScene(viewport, {
-  name: "testThree",
-  tileset: "/assets/tileset.png",
-  tilemap: tilemap,
-  xCount: grid.xCount,
-  yCount: grid.yCount,
-  width,
-  height,
-});
+const tileset = await loadImage(sceneData.tileset);
 
 linkScenes(["testTwo"]);
 
-process((_ctx, _delta) => {});
+process((ctx, _delta) => {
+  drawTilemap(tileset, sceneData, ctx);
+});
+
 console.log("testThree loaded");
