@@ -37,7 +37,7 @@ export const TileWindow: Component<{
   const [isSyncing, setIsSyncing] = createSignal(false);
   const [syncError, setSyncError] = createSignal(null);
 
-  function saveTilemap(): void {
+  function syncSceneData(): void {
     if (isSyncing()) {
       return;
     }
@@ -79,7 +79,7 @@ export const TileWindow: Component<{
         <button type="button" class="btn">
           <StackForwardIcon />
         </button>
-        <button type="button" class="btn" onClick={saveTilemap}>
+        <button type="button" class="btn" onClick={syncSceneData}>
           <Switch
             fallback={
               <span class={isSyncing() ? "rotate" : undefined}>

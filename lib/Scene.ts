@@ -21,6 +21,18 @@ export type SceneData = {
   height: number;
 };
 
+export function createRawSceneData(): SceneData {
+  return {
+    name: "",
+    tileset: "",
+    tilemap: [[]],
+    xCount: 0,
+    yCount: 0,
+    width: 0,
+    height: 0,
+  };
+}
+
 export function drawTilemap(
   tileset: HTMLImageElement,
   { tilemap, xCount, yCount }: SceneData,
@@ -66,16 +78,8 @@ export const currentScene: {
   data: SceneData;
   process: Process;
 } = {
-  data: {
-    name: "",
-    tileset: "",
-    tilemap: [[]],
-    xCount: 0,
-    yCount: 0,
-    width: 0,
-    height: 0,
-  },
-  process() {},
+  data: createRawSceneData(),
+  process: () => {},
 };
 
 export async function swapScene(

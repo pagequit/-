@@ -24,6 +24,7 @@ import {
   isPointInRectangle,
   type Rectangle,
 } from "#/lib/collision.ts";
+import { loadImage } from "#/lib/loadImage.ts";
 
 export const [sceneData, setSceneData] = createSignal(currentScene.data);
 export const [isDrawing, setIsDrawing] = createSignal(false);
@@ -181,7 +182,17 @@ const DevTools: Component<{
         <TileWindow sceneData={sceneData} />
 
         <div class="tile-src">
-          <InputField name="tileset" type="text" value={sceneData().tileset}>
+          <InputField
+            name="tileset"
+            type="text"
+            value={sceneData().tileset}
+            onChange={(value) => {
+              loadImage(value).then((image) => {
+                setTileset(image);
+              });
+              sceneData().tileset = value;
+            }}
+          >
             <span>tileset</span>
           </InputField>
         </div>
@@ -191,6 +202,24 @@ const DevTools: Component<{
             name="xCount"
             type="number"
             value={sceneData().xCount.toString()}
+            onChange={(value) => {
+              const xCount = parseInt(value);
+              if (sceneData().xCount === xCount) {
+                return;
+              }
+
+              if (sceneData().xCount > xCount) {
+                for (const row of sceneData().tilemap) {
+                  row.unshift();
+                }
+              } else {
+                for (const row of sceneData().tilemap) {
+                  row.push(createVector());
+                }
+              }
+              sceneData().xCount = xCount;
+              sceneData().width = xCount * tileSize;
+            }}
           >
             <span>xCount</span>
           </InputField>
@@ -199,6 +228,22 @@ const DevTools: Component<{
             name="yCount"
             type="number"
             value={sceneData().yCount.toString()}
+            onChange={(value) => {
+              const yCount = parseInt(value);
+              if (sceneData().yCount === yCount) {
+                return;
+              }
+
+              if (sceneData().yCount > yCount) {
+                sceneData().tilemap.unshift();
+              } else {
+                sceneData().tilemap.push(
+                  [...Array(sceneData().xCount)].map(() => createVector()),
+                );
+              }
+              sceneData().yCount = yCount;
+              sceneData().height = yCount * tileSize;
+            }}
           >
             <span>yCount</span>
           </InputField>

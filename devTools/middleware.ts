@@ -16,7 +16,7 @@ export function devToolMiddleware(
 
     writeFileSync(
       `${dev.scenesDir}/${data.name}.json`,
-      JSON.stringify(data.tilemap, null, 2),
+      JSON.stringify(data, null, 2),
       "utf8",
     );
 
