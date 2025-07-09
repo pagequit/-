@@ -98,25 +98,3 @@ export function focusViewport(
     height,
   );
 }
-
-export function centerViewport(
-  viewport: Viewport,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-): void {
-  const { container, translation, scale } = viewport;
-
-  const halfWidth = container.offsetWidth / 2;
-  translation.x = Math.max(
-    -halfWidth,
-    Math.min(x * scale.x - halfWidth, width * scale.x - halfWidth),
-  );
-
-  const halfHeight = container.offsetHeight / 2;
-  translation.y = Math.max(
-    -halfHeight,
-    Math.min(y * scale.y - halfHeight, height * scale.y - halfHeight),
-  );
-}

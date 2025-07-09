@@ -13,7 +13,7 @@ import { TileWindow, setIsUnsynced } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { InputField } from "./InputField.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
-import { zoomViewport, type Viewport } from "#/lib/Viewport.ts";
+import { placeViewport, zoomViewport, type Viewport } from "#/lib/Viewport.ts";
 import { currentScene, drawTilemap } from "#/lib/Scene.ts";
 import { viewport, pointer, delta, setIsPaused } from "#/game/game.ts";
 import { createGrid, drawGrid } from "#/lib/Grid.ts";
@@ -122,9 +122,39 @@ const DevTools: Component<{
     resizeX = false;
   }
 
+  const panVector = createVector();
+  const panDelta = createVector();
+
   function handleMouseMove(event: MouseEvent | UIEvent) {
     mouse.x = (event as MouseEvent).clientX;
     mouse.y = (event as MouseEvent).clientY;
+
+    if ((event as MouseEvent).buttons === 0) {
+      panVector.x = mouse.x;
+      panVector.y = mouse.y;
+
+      return;
+    }
+
+    if ((event as MouseEvent).buttons === 2) {
+      if (isDrawing()) {
+        panDelta.x = panVector.x - mouse.x;
+        panDelta.y = panVector.y - mouse.y;
+
+        panVector.x = mouse.x;
+        panVector.y = mouse.y;
+
+        placeViewport(
+          viewport,
+          viewport.translation.x + panDelta.x,
+          viewport.translation.y + panDelta.y,
+          sceneData().width,
+          sceneData().height,
+        );
+      }
+
+      return;
+    }
 
     let newWidth = width();
     if (resizeX) {
