@@ -322,6 +322,7 @@
 
 .tile-src {
   padding: var(--sp-2);
+  padding-bottom: 0;
 }
 
 .tile-ratio {
@@ -348,8 +349,8 @@
   font-size: medium;
   margin: 0;
   padding: var(--sp-1) var(--sp-2);
-  border: 1px solid var(--c-bg-2);
-  background: var(--c-bg-3);
+  border: none;
+  background: var(--c-bg-2);
   color: var(--c-fg-1);
   border-radius: var(--sp-1);
 }
