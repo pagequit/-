@@ -1,4 +1,4 @@
-import { type Vector } from "./Vector";
+import { type Vector } from "./Vector.ts";
 
 export type Grid = {
   tileSize: number;

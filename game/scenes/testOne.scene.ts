@@ -1,6 +1,6 @@
 import { tileSize } from "#/config.ts";
 import { pointer, viewport } from "#/game/game.ts";
-import { drawTilemap, type SceneData, useScene } from "#/lib/Scene.ts";
+import { drawTilemap, useScene } from "#/lib/Scene.ts";
 import {
   loadHero,
   processHero,
@@ -17,7 +17,6 @@ import { loadImage } from "#/lib/loadImage";
 import { focusViewport } from "#/lib/Viewport";
 import sceneData from "./testOne.json";
 
-const { xCount, yCount, width, height }: SceneData = sceneData;
 const { process, preProcess, linkScenes } = useScene(viewport, sceneData);
 
 const swapScene = linkScenes(["testTwo"]);
@@ -26,19 +25,29 @@ const aThing: Rectangle = {
   width: tileSize,
   height: tileSize,
   position: {
-    x: (xCount - 8) * tileSize,
-    y: (yCount - 12) * tileSize,
+    x: (sceneData.xCount - 8) * tileSize,
+    y: (sceneData.yCount - 12) * tileSize,
   },
 };
 
 const hero = await loadHero();
 const tileset = await loadImage(sceneData.tileset);
 
+preProcess(() => {
+  setHeroPosition(tileSize * 15, tileSize * 5);
+});
+
 process((ctx, delta) => {
   drawTilemap(tileset, sceneData, ctx);
 
   processHero(delta);
-  focusViewport(viewport, hero.position.x, hero.position.y, width, height);
+  focusViewport(
+    viewport,
+    hero.position.x,
+    hero.position.y,
+    sceneData.width,
+    sceneData.height,
+  );
 
   let color = "rgba(128, 128, 128, 0.5)";
   if (isPointInRectangle(pointer.position, aThing)) {
@@ -51,10 +60,6 @@ process((ctx, delta) => {
       setHeroCoords(10, 7);
     });
   }
-});
-
-preProcess(() => {
-  setHeroPosition(tileSize * 15, tileSize * 5);
 });
 
 console.log("testOne loaded");

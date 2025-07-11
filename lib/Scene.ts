@@ -74,6 +74,16 @@ function linkScenes(a: string, b: string): void {
   }
 }
 
+const onSceneSwapProxy = {
+  callback: (_: SceneData, __: SceneData) => {},
+};
+
+export function onSceneSwap(
+  callback: (to: SceneData, from: SceneData) => void,
+): void {
+  onSceneSwapProxy.callback = callback;
+}
+
 export const currentScene: {
   data: SceneData;
   process: Process;
@@ -104,10 +114,12 @@ export async function swapScene(
     postProcess();
   }
 
-  currentScene.data = dataMap.get(sceneName) as SceneData;
-  currentScene.process = processMap.get(sceneName) as Process;
-
+  const nextSceneData = dataMap.get(sceneName) as SceneData;
+  onSceneSwapProxy.callback(nextSceneData, currentScene.data);
+  currentScene.data = nextSceneData;
   resizeViewport(viewport, currentScene.data.width, currentScene.data.height);
+
+  currentScene.process = processMap.get(sceneName) as Process;
 }
 
 export function useScene(viewport: Viewport, sceneData: SceneData) {
