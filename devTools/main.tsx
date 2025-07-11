@@ -13,7 +13,12 @@ import { TileWindow } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { InputField } from "./InputField.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
-import { placeViewport, type Viewport, zoomViewport } from "#/lib/Viewport.ts";
+import {
+  placeViewport,
+  resizeViewport,
+  type Viewport,
+  zoomViewport,
+} from "#/lib/Viewport.ts";
 import { currentScene, drawTilemap, type SceneData } from "#/lib/Scene.ts";
 import { delta, pointer, setIsPaused, viewport } from "#/game/game.ts";
 import { createGrid, drawGrid, type Grid } from "#/lib/Grid.ts";
@@ -40,15 +45,19 @@ export const [tileset, setTileset] = createSignal<HTMLImageElement | null>(
 );
 export const [isUnsynced, setIsUnsynced] = createSignal(false);
 
-const [grid, setGrid] = createSignal<Grid>(
-  createGrid(tileSize, sceneData().xCount, sceneData().yCount),
-);
+const grid: Grid = createGrid(tileSize, sceneData().xCount, sceneData().yCount);
 
 const mouse: Vector = createVector();
 
 const [boundingRectangle, setBoundingRectangle] = createSignal(
   getBoundingRectangle(),
 );
+
+function checkBoundings(): void {
+  grid.xCount = sceneData().xCount;
+  grid.yCount = sceneData().yCount;
+  resizeViewport(viewport, sceneData().width, sceneData().height);
+}
 
 function checkSyncState(): boolean {
   return setIsUnsynced(!objectEquals(sceneDataRef(), sceneData()));
@@ -96,7 +105,7 @@ function animate(): void {
         tileSize,
       );
     }
-    drawGrid(grid(), viewport.ctx);
+    drawGrid(grid, viewport.ctx);
   }
 }
 
@@ -108,9 +117,6 @@ export function use(appContainer: HTMLElement): void {
 const DevTools: Component<{
   appContainer: HTMLElement;
 }> = ({ appContainer }) => {
-  createEffect(() => {
-    setGrid(createGrid(tileSize, sceneData().xCount, sceneData().yCount));
-  });
   createEffect(() => {
     setIsPaused(isDrawing());
   });
@@ -251,7 +257,7 @@ const DevTools: Component<{
 
               if (sceneData().xCount > xCount) {
                 for (const row of sceneData().tilemap) {
-                  row.unshift();
+                  row.length = xCount;
                 }
               } else {
                 for (const row of sceneData().tilemap) {
@@ -260,6 +266,7 @@ const DevTools: Component<{
               }
               sceneData().xCount = xCount;
               sceneData().width = xCount * tileSize;
+              checkBoundings();
               checkSyncState();
             }}
           >
@@ -277,7 +284,7 @@ const DevTools: Component<{
               }
 
               if (sceneData().yCount > yCount) {
-                sceneData().tilemap.unshift();
+                sceneData().tilemap.length = yCount;
               } else {
                 sceneData().tilemap.push(
                   [...Array(sceneData().xCount)].map(() => createVector()),
@@ -285,6 +292,7 @@ const DevTools: Component<{
               }
               sceneData().yCount = yCount;
               sceneData().height = yCount * tileSize;
+              checkBoundings();
               checkSyncState();
             }}
           >
