@@ -24,49 +24,45 @@ import { delta, pointer, setIsPaused, viewport } from "#/game/game.ts";
 import { createGrid, drawGrid, type Grid } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/config.ts";
 import { createVector, type Vector } from "#/lib/Vector.ts";
-import {
-  createRectangle,
-  isPointInRectangle,
-  type Rectangle,
-} from "#/lib/collision.ts";
 import { loadImage } from "#/lib/loadImage.ts";
 import { objectEquals } from "#/lib/objectEquals.ts";
 
+const { ctx } = viewport;
+
+export const [isDrawing, setIsDrawing] = createSignal(false);
+export const [tileCoord, setTileCoord] = createSignal<Vector>(createVector());
+export const [tileset, setTileset] = createSignal<HTMLImageElement>(
+  await loadImage(currentScene.data.tileset),
+);
+export const [isUnsynced, setIsUnsynced] = createSignal(false);
 export const [sceneDataRef, setSceneDataRef] = createSignal<SceneData>(
   structuredClone(currentScene.data),
 );
-export const [sceneData, setSceneData] = createSignal<SceneData>(
-  currentScene.data,
-);
-export const [isDrawing, setIsDrawing] = createSignal(false);
-export const [tileCoord, setTileCoord] = createSignal(createVector());
-export const [tileset, setTileset] = createSignal<HTMLImageElement | null>(
-  null,
-);
-export const [isUnsynced, setIsUnsynced] = createSignal(false);
 
-const grid: Grid = createGrid(tileSize, sceneData().xCount, sceneData().yCount);
-
+const grid: Grid = createGrid(
+  tileSize,
+  currentScene.data.xCount,
+  currentScene.data.yCount,
+);
 const mouse: Vector = createVector();
 
-const [boundingRectangle, setBoundingRectangle] = createSignal(
-  getBoundingRectangle(),
-);
+function resetBoundings(): void {
+  grid.xCount = currentScene.data.xCount;
+  grid.yCount = currentScene.data.yCount;
+  resizeViewport(viewport, currentScene.data.width, currentScene.data.height);
+}
 
-function checkBoundings(): void {
-  grid.xCount = sceneData().xCount;
-  grid.yCount = sceneData().yCount;
-  resizeViewport(viewport, sceneData().width, sceneData().height);
+function isPointInDOMRect(point: Vector, rect: DOMRect): boolean {
+  return (
+    point.x >= rect.x &&
+    point.x <= rect.x + rect.width &&
+    point.y >= rect.y &&
+    point.y <= rect.y + rect.height
+  );
 }
 
 function checkSyncState(): boolean {
-  return setIsUnsynced(!objectEquals(sceneDataRef(), sceneData()));
-}
-
-function getBoundingRectangle(): Rectangle {
-  const rect = viewport.ctx.canvas.getBoundingClientRect();
-
-  return createRectangle(createVector(rect.x, rect.y), rect.width, rect.height);
+  return setIsUnsynced(!objectEquals(sceneDataRef(), currentScene.data));
 }
 
 function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
@@ -87,14 +83,14 @@ function animate(): void {
     if (pointer.isDown) {
       const x = (pointer.position.x / tileSize) | 0;
       const y = (pointer.position.y / tileSize) | 0;
-      sceneData().tilemap[y][x] = tileCoord();
+      currentScene.data.tilemap[y][x] = tileCoord();
       checkSyncState();
     }
 
-    drawTilemap(tileset()!, sceneData(), viewport.ctx);
-    if (isPointInRectangle(mouse, boundingRectangle())) {
-      viewport.ctx.drawImage(
-        tileset()!,
+    drawTilemap(tileset(), currentScene.data, ctx);
+    if (isPointInDOMRect(mouse, ctx.canvas.getBoundingClientRect())) {
+      ctx.drawImage(
+        tileset(),
         tileCoord().x * pixelBase,
         tileCoord().y * pixelBase,
         pixelBase,
@@ -105,43 +101,49 @@ function animate(): void {
         tileSize,
       );
     }
-    drawGrid(grid, viewport.ctx);
+    drawGrid(grid, ctx);
   }
 }
 
-export function use(appContainer: HTMLElement): void {
-  render(() => <DevTools appContainer={appContainer} />, appContainer);
-  animate();
+function adjustGameContainerStyle(container: HTMLElement, width: number): void {
+  container.style = `position: absolute; top: 0; left: ${width}px; width: ${
+    self.innerWidth - width
+  }px;`;
 }
 
 const DevTools: Component<{
   appContainer: HTMLElement;
 }> = ({ appContainer }) => {
+  const [scale, setScale] = createSignal(1);
+  const [width, setWidth] = createSignal(tileSize * 5);
+
   createEffect(() => {
     setIsPaused(isDrawing());
+  });
+  createEffect(() => {
+    zoomViewport(
+      viewport,
+      scale(),
+      currentScene.data.width,
+      currentScene.data.height,
+    );
   });
 
   const gameContainer = appContainer.querySelector(
     ".game-container",
   ) as HTMLElement;
 
-  function adjustGameContainerStyle(
-    container: HTMLElement,
-    width: number,
-  ): void {
-    container.style = `position: absolute; top: 0; left: ${width}px; width: ${
-      self.innerWidth - width
-    }px;`;
-  }
+  adjustGameContainerStyle(gameContainer, width());
 
-  function stopResizeX() {
+  let resizeX = false;
+  const stopResizeX = () => {
     resizeX = false;
-  }
+  };
 
   const panVector = createVector();
   const panDelta = createVector();
 
-  function handleMouseMove(event: MouseEvent | UIEvent) {
+  const handleMouseMove = (event: MouseEvent | UIEvent): void => {
     mouse.x = (event as MouseEvent).clientX;
     mouse.y = (event as MouseEvent).clientY;
 
@@ -164,8 +166,8 @@ const DevTools: Component<{
           viewport,
           viewport.translation.x + panDelta.x,
           viewport.translation.y + panDelta.y,
-          sceneData().width,
-          sceneData().height,
+          currentScene.data.width,
+          currentScene.data.height,
         );
       }
 
@@ -180,12 +182,44 @@ const DevTools: Component<{
 
     setWidth(newWidth);
     adjustGameContainerStyle(gameContainer, newWidth);
-    setBoundingRectangle(getBoundingRectangle());
-  }
+    resetBoundings();
+  };
 
-  const [width, setWidth] = createSignal(tileSize * 5);
-  adjustGameContainerStyle(gameContainer, width());
-  let resizeX = false;
+  const handleXCountChange = (value: string): void => {
+    const xCount = parseInt(value);
+
+    if (currentScene.data.xCount > xCount) {
+      for (const row of currentScene.data.tilemap) {
+        row.length = xCount;
+      }
+    } else {
+      for (const row of currentScene.data.tilemap) {
+        row.push(createVector());
+      }
+    }
+
+    currentScene.data.xCount = xCount;
+    currentScene.data.width = xCount * tileSize;
+    resetBoundings();
+    checkSyncState();
+  };
+
+  const handleYCountChange = (value: string): void => {
+    const yCount = parseInt(value);
+
+    if (currentScene.data.yCount > yCount) {
+      currentScene.data.tilemap.length = yCount;
+    } else {
+      currentScene.data.tilemap.push(
+        [...Array(currentScene.data.xCount)].map(() => createVector()),
+      );
+    }
+
+    currentScene.data.yCount = yCount;
+    currentScene.data.height = yCount * tileSize;
+    resetBoundings();
+    checkSyncState();
+  };
 
   onMount(() => {
     self.addEventListener("mousemove", handleMouseMove);
@@ -199,12 +233,6 @@ const DevTools: Component<{
     self.removeEventListener("resize", handleMouseMove);
   });
 
-  const [scale, setScale] = createSignal(1);
-  createEffect(() => {
-    zoomViewport(viewport, scale(), sceneData().width, sceneData().height);
-    setBoundingRectangle(getBoundingRectangle());
-  });
-
   return (
     <div class="dev-container" style={{ width: `${width()}px` }}>
       <div class="dev-tools">
@@ -215,7 +243,7 @@ const DevTools: Component<{
             max={1.5}
             step={0.25}
             value={scale()}
-            onInput={(value) => setScale(value)}
+            onInput={setScale}
           >
             <span role="button" onClick={() => setScale(1)}>
               <ZoomScanIcon />
@@ -225,18 +253,18 @@ const DevTools: Component<{
         </div>
         <hr />
 
-        <TileWindow sceneData={sceneData} />
+        <TileWindow />
 
         <div class="tile-src">
           <InputField
             name="tileset"
             type="text"
-            value={sceneData().tileset}
+            value={currentScene.data.tileset}
             onChange={(value) => {
               loadImage(value).then((image) => {
                 setTileset(image);
               });
-              sceneData().tileset = value;
+              currentScene.data.tileset = value;
               checkSyncState();
             }}
           >
@@ -248,27 +276,8 @@ const DevTools: Component<{
           <InputField
             name="xCount"
             type="number"
-            value={sceneData().xCount.toString()}
-            onChange={(value) => {
-              const xCount = parseInt(value);
-              if (sceneData().xCount === xCount) {
-                return;
-              }
-
-              if (sceneData().xCount > xCount) {
-                for (const row of sceneData().tilemap) {
-                  row.length = xCount;
-                }
-              } else {
-                for (const row of sceneData().tilemap) {
-                  row.push(createVector());
-                }
-              }
-              sceneData().xCount = xCount;
-              sceneData().width = xCount * tileSize;
-              checkBoundings();
-              checkSyncState();
-            }}
+            value={currentScene.data.xCount.toString()}
+            onChange={handleXCountChange}
           >
             <span>xCount</span>
           </InputField>
@@ -276,32 +285,15 @@ const DevTools: Component<{
           <InputField
             name="yCount"
             type="number"
-            value={sceneData().yCount.toString()}
-            onChange={(value) => {
-              const yCount = parseInt(value);
-              if (sceneData().yCount === yCount) {
-                return;
-              }
-
-              if (sceneData().yCount > yCount) {
-                sceneData().tilemap.length = yCount;
-              } else {
-                sceneData().tilemap.push(
-                  [...Array(sceneData().xCount)].map(() => createVector()),
-                );
-              }
-              sceneData().yCount = yCount;
-              sceneData().height = yCount * tileSize;
-              checkBoundings();
-              checkSyncState();
-            }}
+            value={currentScene.data.yCount.toString()}
+            onChange={handleYCountChange}
           >
             <span>yCount</span>
           </InputField>
         </div>
         <hr />
 
-        <SceneBrowser setSceneData={setSceneData} />
+        <SceneBrowser />
         <hr />
 
         <AssetBrowser />
@@ -311,3 +303,8 @@ const DevTools: Component<{
     </div>
   );
 };
+
+export function use(appContainer: HTMLElement): void {
+  render(() => <DevTools appContainer={appContainer} />, appContainer);
+  animate();
+}

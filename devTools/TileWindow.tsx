@@ -1,40 +1,33 @@
 import {
-  type Accessor,
   type Component,
-  createEffect,
+  createMemo,
   createSignal,
   Match,
-  Show,
   Switch,
 } from "solid-js";
 import {
-  PencilIcon,
+  RefreshIcon,
   RefreshAlertIcon,
   RefreshDotIcon,
-  RefreshIcon,
+  PencilIcon,
   StackBackwardIcon,
   StackForwardIcon,
 } from "#/devTools/icons/index.ts";
 import { dev, pixelBase, scaleBase, tileSize } from "#/config.ts";
-import { loadImage } from "#/lib/loadImage.ts";
-import { type SceneData } from "#/lib/Scene.ts";
 import {
   isDrawing,
-  isUnsynced,
-  sceneData,
   setIsDrawing,
-  setIsUnsynced,
-  setSceneDataRef,
-  setTileCoord,
-  setTileset,
   tileCoord,
+  setTileCoord,
   tileset,
+  setSceneDataRef,
+  isUnsynced,
+  setIsUnsynced,
 } from "#/devTools/main.tsx";
 import { createVector } from "#/lib/Vector.ts";
+import { currentScene } from "#/lib/Scene.ts";
 
-export const TileWindow: Component<{
-  sceneData: Accessor<SceneData>;
-}> = (props) => {
+export const TileWindow: Component = () => {
   const [isSyncing, setIsSyncing] = createSignal(false);
   const [syncError, setSyncError] = createSignal(null);
 
@@ -48,10 +41,10 @@ export const TileWindow: Component<{
 
     fetch(`http://${dev.host}:${dev.port}/dev`, {
       method: "POST",
-      body: JSON.stringify(sceneData()),
+      body: JSON.stringify(currentScene.data),
     })
       .then(() => {
-        setSceneDataRef(structuredClone(sceneData()));
+        setSceneDataRef(structuredClone(currentScene.data));
         setIsUnsynced(false);
       })
       .catch((error) => {
@@ -64,15 +57,18 @@ export const TileWindow: Component<{
       });
   }
 
-  let xCount = 0;
-  let yCount = 0;
-  createEffect(() => {
-    loadImage(props.sceneData().tileset).then((image) => {
-      xCount = image.naturalWidth / pixelBase;
-      yCount = image.naturalHeight / pixelBase;
-      setTileset(image);
-    });
-  });
+  const xCount = createMemo(() =>
+    tileset() ? tileset().naturalWidth / pixelBase : 0,
+  );
+  const yCount = createMemo(() =>
+    tileset() ? tileset().naturalHeight / pixelBase : 0,
+  );
+  const xSize = createMemo(() =>
+    tileset() ? tileset().naturalWidth * scaleBase : 0,
+  );
+  const ySize = createMemo(() =>
+    tileset() ? tileset().naturalHeight * scaleBase : 0,
+  );
 
   return (
     <div class="tile-window">
@@ -115,34 +111,30 @@ export const TileWindow: Component<{
         </button>
       </div>
 
-      <Show when={tileset()}>
-        <div class="tileset">
-          {[...Array(xCount * yCount)].map((_, index) => {
-            const x = index % xCount;
-            const y = (index / yCount) | 0;
+      <div class="tileset">
+        {[...Array(xCount() * yCount())].map((_, index) => {
+          const x = index % xCount();
+          const y = (index / yCount()) | 0;
 
-            return (
-              <div
-                class={"tileset-tile"}
-                classList={{
-                  active: tileCoord().x === x && tileCoord().y === y,
-                }}
-                style={{
-                  ["width"]: `${tileSize}px`,
-                  ["height"]: `${tileSize}px`,
-                  ["background-image"]: `url(${tileset()!.src})`,
-                  ["background-position-x"]: `-${x * tileSize}px`,
-                  ["background-position-y"]: `-${y * tileSize}px`,
-                  ["background-size"]: `${
-                    tileset()!.naturalWidth * scaleBase
-                  }px ${tileset()!.naturalHeight * scaleBase}px`,
-                }}
-                onClick={() => setTileCoord(createVector(x, y))}
-              ></div>
-            );
-          })}
-        </div>
-      </Show>
+          return (
+            <div
+              class={"tileset-tile"}
+              classList={{
+                active: tileCoord().x === x && tileCoord().y === y,
+              }}
+              style={{
+                ["width"]: `${tileSize}px`,
+                ["height"]: `${tileSize}px`,
+                ["background-image"]: `url(${tileset().src})`,
+                ["background-position-x"]: `-${x * tileSize}px`,
+                ["background-position-y"]: `-${y * tileSize}px`,
+                ["background-size"]: `${xSize()}px ${ySize()}px`,
+              }}
+              onClick={() => setTileCoord(createVector(x, y))}
+            ></div>
+          );
+        })}
+      </div>
     </div>
   );
 };

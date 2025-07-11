@@ -3,7 +3,6 @@ import {
   createResource,
   createSignal,
   Index,
-  type Setter,
   Show,
 } from "solid-js";
 import {
@@ -11,8 +10,10 @@ import {
   FolderOpenIcon,
   ScriptIcon,
 } from "#/devTools/icons/index.ts";
-import { currentScene, type SceneData, swapScene } from "#/lib/Scene.ts";
+import { swapScene, currentScene } from "#/lib/Scene.ts";
 import { viewport } from "#/game/game.ts";
+import { setTileset } from "./main";
+import { loadImage } from "#/lib/loadImage";
 
 type SceneEntry = { name: string };
 type SceneFolder = Map<string, SceneEntry | SceneFolder>;
@@ -52,9 +53,7 @@ async function fetchSceneIndex(): Promise<SceneFolder> {
   }, new Map() as SceneFolder);
 }
 
-export const SceneBrowser: Component<{
-  setSceneData: Setter<SceneData>;
-}> = (props) => {
+export const SceneBrowser: Component = () => {
   const [sceneIndex] = createResource(createSignal([])[0], fetchSceneIndex);
 
   const SceneFile: Component<{ entry: SceneEntry }> = ({ entry }) => {
@@ -63,7 +62,9 @@ export const SceneBrowser: Component<{
         class="file-label"
         onClick={() => {
           swapScene(viewport, entry.name).then(() => {
-            props.setSceneData(currentScene.data);
+            loadImage(currentScene.data.tileset).then((image) => {
+              setTileset(image);
+            });
           });
         }}
       >
