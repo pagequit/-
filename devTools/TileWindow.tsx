@@ -8,10 +8,10 @@ import {
   Switch,
 } from "solid-js";
 import {
-  RefreshIcon,
+  PencilIcon,
   RefreshAlertIcon,
   RefreshDotIcon,
-  PencilIcon,
+  RefreshIcon,
   StackBackwardIcon,
   StackForwardIcon,
 } from "#/devTools/icons/index.ts";
@@ -20,16 +20,17 @@ import { loadImage } from "#/lib/loadImage.ts";
 import { type SceneData } from "#/lib/Scene.ts";
 import {
   isDrawing,
-  setIsDrawing,
-  tileCoord,
-  setTileCoord,
-  tileset,
-  setTileset,
+  isUnsynced,
   sceneData,
+  setIsDrawing,
+  setIsUnsynced,
+  setSceneDataRef,
+  setTileCoord,
+  setTileset,
+  tileCoord,
+  tileset,
 } from "#/devTools/main.tsx";
-import { createVector } from "#/lib/Vector";
-
-export const [isUnsynced, setIsUnsynced] = createSignal(false);
+import { createVector } from "#/lib/Vector.ts";
 
 export const TileWindow: Component<{
   sceneData: Accessor<SceneData>;
@@ -43,13 +44,16 @@ export const TileWindow: Component<{
     }
 
     setIsSyncing(true);
-    setIsUnsynced(false);
     setSyncError(null);
 
     fetch(`http://${dev.host}:${dev.port}/dev`, {
       method: "POST",
       body: JSON.stringify(sceneData()),
     })
+      .then(() => {
+        setSceneDataRef(structuredClone(sceneData()));
+        setIsUnsynced(false);
+      })
       .catch((error) => {
         setIsUnsynced(true);
         setSyncError(error);

@@ -9,14 +9,14 @@ import {
 import { render } from "solid-js/web";
 import { AssetBrowser } from "#/devTools/AssetBrowser.tsx";
 import { SceneBrowser } from "#/devTools/SceneBrowser.tsx";
-import { TileWindow, setIsUnsynced } from "#/devTools/TileWindow.tsx";
+import { TileWindow } from "#/devTools/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { InputField } from "./InputField.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
-import { placeViewport, zoomViewport, type Viewport } from "#/lib/Viewport.ts";
-import { currentScene, drawTilemap } from "#/lib/Scene.ts";
-import { viewport, pointer, delta, setIsPaused } from "#/game/game.ts";
-import { createGrid, drawGrid } from "#/lib/Grid.ts";
+import { placeViewport, type Viewport, zoomViewport } from "#/lib/Viewport.ts";
+import { currentScene, drawTilemap, type SceneData } from "#/lib/Scene.ts";
+import { delta, pointer, setIsPaused, viewport } from "#/game/game.ts";
+import { createGrid, drawGrid, type Grid } from "#/lib/Grid.ts";
 import { pixelBase, tileSize } from "#/config.ts";
 import { createVector, type Vector } from "#/lib/Vector.ts";
 import {
@@ -25,14 +25,22 @@ import {
   type Rectangle,
 } from "#/lib/collision.ts";
 import { loadImage } from "#/lib/loadImage.ts";
+import { objectEquals } from "#/lib/objectEquals.ts";
 
-export const [sceneData, setSceneData] = createSignal(currentScene.data);
+export const [sceneDataRef, setSceneDataRef] = createSignal<SceneData>(
+  structuredClone(currentScene.data),
+);
+export const [sceneData, setSceneData] = createSignal<SceneData>(
+  currentScene.data,
+);
 export const [isDrawing, setIsDrawing] = createSignal(false);
 export const [tileCoord, setTileCoord] = createSignal(createVector());
 export const [tileset, setTileset] = createSignal<HTMLImageElement | null>(
   null,
 );
-const [grid, setGrid] = createSignal(
+export const [isUnsynced, setIsUnsynced] = createSignal(false);
+
+const [grid, setGrid] = createSignal<Grid>(
   createGrid(tileSize, sceneData().xCount, sceneData().yCount),
 );
 
@@ -41,6 +49,10 @@ const mouse: Vector = createVector();
 const [boundingRectangle, setBoundingRectangle] = createSignal(
   getBoundingRectangle(),
 );
+
+function checkSyncState(): boolean {
+  return setIsUnsynced(!objectEquals(sceneDataRef(), sceneData()));
+}
 
 function getBoundingRectangle(): Rectangle {
   const rect = viewport.ctx.canvas.getBoundingClientRect();
@@ -66,10 +78,8 @@ function animate(): void {
     if (pointer.isDown) {
       const x = (pointer.position.x / tileSize) | 0;
       const y = (pointer.position.y / tileSize) | 0;
-      if (sceneData().tilemap[y][x] !== tileCoord()) {
-        setIsUnsynced(true);
-      }
       sceneData().tilemap[y][x] = tileCoord();
+      checkSyncState();
     }
 
     drawTilemap(tileset()!, sceneData(), viewport.ctx);
@@ -221,6 +231,7 @@ const DevTools: Component<{
                 setTileset(image);
               });
               sceneData().tileset = value;
+              checkSyncState();
             }}
           >
             <span>tileset</span>
@@ -249,6 +260,7 @@ const DevTools: Component<{
               }
               sceneData().xCount = xCount;
               sceneData().width = xCount * tileSize;
+              checkSyncState();
             }}
           >
             <span>xCount</span>
@@ -273,6 +285,7 @@ const DevTools: Component<{
               }
               sceneData().yCount = yCount;
               sceneData().height = yCount * tileSize;
+              checkSyncState();
             }}
           >
             <span>yCount</span>

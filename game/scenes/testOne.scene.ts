@@ -1,6 +1,6 @@
 import { tileSize } from "#/config.ts";
 import { pointer, viewport } from "#/game/game.ts";
-import { drawTilemap, useScene, type SceneData } from "#/lib/Scene.ts";
+import { drawTilemap, type SceneData, useScene } from "#/lib/Scene.ts";
 import {
   loadHero,
   processHero,
