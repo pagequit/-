@@ -2,8 +2,8 @@ import { createSignal } from "solid-js";
 import { dev } from "#/config.ts";
 import {
   currentScene,
-  type SceneData,
   onSceneSwap,
+  type SceneData,
   swapScene,
 } from "#/lib/Scene.ts";
 import { objectEquals } from "#/lib/objectEquals.ts";

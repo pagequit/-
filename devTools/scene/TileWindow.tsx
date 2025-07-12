@@ -25,14 +25,14 @@ import { createGrid, drawGrid } from "#/lib/Grid.ts";
 import { placeViewport, resizeViewport } from "#/lib/Viewport.ts";
 import { pointer, setIsPaused, viewport } from "#/game/game.ts";
 import {
+  checkSync,
+  isUnsynced,
+  setIsUnsynced,
+  setSceneDataRef,
+  setTileset,
   tileset,
   xCount,
   yCount,
-  setSceneDataRef,
-  isUnsynced,
-  setIsUnsynced,
-  checkSync,
-  setTileset,
 } from "./sceneHandler.ts";
 
 const [tileCoord, setTileCoord] = createSignal<Vector>(createVector());
