@@ -17,26 +17,30 @@ import {
   StackForwardIcon,
 } from "#/devTools/icons/index.ts";
 import { dev, pixelBase, scaleBase, tileSize } from "#/config.ts";
-import {
-  checkSyncState,
-  isUnsynced,
-  setIsUnsynced,
-  setSceneDataRef,
-  setTileset,
-  tileset,
-} from "#/devTools/main.tsx";
-import { InputField } from "./InputField.tsx";
+import { InputField } from "#/devTools/InputField.tsx";
 import { createVector, type Vector } from "#/lib/Vector.ts";
 import { currentScene, drawTilemap } from "#/lib/Scene.ts";
 import { loadImage } from "#/lib/loadImage.ts";
-import { createGrid, drawGrid, type Grid } from "#/lib/Grid.ts";
+import { objectEquals } from "#/lib/objectEquals.ts";
+import { createGrid, drawGrid } from "#/lib/Grid.ts";
 import { placeViewport, resizeViewport } from "#/lib/Viewport.ts";
 import { pointer, setIsPaused, viewport } from "#/game/game.ts";
+import {
+  tileset,
+  xCount,
+  yCount,
+  sceneDataRef,
+  setSceneDataRef,
+} from "./sceneHandler.ts";
 
+const [isUnsynced, setIsUnsynced] = createSignal(false);
 const [tileCoord, setTileCoord] = createSignal<Vector>(createVector());
+const [tilesetImage, setTilesetImage] = createSignal<HTMLImageElement>(
+  await loadImage(currentScene.data.tileset),
+);
 const [isDrawing, setIsDrawing] = createSignal(false);
-const mouse: Vector = createVector();
-const grid: Grid = createGrid(
+const mouse = createVector();
+const grid = createGrid(
   tileSize,
   currentScene.data.xCount,
   currentScene.data.yCount,
@@ -45,7 +49,6 @@ const grid: Grid = createGrid(
 function resizeBoundings(): void {
   grid.xCount = currentScene.data.xCount;
   grid.yCount = currentScene.data.yCount;
-  console.log(currentScene.data);
   resizeViewport(viewport, currentScene.data.width, currentScene.data.height);
 }
 
@@ -64,13 +67,12 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
       const x = (pointer.position.x / tileSize) | 0;
       const y = (pointer.position.y / tileSize) | 0;
       currentScene.data.tilemap[y][x] = tileCoord();
-      checkSyncState();
     }
 
-    drawTilemap(tileset(), currentScene.data, ctx);
+    drawTilemap(tilesetImage(), currentScene.data, ctx);
     if (isPointInDOMRect(mouse, ctx.canvas.getBoundingClientRect())) {
       ctx.drawImage(
-        tileset(),
+        tilesetImage(),
         tileCoord().x * pixelBase,
         tileCoord().y * pixelBase,
         pixelBase,
@@ -86,28 +88,25 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
 }
 
 export const TileWindow: Component = () => {
+  // FIXME
+  createEffect(() => {
+    setIsUnsynced(!objectEquals(sceneDataRef(), currentScene.data));
+  });
+
+  createEffect(() => {
+    loadImage(tileset()).then((image) => {
+      setTilesetImage(image);
+    });
+  });
+
   const [isSyncing, setIsSyncing] = createSignal(false);
   const [syncError, setSyncError] = createSignal(null);
 
-  const [dataXCount, setDataXCount] = createSignal(currentScene.data.xCount);
-  const [dataYCount, setDataYCount] = createSignal(currentScene.data.yCount);
-  const [dataTileset, setDataTileset] = createSignal(currentScene.data.tileset);
-
-  // TODO
-  createEffect(() => {
-    if (tileset()) {
-      setDataXCount(currentScene.data.xCount);
-      setDataYCount(currentScene.data.yCount);
-      setDataTileset(currentScene.data.tileset);
-    }
-  });
-
   const handleXCountChange = (value: string): void => {
-    setDataXCount(parseInt(value));
-
-    if (currentScene.data.xCount > dataXCount()) {
+    const xCount = parseInt(value);
+    if (currentScene.data.xCount > xCount) {
       for (const row of currentScene.data.tilemap) {
-        row.length = dataXCount();
+        row.length = xCount;
       }
     } else {
       for (const row of currentScene.data.tilemap) {
@@ -115,27 +114,24 @@ export const TileWindow: Component = () => {
       }
     }
 
-    currentScene.data.xCount = dataXCount();
-    currentScene.data.width = dataXCount() * tileSize;
+    currentScene.data.xCount = xCount;
+    currentScene.data.width = xCount * tileSize;
     resizeBoundings();
-    checkSyncState();
   };
 
   const handleYCountChange = (value: string): void => {
-    setDataYCount(parseInt(value));
-
-    if (currentScene.data.yCount > dataYCount()) {
-      currentScene.data.tilemap.length = dataYCount();
+    const yCount = parseInt(value);
+    if (currentScene.data.yCount > yCount) {
+      currentScene.data.tilemap.length = yCount;
     } else {
       currentScene.data.tilemap.push(
         [...Array(currentScene.data.xCount)].map(() => createVector()),
       );
     }
 
-    currentScene.data.yCount = dataYCount();
-    currentScene.data.height = dataYCount() * tileSize;
+    currentScene.data.yCount = yCount;
+    currentScene.data.height = yCount * tileSize;
     resizeBoundings();
-    checkSyncState();
   };
 
   const panOrigin: Vector = createVector();
@@ -147,10 +143,10 @@ export const TileWindow: Component = () => {
 
     switch (event.buttons) {
       case 0: {
-        break;
+        break; //
       }
       case 1: {
-        break;
+        break; //
       }
       case 2: {
         if (isDrawing()) {
@@ -200,18 +196,10 @@ export const TileWindow: Component = () => {
       });
   };
 
-  const xCount = createMemo(() =>
-    tileset() ? tileset().naturalWidth / pixelBase : 0,
-  );
-  const yCount = createMemo(() =>
-    tileset() ? tileset().naturalHeight / pixelBase : 0,
-  );
-  const xSize = createMemo(() =>
-    tileset() ? tileset().naturalWidth * scaleBase : 0,
-  );
-  const ySize = createMemo(() =>
-    tileset() ? tileset().naturalHeight * scaleBase : 0,
-  );
+  const cols = createMemo(() => tilesetImage().naturalWidth / pixelBase);
+  const rows = createMemo(() => tilesetImage().naturalHeight / pixelBase);
+  const width = createMemo(() => tilesetImage().naturalWidth * scaleBase);
+  const height = createMemo(() => tilesetImage().naturalHeight * scaleBase);
 
   onMount(() => {
     self.addEventListener("mousemove", handleMouse);
@@ -270,9 +258,9 @@ export const TileWindow: Component = () => {
       </div>
 
       <div class="tileset">
-        {[...Array(xCount() * yCount())].map((_, index) => {
-          const x = index % xCount();
-          const y = (index / yCount()) | 0;
+        {[...Array(cols() * rows())].map((_, index) => {
+          const x = index % cols();
+          const y = (index / rows()) | 0;
 
           return (
             <div
@@ -283,10 +271,10 @@ export const TileWindow: Component = () => {
               style={{
                 ["width"]: `${tileSize}px`,
                 ["height"]: `${tileSize}px`,
-                ["background-image"]: `url(${tileset().src})`,
+                ["background-image"]: `url(${tileset()})`,
                 ["background-position-x"]: `-${x * tileSize}px`,
                 ["background-position-y"]: `-${y * tileSize}px`,
-                ["background-size"]: `${xSize()}px ${ySize()}px`,
+                ["background-size"]: `${width()}px ${height()}px`,
               }}
               onClick={() => setTileCoord(createVector(x, y))}
             ></div>
@@ -294,29 +282,22 @@ export const TileWindow: Component = () => {
         })}
       </div>
 
-      <div class="tile-src">
+      <div class="tileset-src">
         <InputField
           name="tileset"
           type="text"
-          value={dataTileset()}
-          onChange={(value) => {
-            setDataTileset(value);
-            loadImage(value).then((image) => {
-              setTileset(image);
-            });
-            currentScene.data.tileset = value;
-            checkSyncState();
-          }}
+          value={tileset()}
+          onChange={(value) => (currentScene.data.tileset = value)}
         >
           <span>tileset</span>
         </InputField>
       </div>
 
-      <div class="tile-ratio">
+      <div class="scene-ratio">
         <InputField
           name="xCount"
           type="number"
-          value={dataXCount().toString()}
+          value={xCount().toString()}
           onChange={handleXCountChange}
         >
           <span>xCount</span>
@@ -325,7 +306,7 @@ export const TileWindow: Component = () => {
         <InputField
           name="yCount"
           type="number"
-          value={dataYCount().toString()}
+          value={yCount().toString()}
           onChange={handleYCountChange}
         >
           <span>yCount</span>

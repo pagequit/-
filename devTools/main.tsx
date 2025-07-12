@@ -8,30 +8,13 @@ import {
 } from "solid-js";
 import { render } from "solid-js/web";
 import { AssetBrowser } from "#/devTools/AssetBrowser.tsx";
-import { SceneBrowser } from "#/devTools/SceneBrowser.tsx";
-import { handleDrawing, TileWindow } from "#/devTools/TileWindow.tsx";
+import { SceneBrowser } from "#/devTools/scene/SceneBrowser.tsx";
+import { handleDrawing, TileWindow } from "#/devTools/scene/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import { ZoomScanIcon } from "#/devTools/icons/index.ts";
 import { type Viewport, zoomViewport } from "#/lib/Viewport.ts";
-import { currentScene, type SceneData, onSceneSwap } from "#/lib/Scene.ts";
+import { currentScene } from "#/lib/Scene.ts";
 import { delta, viewport } from "#/game/game.ts";
-import { loadImage } from "#/lib/loadImage.ts";
-import { objectEquals } from "#/lib/objectEquals.ts";
-
-export const [tileset, setTileset] = createSignal<HTMLImageElement>(
-  await loadImage(currentScene.data.tileset),
-);
-export const [isUnsynced, setIsUnsynced] = createSignal(false);
-export const [sceneDataRef, setSceneDataRef] = createSignal<SceneData>(
-  structuredClone(currentScene.data),
-);
-
-// TODO
-onSceneSwap(console.log);
-
-export function checkSyncState(): boolean {
-  return setIsUnsynced(!objectEquals(sceneDataRef(), currentScene.data));
-}
 
 function drawDelta({ ctx, translation, scale }: Viewport, delta: number): void {
   ctx.font = "16px monospace";

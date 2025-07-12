@@ -116,9 +116,10 @@ export async function swapScene(
 
   const nextSceneData = dataMap.get(sceneName) as SceneData;
   onSceneSwapProxy.callback(nextSceneData, currentScene.data);
-  currentScene.data = nextSceneData;
-  resizeViewport(viewport, currentScene.data.width, currentScene.data.height);
 
+  resizeViewport(viewport, nextSceneData.width, nextSceneData.height);
+
+  currentScene.data = nextSceneData;
   currentScene.process = processMap.get(sceneName) as Process;
 }
 

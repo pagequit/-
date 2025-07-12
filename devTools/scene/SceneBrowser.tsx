@@ -10,10 +10,9 @@ import {
   FolderOpenIcon,
   ScriptIcon,
 } from "#/devTools/icons/index.ts";
-import { currentScene, swapScene } from "#/lib/Scene.ts";
+import { swapScene } from "#/lib/Scene.ts";
 import { viewport } from "#/game/game.ts";
-import { setTileset } from "./main.tsx";
-import { loadImage } from "#/lib/loadImage.ts";
+import { name } from "./sceneHandler.ts";
 
 type SceneEntry = { name: string };
 type SceneFolder = Map<string, SceneEntry | SceneFolder>;
@@ -55,22 +54,16 @@ async function fetchSceneIndex(): Promise<SceneFolder> {
 
 export const SceneBrowser: Component = () => {
   const [sceneIndex] = createResource(createSignal([])[0], fetchSceneIndex);
-  const [sceneName, setSceneName] = createSignal(currentScene.data.name);
 
   const SceneFile: Component<{ entry: SceneEntry }> = ({ entry }) => {
     return (
       <div
         class="file-label"
         classList={{
-          active: sceneName() === entry.name,
+          active: name() === entry.name,
         }}
         onClick={() => {
-          swapScene(viewport, entry.name).then(() => {
-            setSceneName(currentScene.data.name);
-            loadImage(currentScene.data.tileset).then((image) => {
-              setTileset(image);
-            });
-          });
+          swapScene(viewport, entry.name);
         }}
       >
         <ScriptIcon />
