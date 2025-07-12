@@ -4,7 +4,7 @@
   "height": 384,
   "xCount": 12,
   "yCount": 6,
-  "tileset": "/assets/tiles.png",
+  "tileset": "/assets/tileset.png",
   "tilemap": [
     [
       {

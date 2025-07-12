@@ -32,6 +32,7 @@ import {
   isUnsynced,
   setIsUnsynced,
   checkSync,
+  setTileset,
 } from "./sceneHandler.ts";
 
 const [tileCoord, setTileCoord] = createSignal<Vector>(createVector());
@@ -276,6 +277,7 @@ export const TileWindow: Component = () => {
           type="text"
           value={tileset()}
           onChange={(value) => {
+            setTileset(value);
             currentScene.data.tileset = value;
             checkSync(currentScene.data);
           }}
