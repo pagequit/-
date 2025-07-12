@@ -21,7 +21,6 @@ import { InputField } from "#/devTools/InputField.tsx";
 import { createVector, type Vector } from "#/lib/Vector.ts";
 import { currentScene, drawTilemap } from "#/lib/Scene.ts";
 import { loadImage } from "#/lib/loadImage.ts";
-import { objectEquals } from "#/lib/objectEquals.ts";
 import { createGrid, drawGrid } from "#/lib/Grid.ts";
 import { placeViewport, resizeViewport } from "#/lib/Viewport.ts";
 import { pointer, setIsPaused, viewport } from "#/game/game.ts";
@@ -29,11 +28,12 @@ import {
   tileset,
   xCount,
   yCount,
-  sceneDataRef,
   setSceneDataRef,
+  isUnsynced,
+  setIsUnsynced,
+  checkSync,
 } from "./sceneHandler.ts";
 
-const [isUnsynced, setIsUnsynced] = createSignal(false);
 const [tileCoord, setTileCoord] = createSignal<Vector>(createVector());
 const [tilesetImage, setTilesetImage] = createSignal<HTMLImageElement>(
   await loadImage(currentScene.data.tileset),
@@ -67,6 +67,7 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
       const x = (pointer.position.x / tileSize) | 0;
       const y = (pointer.position.y / tileSize) | 0;
       currentScene.data.tilemap[y][x] = tileCoord();
+      checkSync(currentScene.data);
     }
 
     drawTilemap(tilesetImage(), currentScene.data, ctx);
@@ -88,11 +89,6 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
 }
 
 export const TileWindow: Component = () => {
-  // FIXME
-  createEffect(() => {
-    setIsUnsynced(!objectEquals(sceneDataRef(), currentScene.data));
-  });
-
   createEffect(() => {
     loadImage(tileset()).then((image) => {
       setTilesetImage(image);
@@ -117,6 +113,7 @@ export const TileWindow: Component = () => {
     currentScene.data.xCount = xCount;
     currentScene.data.width = xCount * tileSize;
     resizeBoundings();
+    checkSync(currentScene.data);
   };
 
   const handleYCountChange = (value: string): void => {
@@ -132,6 +129,7 @@ export const TileWindow: Component = () => {
     currentScene.data.yCount = yCount;
     currentScene.data.height = yCount * tileSize;
     resizeBoundings();
+    checkSync(currentScene.data);
   };
 
   const panOrigin: Vector = createVector();
@@ -142,12 +140,6 @@ export const TileWindow: Component = () => {
     mouse.y = event.clientY;
 
     switch (event.buttons) {
-      case 0: {
-        break; //
-      }
-      case 1: {
-        break; //
-      }
       case 2: {
         if (isDrawing()) {
           panDelta.x = panOrigin.x - mouse.x;
@@ -203,14 +195,10 @@ export const TileWindow: Component = () => {
 
   onMount(() => {
     self.addEventListener("mousemove", handleMouse);
-    // self.addEventListener("mousedown", handleMouse);
-    // self.addEventListener("mouseup", handleMouse);
   });
 
   onCleanup(() => {
     self.removeEventListener("mousemove", handleMouse);
-    // self.removeEventListener("mousedown", handleMouse);
-    // self.removeEventListener("mouseup", handleMouse);
   });
 
   return (
@@ -287,7 +275,10 @@ export const TileWindow: Component = () => {
           name="tileset"
           type="text"
           value={tileset()}
-          onChange={(value) => (currentScene.data.tileset = value)}
+          onChange={(value) => {
+            currentScene.data.tileset = value;
+            checkSync(currentScene.data);
+          }}
         >
           <span>tileset</span>
         </InputField>

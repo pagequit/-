@@ -1,16 +1,13 @@
 import { createSignal } from "solid-js";
+import { dev } from "#/config.ts";
 import {
   currentScene,
   type SceneData,
   onSceneSwap,
   swapScene,
 } from "#/lib/Scene.ts";
+import { objectEquals } from "#/lib/objectEquals.ts";
 import { viewport } from "#/game/game.ts";
-
-if (self.location.hash.length > 1) {
-  const name = self.location.hash.substring(1);
-  await swapScene(viewport, name);
-}
 
 export const [name, setName] = createSignal<string>(currentScene.data.name);
 export const [tileset, setTileset] = createSignal<string>(
@@ -25,6 +22,11 @@ export const [yCount, setYCount] = createSignal<number>(
 export const [sceneDataRef, setSceneDataRef] = createSignal<SceneData>(
   structuredClone(currentScene.data),
 );
+export const [isUnsynced, setIsUnsynced] = createSignal(false);
+
+export function checkSync(sceneData: SceneData): void {
+  setIsUnsynced(!objectEquals(sceneDataRef(), sceneData));
+}
 
 onSceneSwap((sceneData: SceneData) => {
   self.location.hash = sceneData.name;
@@ -34,5 +36,15 @@ onSceneSwap((sceneData: SceneData) => {
   setXCount(sceneData.xCount);
   setYCount(sceneData.yCount);
 
-  setSceneDataRef(structuredClone(sceneData));
+  fetch(`http://${dev.host}:${dev.port}/dev/${sceneData.name}`, {
+    method: "GET",
+  }).then(async (data) => {
+    setSceneDataRef(await data.json());
+    checkSync(sceneData);
+  });
 });
+
+if (self.location.hash.length > 1) {
+  const name = self.location.hash.substring(1);
+  swapScene(viewport, name);
+}
