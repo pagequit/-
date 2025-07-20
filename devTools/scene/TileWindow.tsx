@@ -103,7 +103,7 @@ export const TileWindow: Component = () => {
     const xCount = parseInt(value);
     if (currentScene.data.xCount > xCount) {
       for (const row of currentScene.data.tilemap) {
-        row.length = xCount;
+        row.pop();
       }
     } else {
       for (const row of currentScene.data.tilemap) {
@@ -120,7 +120,7 @@ export const TileWindow: Component = () => {
   const handleYCountChange = (value: string): void => {
     const yCount = parseInt(value);
     if (currentScene.data.yCount > yCount) {
-      currentScene.data.tilemap.length = yCount;
+      currentScene.data.tilemap.pop();
     } else {
       currentScene.data.tilemap.push(
         [...Array(currentScene.data.xCount)].map(() => createVector()),

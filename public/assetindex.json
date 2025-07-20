@@ -1,12 +1,12 @@
 [
-  "/hain.wav",
-  "/tileset.png",
-  "/portal.png",
-  "/bgm.wav",
   "/char-walk.png",
   "/tiles.png",
+  "/bgm.wav",
+  "/portal.png",
   "/char-idle.png",
+  "/tileset.png",
   "/portal2.png",
-  "/hero/walk.png",
-  "/hero/idle.png"
+  "/hain.wav",
+  "/hero/idle.png",
+  "/hero/walk.png"
 ]
