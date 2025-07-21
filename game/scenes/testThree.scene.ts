@@ -1,7 +1,7 @@
 import { viewport } from "#/game/game.ts";
-import { loadImage } from "#/lib/loadImage";
+import { loadImage } from "#/lib/loadImage.ts";
 import { drawTilemap, useScene } from "#/lib/Scene.ts";
-import { placeViewport } from "#/lib/Viewport";
+import { placeViewport } from "#/lib/Viewport.ts";
 import sceneData from "./testThree.json";
 
 const { preProcess, process, linkScenes } = useScene(viewport, sceneData);

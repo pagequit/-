@@ -1,6 +1,6 @@
 import { drawTilemap, useScene } from "#/lib/Scene.ts";
 import { focusViewport } from "#/lib/Viewport.ts";
-import { loadImage } from "#/lib/loadImage";
+import { loadImage } from "#/lib/loadImage.ts";
 import { viewport } from "#/game/game.ts";
 import { loadHero, processHero } from "#/game/Hero.ts";
 import sceneData from "./testTwo.json";

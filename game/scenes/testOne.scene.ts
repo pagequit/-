@@ -13,8 +13,8 @@ import {
   type Rectangle,
 } from "#/lib/collision.ts";
 import { drawRectangle } from "#/game/misc.ts";
-import { loadImage } from "#/lib/loadImage";
-import { focusViewport } from "#/lib/Viewport";
+import { loadImage } from "#/lib/loadImage.ts";
+import { focusViewport } from "#/lib/Viewport.ts";
 import sceneData from "./testOne.json";
 
 const { process, preProcess, linkScenes } = useScene(viewport, sceneData);
