@@ -10,6 +10,7 @@ import {
 } from "solid-js";
 import {
   PencilIcon,
+  PolygonIcon,
   RefreshAlertIcon,
   RefreshDotIcon,
   RefreshIcon,
@@ -34,12 +35,20 @@ import {
   xCount,
   yCount,
 } from "./sceneHandler.ts";
+import { drawHeroStuff } from "#/game/Hero.ts";
 
 const [tileCoord, setTileCoord] = createSignal<Vector>(createVector());
 const [tilesetImage, setTilesetImage] = createSignal<HTMLImageElement>(
   await loadImage(currentScene.data.tileset),
 );
-const [isDrawing, setIsDrawing] = createSignal(false);
+
+enum DrawMode {
+  None,
+  Tileset,
+  Polygon,
+}
+
+const [drawMode, setDrawMode] = createSignal<DrawMode>(DrawMode.None);
 const mouse = createVector();
 const grid = createGrid(
   tileSize,
@@ -63,29 +72,40 @@ function isPointInDOMRect(point: Vector, rect: DOMRect): boolean {
 }
 
 export function handleDrawing(ctx: CanvasRenderingContext2D): void {
-  if (isDrawing()) {
-    if (pointer.isDown) {
-      const x = (pointer.position.x / tileSize) | 0;
-      const y = (pointer.position.y / tileSize) | 0;
-      currentScene.data.tilemap[y][x] = tileCoord();
-      checkSync(currentScene.data);
-    }
+  if (drawMode() === DrawMode.None) {
+    return;
+  }
 
-    drawTilemap(tilesetImage(), currentScene.data, ctx);
-    if (isPointInDOMRect(mouse, ctx.canvas.getBoundingClientRect())) {
-      ctx.drawImage(
-        tilesetImage(),
-        tileCoord().x * pixelBase,
-        tileCoord().y * pixelBase,
-        pixelBase,
-        pixelBase,
-        ((pointer.position.x / tileSize) | 0) * tileSize,
-        ((pointer.position.y / tileSize) | 0) * tileSize,
-        tileSize,
-        tileSize,
-      );
+  drawTilemap(tilesetImage(), currentScene.data, ctx);
+
+  switch (drawMode()) {
+    case DrawMode.Tileset: {
+      if (pointer.isDown) {
+        const x = (pointer.position.x / tileSize) | 0;
+        const y = (pointer.position.y / tileSize) | 0;
+        currentScene.data.tilemap[y][x] = tileCoord();
+        checkSync(currentScene.data);
+      }
+
+      if (isPointInDOMRect(mouse, ctx.canvas.getBoundingClientRect())) {
+        ctx.drawImage(
+          tilesetImage(),
+          tileCoord().x * pixelBase,
+          tileCoord().y * pixelBase,
+          pixelBase,
+          pixelBase,
+          ((pointer.position.x / tileSize) | 0) * tileSize,
+          ((pointer.position.y / tileSize) | 0) * tileSize,
+          tileSize,
+          tileSize,
+        );
+      }
+      drawGrid(grid, ctx);
+      break;
     }
-    drawGrid(grid, ctx);
+    case DrawMode.Polygon: {
+      drawHeroStuff(ctx);
+    }
   }
 }
 
@@ -142,7 +162,7 @@ export const TileWindow: Component = () => {
 
     switch (event.buttons) {
       case 2: {
-        if (isDrawing()) {
+        if (drawMode() !== DrawMode.None) {
           panDelta.x = panOrigin.x - mouse.x;
           panDelta.y = panOrigin.y - mouse.y;
 
@@ -205,12 +225,6 @@ export const TileWindow: Component = () => {
   return (
     <div class="tile-window">
       <div class="icon-bar">
-        <button type="button" class="btn">
-          <StackBackwardIcon />
-        </button>
-        <button type="button" class="btn">
-          <StackForwardIcon />
-        </button>
         <button type="button" class="btn" onClick={syncSceneData}>
           <Switch
             fallback={
@@ -235,11 +249,38 @@ export const TileWindow: Component = () => {
           type="button"
           class="btn"
           classList={{
-            active: isDrawing(),
+            active: drawMode() === DrawMode.Polygon,
           }}
           onClick={() => {
-            setIsDrawing(!isDrawing());
-            setIsPaused(isDrawing());
+            setDrawMode(
+              drawMode() !== DrawMode.Polygon
+                ? DrawMode.Polygon
+                : DrawMode.None,
+            );
+            setIsPaused(drawMode() !== DrawMode.None);
+          }}
+        >
+          <PolygonIcon />
+        </button>
+        <button type="button" class="btn">
+          <StackBackwardIcon />
+        </button>
+        <button type="button" class="btn">
+          <StackForwardIcon />
+        </button>
+        <button
+          type="button"
+          class="btn"
+          classList={{
+            active: drawMode() === DrawMode.Tileset,
+          }}
+          onClick={() => {
+            setDrawMode(
+              drawMode() !== DrawMode.Tileset
+                ? DrawMode.Tileset
+                : DrawMode.None,
+            );
+            setIsPaused(drawMode() !== DrawMode.None);
           }}
         >
           <PencilIcon />

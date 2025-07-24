@@ -12,6 +12,7 @@ export default [
   ...tseslint.configs.recommended,
   {
     rules: {
+      "no-fallthrough": "warn",
       "no-empty": "warn",
       "prefer-const": "warn",
       "no-unused-vars": "off",
