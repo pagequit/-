@@ -56,7 +56,13 @@ function animate(timestamp: number): void {
   resetViewport(viewport);
 
   if (paused) {
-    ctx.drawImage(backCanvas, 0, 0);
+    ctx.drawImage(
+      backCanvas,
+      viewport.translation.x / viewport.scale.x,
+      viewport.translation.y / viewport.scale.y,
+      ctx.canvas.width / viewport.scale.x,
+      ctx.canvas.height / viewport.scale.y,
+    );
   } else {
     currentScene.process(ctx, delta.value);
   }

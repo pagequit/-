@@ -76,8 +76,6 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
     return;
   }
 
-  drawTilemap(tilesetImage(), currentScene.data, ctx);
-
   switch (drawMode()) {
     case DrawMode.Tileset: {
       if (pointer.isDown) {
@@ -87,6 +85,7 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
         checkSync(currentScene.data);
       }
 
+      drawTilemap(tilesetImage(), currentScene.data, ctx);
       if (isPointInDOMRect(mouse, ctx.canvas.getBoundingClientRect())) {
         ctx.drawImage(
           tilesetImage(),
@@ -105,6 +104,7 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
     }
     case DrawMode.Polygon: {
       drawHeroStuff(ctx);
+      break;
     }
   }
 }
