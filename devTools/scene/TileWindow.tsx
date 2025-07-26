@@ -76,6 +76,8 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
     return;
   }
 
+  drawTilemap(tilesetImage(), currentScene.data, ctx);
+
   switch (drawMode()) {
     case DrawMode.Tileset: {
       if (pointer.isDown) {
@@ -85,7 +87,6 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
         checkSync(currentScene.data);
       }
 
-      drawTilemap(tilesetImage(), currentScene.data, ctx);
       if (isPointInDOMRect(mouse, ctx.canvas.getBoundingClientRect())) {
         ctx.drawImage(
           tilesetImage(),
@@ -99,7 +100,6 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
           tileSize,
         );
       }
-      drawGrid(grid, ctx);
       break;
     }
     case DrawMode.Polygon: {
@@ -107,6 +107,8 @@ export function handleDrawing(ctx: CanvasRenderingContext2D): void {
       break;
     }
   }
+
+  drawGrid(grid, ctx);
 }
 
 export const TileWindow: Component = () => {
