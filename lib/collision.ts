@@ -5,27 +5,42 @@ export type Circle = {
   radius: number;
 };
 
-export type Rectangle = {
+export type AABB = {
   position: Vector;
   width: number;
   height: number;
 };
 
+export type Polygon = {
+  position: Vector;
+  points: Array<Vector>;
+};
+
 export enum ShapeType {
   Circle,
-  Rectangle,
+  AABB,
+  Polygon,
 }
+
+export type CollisionShape = {
+  position: Vector;
+  support: (direction: Vector) => Vector;
+};
 
 export function createCircle(position: Vector, radius: number): Circle {
   return { position, radius };
 }
 
-export function createRectangle(
+export function createAABB(
   position: Vector,
   width: number,
   height: number,
-): Rectangle {
+): AABB {
   return { position, width, height };
+}
+
+export function sat(a: Polygon, b: Polygon): boolean {
+  return false;
 }
 
 export function isPointInCircle(point: Vector, circle: Circle): boolean {
@@ -35,29 +50,26 @@ export function isPointInCircle(point: Vector, circle: Circle): boolean {
   return dx * dx + dy * dy <= Math.pow(circle.radius, 2);
 }
 
-export function circleCollideCircle(a: Circle, b: Circle): boolean {
+export function circleIntersectCircle(a: Circle, b: Circle): boolean {
   const dx = a.position.x - b.position.x;
   const dy = a.position.y - b.position.y;
 
   return dx * dx + dy * dy <= Math.pow(a.radius + b.radius, 2);
 }
 
-export function isPointInRectangle(
-  point: Vector,
-  rectangle: Rectangle,
-): boolean {
-  const rx = rectangle.position.x;
-  const ry = rectangle.position.y;
+export function isPointInAABB(point: Vector, rect: AABB): boolean {
+  const rx = rect.position.x;
+  const ry = rect.position.y;
 
   return (
     point.x >= rx &&
-    point.x <= rx + rectangle.width &&
+    point.x <= rx + rect.width &&
     point.y >= ry &&
-    point.y <= ry + rectangle.height
+    point.y <= ry + rect.height
   );
 }
 
-export function rectangleCollideRectangle(a: Rectangle, b: Rectangle): boolean {
+export function AABBIntersectAABB(a: AABB, b: AABB): boolean {
   const ax = a.position.x;
   const ay = a.position.y;
   const bx = b.position.x;
@@ -71,17 +83,14 @@ export function rectangleCollideRectangle(a: Rectangle, b: Rectangle): boolean {
   );
 }
 
-export function circleCollideRectangle(
-  circle: Circle,
-  rectangle: Rectangle,
-): boolean {
+export function circleIntersectAABB(circle: Circle, rect: AABB): boolean {
   const cx = circle.position.x;
   const cy = circle.position.y;
-  const rx = rectangle.position.x;
-  const ry = rectangle.position.y;
+  const rx = rect.position.x;
+  const ry = rect.position.y;
 
-  const dx = cx - Math.max(rx, Math.min(cx, rx + rectangle.width));
-  const dy = cy - Math.max(ry, Math.min(cy, ry + rectangle.height));
+  const dx = cx - Math.max(rx, Math.min(cx, rx + rect.width));
+  const dy = cy - Math.max(ry, Math.min(cy, ry + rect.height));
 
   return dx * dx + dy * dy <= Math.pow(circle.radius, 2);
 }
@@ -94,10 +103,7 @@ export function circleContainsCircle(a: Circle, b: Circle): boolean {
   return a.radius >= b.radius + distance;
 }
 
-export function rectangleContainsRectangle(
-  a: Rectangle,
-  b: Rectangle,
-): boolean {
+export function AABBContainsAABB(a: AABB, b: AABB): boolean {
   const ax = a.position.x;
   const ay = a.position.y;
   const bx = b.position.x;
@@ -111,38 +117,32 @@ export function rectangleContainsRectangle(
   );
 }
 
-export function rectangleContainsCircle(
-  rectangle: Rectangle,
-  circle: Circle,
-): boolean {
-  const rx = rectangle.position.x;
-  const ry = rectangle.position.y;
+export function AABBContainsCircle(rect: AABB, circle: Circle): boolean {
+  const rx = rect.position.x;
+  const ry = rect.position.y;
   const cx = circle.position.x;
   const cy = circle.position.y;
 
   return (
     rx <= cx - circle.radius &&
-    rx + rectangle.width >= cx + circle.radius &&
+    rx + rect.width >= cx + circle.radius &&
     ry <= cy - circle.radius &&
-    ry + rectangle.height >= cy + circle.radius
+    ry + rect.height >= cy + circle.radius
   );
 }
 
-export function circleContainsRectangle(
-  circle: Circle,
-  rectangle: Rectangle,
-): boolean {
-  const dax = rectangle.position.x - circle.position.x;
-  const day = rectangle.position.y - circle.position.y;
+export function circleContainsAABB(circle: Circle, rect: AABB): boolean {
+  const dax = rect.position.x - circle.position.x;
+  const day = rect.position.y - circle.position.y;
 
-  const dbx = rectangle.position.x + rectangle.width - circle.position.x;
-  const dby = rectangle.position.y - circle.position.y;
+  const dbx = rect.position.x + rect.width - circle.position.x;
+  const dby = rect.position.y - circle.position.y;
 
-  const dcx = rectangle.position.x - circle.position.x;
-  const dcy = rectangle.position.y + rectangle.height - circle.position.y;
+  const dcx = rect.position.x - circle.position.x;
+  const dcy = rect.position.y + rect.height - circle.position.y;
 
-  const ddx = rectangle.position.x + rectangle.width - circle.position.x;
-  const ddy = rectangle.position.y + rectangle.height - circle.position.y;
+  const ddx = rect.position.x + rect.width - circle.position.x;
+  const ddy = rect.position.y + rect.height - circle.position.y;
 
   const daSquare = dax * dax + day * day;
   const dbsquare = dbx * dbx + dby * dby;
