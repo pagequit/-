@@ -9,9 +9,9 @@ import {
 } from "#/game/Hero.ts";
 import {
   circleIntersectAABB,
+  createPolygon,
   isPointInAABB,
-  getAxes,
-  sat,
+  updateAxes,
   type AABB,
   type Polygon,
 } from "#/lib/collision.ts";
@@ -20,7 +20,6 @@ import { loadImage } from "#/lib/loadImage.ts";
 import { focusViewport } from "#/lib/Viewport.ts";
 import sceneData from "./testOne.json";
 import { createVector } from "#/lib/Vector";
-import { createTextChangeRange } from "typescript";
 
 const { process, preProcess, linkScenes } = useScene(viewport, sceneData);
 
@@ -37,20 +36,21 @@ const aThing: AABB = {
 
 //
 
-const polyA: Polygon = {
-  position: createVector(
+const polyA = createPolygon(
+  createVector(
     (sceneData.xCount - 10) * tileSize,
     (sceneData.yCount - 5) * tileSize,
   ),
-  points: [createVector(16, 16), createVector(16, -16), createVector(-16, 16)],
-};
-const polyB: Polygon = {
-  position: createVector(
+  [createVector(16, 16), createVector(16, -16), createVector(-16, 16)],
+);
+
+const polyB = createPolygon(
+  createVector(
     (sceneData.xCount - 9) * tileSize,
     (sceneData.yCount - 5) * tileSize,
   ),
-  points: [createVector(16, 16), createVector(16, -16), createVector(-16, 16)],
-};
+  [createVector(16, 16), createVector(16, -16), createVector(-16, 16)],
+);
 
 function drawPoly(ctx: CanvasRenderingContext2D, poly: Polygon): void {
   drawPoint(ctx, poly.position);
@@ -71,7 +71,7 @@ function drawPoly(ctx: CanvasRenderingContext2D, poly: Polygon): void {
   ctx.stroke();
 }
 
-const aa = getAxes(polyA);
+const aa = updateAxes(polyA);
 
 //
 
@@ -108,17 +108,17 @@ process((ctx, delta) => {
 
   drawPoly(ctx, polyA);
   drawPoly(ctx, polyB);
-  aa.forEach((v) =>
-    drawPoint(
-      ctx,
-      {
-        x: v.x + polyA.position.x,
-        y: v.y + polyA.position.y,
-      },
-      2,
-      "yellow",
-    ),
-  );
+  // polya.axes.foreach((v) =>
+  //   drawpoint(
+  //     ctx,
+  //     {
+  //       x: v.x + polya.position.x,
+  //       y: v.y + polya.position.y,
+  //     },
+  //     2,
+  //     "yellow",
+  //   ),
+  // );
 });
 
 console.log("testOne loaded");

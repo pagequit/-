@@ -1,4 +1,4 @@
-import { normalize, type Vector } from "./Vector.ts";
+import { createVector, normalize, type Vector } from "./Vector.ts";
 
 export type Circle = {
   position: Vector;
@@ -14,6 +14,7 @@ export type AABB = {
 export type Polygon = {
   position: Vector;
   points: Array<Vector>;
+  axes: Array<Vector>;
 };
 
 export enum ShapeType {
@@ -21,11 +22,6 @@ export enum ShapeType {
   AABB,
   Polygon,
 }
-
-export type CollisionShape = {
-  position: Vector;
-  support: (direction: Vector) => Vector;
-};
 
 export function createCircle(position: Vector, radius: number): Circle {
   return { position, radius };
@@ -39,33 +35,40 @@ export function createAABB(
   return { position, width, height };
 }
 
-export function getAxes(polygon: Polygon): Array<Vector> {
-  const { points } = polygon;
-  const axes: Array<Vector> = [];
-  let ai = 0;
-  let bi = 1;
-  const cap = points.length - 1;
+export function createPolygon(
+  position: Vector,
+  points: Array<Vector>,
+): Polygon {
+  return {
+    position,
+    points,
+    axes: points.map(() => createVector()),
+  };
+}
 
-  while (axes.length < points.length) {
-    const axe: Vector = {
-      x: -(points[bi].y - points[ai].y),
-      y: points[bi].x - points[ai].x,
-    };
-    normalize(axe);
-    axes.push(axe);
+export function updateAxes(polygon: Polygon): Array<Vector> {
+  const { points, axes } = polygon;
+  const cap = axes.length - 1;
 
-    ai += 1;
-    bi = bi === cap ? 0 : (bi += 1);
+  let j = 1;
+  for (let i = 0; i < cap; i++) {
+    axes[i].x = -(points[j].y - points[i].y);
+    axes[i].y = points[j].x - points[i].x;
+    normalize(axes[i]);
+
+    if (j++ > cap) {
+      j = 0;
+    }
   }
 
   return axes;
 }
 
 export function sat(a: Polygon, b: Polygon): boolean {
-  const aAxes = getAxes(a);
-  const bAxes = getAxes(b);
+  updateAxes(a);
+  updateAxes(b);
 
-  console.log(aAxes, bAxes);
+  console.log(a, b);
 
   return false;
 }
