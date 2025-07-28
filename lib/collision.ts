@@ -1,4 +1,4 @@
-import { type Vector } from "./Vector.ts";
+import { normalize, type Vector } from "./Vector.ts";
 
 export type Circle = {
   position: Vector;
@@ -39,7 +39,34 @@ export function createAABB(
   return { position, width, height };
 }
 
+export function getAxes(polygon: Polygon): Array<Vector> {
+  const { points } = polygon;
+  const axes: Array<Vector> = [];
+  let ai = 0;
+  let bi = 1;
+  const cap = points.length - 1;
+
+  while (axes.length < points.length) {
+    const axe: Vector = {
+      x: -(points[bi].y - points[ai].y),
+      y: points[bi].x - points[ai].x,
+    };
+    normalize(axe);
+    axes.push(axe);
+
+    ai += 1;
+    bi = bi === cap ? 0 : (bi += 1);
+  }
+
+  return axes;
+}
+
 export function sat(a: Polygon, b: Polygon): boolean {
+  const aAxes = getAxes(a);
+  const bAxes = getAxes(b);
+
+  console.log(aAxes, bAxes);
+
   return false;
 }
 

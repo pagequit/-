@@ -10,6 +10,8 @@ import {
 import {
   circleIntersectAABB,
   isPointInAABB,
+  getAxes,
+  sat,
   type AABB,
   type Polygon,
 } from "#/lib/collision.ts";
@@ -18,6 +20,7 @@ import { loadImage } from "#/lib/loadImage.ts";
 import { focusViewport } from "#/lib/Viewport.ts";
 import sceneData from "./testOne.json";
 import { createVector } from "#/lib/Vector";
+import { createTextChangeRange } from "typescript";
 
 const { process, preProcess, linkScenes } = useScene(viewport, sceneData);
 
@@ -68,6 +71,8 @@ function drawPoly(ctx: CanvasRenderingContext2D, poly: Polygon): void {
   ctx.stroke();
 }
 
+const aa = getAxes(polyA);
+
 //
 
 const hero = await loadHero();
@@ -103,6 +108,17 @@ process((ctx, delta) => {
 
   drawPoly(ctx, polyA);
   drawPoly(ctx, polyB);
+  aa.forEach((v) =>
+    drawPoint(
+      ctx,
+      {
+        x: v.x + polyA.position.x,
+        y: v.y + polyA.position.y,
+      },
+      2,
+      "yellow",
+    ),
+  );
 });
 
 console.log("testOne loaded");
