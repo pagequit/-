@@ -11,7 +11,7 @@ import {
   circleIntersectAABB,
   createPolygon,
   isPointInAABB,
-  updateAxes,
+  sat,
   type AABB,
   type Polygon,
 } from "#/lib/collision.ts";
@@ -71,8 +71,6 @@ function drawPoly(ctx: CanvasRenderingContext2D, poly: Polygon): void {
   ctx.stroke();
 }
 
-const aa = updateAxes(polyA);
-
 //
 
 const hero = await loadHero();
@@ -106,19 +104,14 @@ process((ctx, delta) => {
     });
   }
 
+  //
+
+  polyA.position.x = hero.position.x;
+  polyA.position.y = hero.position.y;
+
   drawPoly(ctx, polyA);
   drawPoly(ctx, polyB);
-  // polya.axes.foreach((v) =>
-  //   drawpoint(
-  //     ctx,
-  //     {
-  //       x: v.x + polya.position.x,
-  //       y: v.y + polya.position.y,
-  //     },
-  //     2,
-  //     "yellow",
-  //   ),
-  // );
+  console.log(sat(polyA, polyB));
 });
 
 console.log("testOne loaded");

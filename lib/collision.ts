@@ -1,4 +1,10 @@
-import { createVector, normalize, type Vector } from "./Vector.ts";
+import {
+  createVector,
+  getDistance,
+  getDotProduct,
+  normalize,
+  type Vector,
+} from "./Vector.ts";
 
 export type Circle = {
   position: Vector;
@@ -64,13 +70,63 @@ export function updateAxes(polygon: Polygon): Array<Vector> {
   return axes;
 }
 
+type Projection = {
+  min: number;
+  max: number;
+};
+
+function project(polygon: Polygon, axis: Vector): Projection {
+  let min = Number.POSITIVE_INFINITY;
+  let max = Number.NEGATIVE_INFINITY;
+
+  for (const point of polygon.points) {
+    const dot = getDotProduct(point, axis);
+    if (dot < min) {
+      min = dot;
+    }
+    if (dot > max) {
+      max = dot;
+    }
+  }
+
+  return { min, max };
+}
+
 export function sat(a: Polygon, b: Polygon): boolean {
   updateAxes(a);
   updateAxes(b);
+  const distance = createVector(
+    a.position.x - b.position.x,
+    a.position.y - b.position.y,
+  );
 
-  console.log(a, b);
+  for (const axis of a.axes) {
+    const projectionA = project(a, axis);
+    const projectionB = project(b, axis);
+    const dot = getDotProduct(distance, axis);
 
-  return false;
+    if (
+      projectionA.max < projectionB.min + dot ||
+      projectionB.max + dot < projectionA.min
+    ) {
+      return false;
+    }
+  }
+
+  for (const axis of b.axes) {
+    const projectionA = project(a, axis);
+    const projectionB = project(b, axis);
+    const dot = getDotProduct(distance, axis);
+
+    if (
+      projectionA.max < projectionB.min + dot ||
+      projectionB.max + dot < projectionA.min
+    ) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 export function isPointInCircle(point: Vector, circle: Circle): boolean {
