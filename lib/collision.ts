@@ -1,6 +1,5 @@
 import {
   createVector,
-  getDistance,
   getDotProduct,
   normalize,
   type Vector,
