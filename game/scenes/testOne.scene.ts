@@ -41,7 +41,7 @@ const polyA = createPolygon(
     (sceneData.xCount - 10) * tileSize,
     (sceneData.yCount - 5) * tileSize,
   ),
-  [createVector(16, 16), createVector(16, -16), createVector(-16, 16)],
+  [createVector(32, 32), createVector(32, -32), createVector(-32, 32)],
 );
 
 const polyB = createPolygon(
@@ -49,10 +49,14 @@ const polyB = createPolygon(
     (sceneData.xCount - 9) * tileSize,
     (sceneData.yCount - 5) * tileSize,
   ),
-  [createVector(16, 16), createVector(16, -16), createVector(-16, 16)],
+  [createVector(32, 32), createVector(32, -32), createVector(-32, 32)],
 );
 
-function drawPoly(ctx: CanvasRenderingContext2D, poly: Polygon): void {
+function drawPoly(
+  ctx: CanvasRenderingContext2D,
+  poly: Polygon,
+  trigger: boolean = false,
+): void {
   drawPoint(ctx, poly.position);
   ctx.beginPath();
   ctx.moveTo(
@@ -67,7 +71,7 @@ function drawPoly(ctx: CanvasRenderingContext2D, poly: Polygon): void {
     );
   }
 
-  ctx.strokeStyle = "red";
+  ctx.strokeStyle = trigger ? "red" : "orange";
   ctx.stroke();
 }
 
@@ -109,9 +113,8 @@ process((ctx, delta) => {
   polyA.position.x = hero.position.x;
   polyA.position.y = hero.position.y;
 
-  drawPoly(ctx, polyA);
+  drawPoly(ctx, polyA, sat(polyA, polyB));
   drawPoly(ctx, polyB);
-  console.log(sat(polyA, polyB));
 });
 
 console.log("testOne loaded");
