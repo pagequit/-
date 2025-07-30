@@ -44,14 +44,17 @@ export function createPolygon(
   position: Vector,
   points: Array<Vector>,
 ): Polygon {
-  return {
+  const polygon = {
     position,
     points,
-    axes: points.map(() => createVector(-1, -1)),
+    axes: points.map(() => createVector()),
   };
+  updateAxes(polygon);
+
+  return polygon;
 }
 
-export function updateAxes(polygon: Polygon): Array<Vector> {
+export function updateAxes(polygon: Polygon): void {
   const { points, axes } = polygon;
   const cap = axes.length - 1;
 
@@ -65,67 +68,71 @@ export function updateAxes(polygon: Polygon): Array<Vector> {
     axes[i].y = points[j].x - points[i].x;
     normalize(axes[i]);
   }
-
-  return axes;
 }
 
-type Projection = {
-  min: number;
-  max: number;
-};
+export type Projection = { min: number; max: number };
 
-function project(polygon: Polygon, axis: Vector): Projection {
-  let min = Number.POSITIVE_INFINITY;
-  let max = Number.NEGATIVE_INFINITY;
+export function useSAT(
+  projectionArena: Array<Projection>,
+): (a: Polygon, b: Polygon) => boolean {
+  let index = 0;
+  const distance = createVector();
 
-  for (const point of polygon.points) {
-    const dot = getDotProduct(point, axis);
-    if (dot < min) {
-      min = dot;
+  function project(polygon: Polygon, axis: Vector): void {
+    let min = Number.POSITIVE_INFINITY;
+    let max = Number.NEGATIVE_INFINITY;
+
+    for (const point of polygon.points) {
+      const dot = getDotProduct(point, axis);
+      if (dot < min) {
+        min = dot;
+      }
+      if (dot > max) {
+        max = dot;
+      }
     }
-    if (dot > max) {
-      max = dot;
-    }
+
+    projectionArena[index].min = min;
+    projectionArena[index].max = max;
   }
 
-  return { min, max };
-}
+  function sat(a: Polygon, b: Polygon): boolean {
+    index = 0;
+    distance.x = b.position.x - a.position.x;
+    distance.y = b.position.y - a.position.y;
 
-export function sat(a: Polygon, b: Polygon): boolean {
-  updateAxes(a);
-  updateAxes(b);
-  const distance = createVector(
-    b.position.x - a.position.x,
-    b.position.y - a.position.y,
-  );
+    for (const axis of a.axes) {
+      project(a, axis);
+      index++;
+      project(b, axis);
+      const dot = getDotProduct(distance, axis);
 
-  for (const axis of a.axes) {
-    const projectionA = project(a, axis);
-    const projectionB = project(b, axis);
-    const dot = getDotProduct(distance, axis);
-
-    if (
-      projectionA.max < projectionB.min + dot ||
-      projectionB.max + dot < projectionA.min
-    ) {
-      return false;
+      if (
+        projectionArena[index - 1].max < projectionArena[index].min + dot ||
+        projectionArena[index].max + dot < projectionArena[index - 1].min
+      ) {
+        return false;
+      }
     }
+
+    for (const axis of b.axes) {
+      project(a, axis);
+      index++;
+      project(b, axis);
+      const dot = getDotProduct(distance, axis);
+
+      if (
+        projectionArena[index - 1].max < projectionArena[index].min + dot ||
+        projectionArena[index].max + dot < projectionArena[index - 1].min
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
-  for (const axis of b.axes) {
-    const projectionA = project(a, axis);
-    const projectionB = project(b, axis);
-    const dot = getDotProduct(distance, axis);
-
-    if (
-      projectionA.max < projectionB.min + dot ||
-      projectionB.max + dot < projectionA.min
-    ) {
-      return false;
-    }
-  }
-
-  return true;
+  return sat;
 }
 
 export function isPointInCircle(point: Vector, circle: Circle): boolean {

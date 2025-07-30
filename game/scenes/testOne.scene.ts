@@ -13,7 +13,7 @@ import {
   createPolygon,
   isPointInAABB,
   type Polygon,
-  sat,
+  useSAT,
 } from "#/lib/collision.ts";
 import { drawPoint, drawRectangle } from "#/game/misc.ts";
 import { loadImage } from "#/lib/loadImage.ts";
@@ -56,6 +56,13 @@ const polyB = createPolygon(
     (sceneData.yCount - 5) * tileSize,
   ),
   [createVector(-32, -32), createVector(32, -32), createVector(-32, 32)],
+);
+
+const sat = useSAT(
+  [...Array((polyA.axes.length + polyB.axes.length) * 2)].map(() => ({
+    min: 0,
+    max: 0,
+  })),
 );
 
 function drawPoly(
