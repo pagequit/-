@@ -41,7 +41,13 @@ const polyA = createPolygon(
     (sceneData.xCount - 10) * tileSize,
     (sceneData.yCount - 5) * tileSize,
   ),
-  [createVector(32, 32), createVector(32, -32), createVector(-32, 32)],
+  [
+    createVector(34, 28),
+    createVector(32, 0),
+    createVector(-32, -23),
+    createVector(-42, 32),
+    createVector(0, 32),
+  ],
 );
 
 const polyB = createPolygon(
@@ -49,7 +55,7 @@ const polyB = createPolygon(
     (sceneData.xCount - 9) * tileSize,
     (sceneData.yCount - 5) * tileSize,
   ),
-  [createVector(32, 32), createVector(32, -32), createVector(-32, 32)],
+  [createVector(-32, -32), createVector(32, -32), createVector(-32, 32)],
 );
 
 function drawPoly(

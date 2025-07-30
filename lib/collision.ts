@@ -47,7 +47,7 @@ export function createPolygon(
   return {
     position,
     points,
-    axes: points.map(() => createVector()),
+    axes: points.map(() => createVector(-1, -1)),
   };
 }
 
@@ -55,15 +55,15 @@ export function updateAxes(polygon: Polygon): Array<Vector> {
   const { points, axes } = polygon;
   const cap = axes.length - 1;
 
-  let j = 1;
-  for (let i = 0; i < cap; i++) {
+  let j = 0;
+  for (let i = 0; i <= cap; i++) {
+    if (++j > cap) {
+      j = 0;
+    }
+
     axes[i].x = -(points[j].y - points[i].y);
     axes[i].y = points[j].x - points[i].x;
     normalize(axes[i]);
-
-    if (j++ > cap) {
-      j = 0;
-    }
   }
 
   return axes;
@@ -95,8 +95,8 @@ export function sat(a: Polygon, b: Polygon): boolean {
   updateAxes(a);
   updateAxes(b);
   const distance = createVector(
-    a.position.x - b.position.x,
-    a.position.y - b.position.y,
+    b.position.x - a.position.x,
+    b.position.y - a.position.y,
   );
 
   for (const axis of a.axes) {

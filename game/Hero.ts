@@ -132,7 +132,8 @@ export function setHeroDirection(newDirection: Direction): void {
 }
 
 export function processHero(delta: number): void {
-  if (pointer.isDown && !isPointInCircle(pointer.position, collisionShape)) {
+  if (pointer.isDown) {
+    // if (pointer.isDown && !isPointInCircle(pointer.position, collisionShape)) {
     targetPosition.x = pointer.position.x;
     targetPosition.y = pointer.position.y;
   }
@@ -171,7 +172,6 @@ export function processHero(delta: number): void {
     );
   }
 
-  // drawHeroStuff(ctx);
   animateSprite(
     sprites.current,
     position.x - spritesOffset.x,
