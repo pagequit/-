@@ -8,12 +8,12 @@ import {
   setHeroPosition,
 } from "#/game/Hero.ts";
 import {
+  type AABB,
   circleIntersectAABB,
   createPolygon,
   isPointInAABB,
-  sat,
-  type AABB,
   type Polygon,
+  sat,
 } from "#/lib/collision.ts";
 import { drawPoint, drawRectangle } from "#/game/misc.ts";
 import { loadImage } from "#/lib/loadImage.ts";
