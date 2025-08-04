@@ -104,14 +104,13 @@ export function updateAxes(polygon: Polygon): void {
 export type Projection = { min: number; max: number };
 
 export function useSAT(): (a: Polygon, b: Polygon) => boolean {
-  let index = 0;
   const distance = createVector();
   const projections = [
     { min: 0, max: 0 },
     { min: 0, max: 0 },
   ];
 
-  function project(polygon: Polygon, axis: Vector): void {
+  function project(polygon: Polygon, axis: Vector, index: number): void {
     let min = Number.POSITIVE_INFINITY;
     let max = Number.NEGATIVE_INFINITY;
 
@@ -130,40 +129,33 @@ export function useSAT(): (a: Polygon, b: Polygon) => boolean {
   }
 
   function sat(a: Polygon, b: Polygon): boolean {
-    index = 0;
     distance.x = b.position.x - a.position.x;
     distance.y = b.position.y - a.position.y;
 
     for (const axis of a.axes) {
-      project(a, axis);
-      index += 1;
-      project(b, axis);
+      project(a, axis, 0);
+      project(b, axis, 1);
       const dot = getDotProduct(distance, axis);
 
       if (
-        projections[index - 1].max < projections[index].min + dot ||
-        projections[index].max + dot < projections[index - 1].min
+        projections[0].max < projections[1].min + dot ||
+        projections[1].max + dot < projections[0].min
       ) {
         return false;
       }
-
-      index = 0;
     }
 
     for (const axis of b.axes) {
-      project(a, axis);
-      index += 1;
-      project(b, axis);
+      project(a, axis, 0);
+      project(b, axis, 1);
       const dot = getDotProduct(distance, axis);
 
       if (
-        projections[index - 1].max < projections[index].min + dot ||
-        projections[index].max + dot < projections[index - 1].min
+        projections[0].max < projections[1].min + dot ||
+        projections[1].max + dot < projections[0].min
       ) {
         return false;
       }
-
-      index = 0;
     }
 
     return true;
