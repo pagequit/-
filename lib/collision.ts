@@ -20,6 +20,7 @@ export type Polygon = {
   position: Vector;
   points: Array<Vector>;
   axes: Array<Vector>;
+  aabb: AABB;
 };
 
 export enum ShapeType {
@@ -44,11 +45,41 @@ export function createPolygon(
   position: Vector,
   points: Array<Vector>,
 ): Polygon {
-  const polygon = {
+  const polygon: Polygon = {
     position,
     points,
     axes: points.map(() => createVector()),
+    aabb: points.reduce(
+      (acc, cur, index) => {
+        if (cur.x < acc.position.x) {
+          acc.position.x = cur.x;
+        }
+        if (cur.y < acc.position.y) {
+          acc.position.y = cur.y;
+        }
+
+        if (cur.x > acc.width) {
+          acc.width = cur.x;
+        }
+        if (cur.y > acc.height) {
+          acc.height = cur.y;
+        }
+
+        if (index === points.length - 1) {
+          acc.width = acc.width - acc.position.x;
+          acc.height = acc.height - acc.position.y;
+        }
+
+        return acc;
+      },
+      createAABB(
+        createVector(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY),
+        Number.NEGATIVE_INFINITY,
+        Number.NEGATIVE_INFINITY,
+      ),
+    ),
   };
+
   updateAxes(polygon);
 
   return polygon;

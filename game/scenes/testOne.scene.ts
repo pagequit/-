@@ -2,6 +2,7 @@ import { tileSize } from "#/config.ts";
 import { pointer, viewport } from "#/game/game.ts";
 import { drawTilemap, useScene } from "#/lib/Scene.ts";
 import {
+  drawHeroStuff,
   loadHero,
   processHero,
   setHeroCoords,
@@ -55,7 +56,13 @@ const polyB = createPolygon(
     (sceneData.xCount - 9) * tileSize,
     (sceneData.yCount - 5) * tileSize,
   ),
-  [createVector(-32, -32), createVector(32, -32), createVector(-32, 32)],
+  [
+    createVector(0, 42),
+    createVector(36, 18),
+    createVector(28, -24),
+    createVector(-18, -36),
+    createVector(-28, 24),
+  ],
 );
 
 const sat = useSAT(
@@ -126,8 +133,31 @@ process((ctx, delta) => {
   polyA.position.x = hero.position.x;
   polyA.position.y = hero.position.y;
 
-  drawPoly(ctx, polyA, sat(polyA, polyB));
-  drawPoly(ctx, polyB);
+  drawPoly(ctx, polyB, sat(polyA, polyB));
+  drawRectangle(
+    ctx,
+    {
+      x: polyB.aabb.position.x + polyB.position.x,
+      y: polyB.aabb.position.y + polyB.position.y,
+    },
+    polyB.aabb.width,
+    polyB.aabb.height,
+    "rbga(122, 122, 122, 0.4)",
+  );
+
+  drawPoly(ctx, polyA);
+  drawRectangle(
+    ctx,
+    {
+      x: polyA.aabb.position.x + polyA.position.x,
+      y: polyA.aabb.position.y + polyA.position.y,
+    },
+    polyA.aabb.width,
+    polyA.aabb.height,
+    "rbga(122, 122, 122, 0.4)",
+  );
+
+  // drawHeroStuff(ctx);
 });
 
 console.log("testOne loaded");
