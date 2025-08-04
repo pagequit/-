@@ -65,12 +65,22 @@ const polyB = createPolygon(
   ],
 );
 
-const sat = useSAT(
-  [...Array((polyA.axes.length + polyB.axes.length) * 2)].map(() => ({
-    min: 0,
-    max: 0,
-  })),
+const polyC = createPolygon(
+  createVector(
+    (sceneData.xCount - 12) * tileSize,
+    (sceneData.yCount - 5) * tileSize,
+  ),
+  [
+    createVector(0, 47),
+    createVector(36, 24),
+    createVector(28, -37),
+    createVector(6, -44),
+    createVector(-18, -16),
+    createVector(-36, 24),
+  ],
 );
+
+const sat = useSAT();
 
 function drawPoly(
   ctx: CanvasRenderingContext2D,
@@ -132,6 +142,18 @@ process((ctx, delta) => {
 
   polyA.position.x = hero.position.x;
   polyA.position.y = hero.position.y;
+
+  drawPoly(ctx, polyC, sat(polyA, polyC));
+  drawRectangle(
+    ctx,
+    {
+      x: polyC.aabb.position.x + polyC.position.x,
+      y: polyC.aabb.position.y + polyC.position.y,
+    },
+    polyC.aabb.width,
+    polyC.aabb.height,
+    "rbga(122, 122, 122, 0.4)",
+  );
 
   drawPoly(ctx, polyB, sat(polyA, polyB));
   drawRectangle(
