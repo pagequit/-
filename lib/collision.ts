@@ -102,7 +102,27 @@ export function updateAxes(polygon: Polygon): void {
   }
 }
 
-export function useSAT(): (a: Polygon, b: Polygon) => boolean {
+function project(polygon: Polygon, axis: Vector): { min: number; max: number } {
+  let min = Number.POSITIVE_INFINITY;
+  let max = Number.NEGATIVE_INFINITY;
+
+  for (const point of polygon.points) {
+    const dot = getDotProduct(point, axis);
+    if (dot < min) {
+      min = dot;
+    }
+    if (dot > max) {
+      max = dot;
+    }
+  }
+
+  return { min, max };
+}
+
+export function useSAT(): {
+  SAT: (a: Polygon, b: Polygon) => boolean;
+  circleSAT: (circle: Circle, polygon: Polygon) => boolean;
+} {
   const delta = createVector();
   const projections = [
     { min: 0, max: 0 },
@@ -127,7 +147,7 @@ export function useSAT(): (a: Polygon, b: Polygon) => boolean {
     projections[index].max = max;
   }
 
-  function sat(a: Polygon, b: Polygon): boolean {
+  function SAT(a: Polygon, b: Polygon): boolean {
     delta.x = b.position.x - a.position.x;
     delta.y = b.position.y - a.position.y;
 
@@ -160,73 +180,49 @@ export function useSAT(): (a: Polygon, b: Polygon) => boolean {
     return true;
   }
 
-  return sat;
-}
-
-function project(polygon: Polygon, axis: Vector): { min: number; max: number } {
-  let min = Number.POSITIVE_INFINITY;
-  let max = Number.NEGATIVE_INFINITY;
-
-  for (const point of polygon.points) {
-    const dot = getDotProduct(point, axis);
-    if (dot < min) {
-      min = dot;
-    }
-    if (dot > max) {
-      max = dot;
-    }
-  }
-
-  return { min, max };
-}
-
-export function circleSAT(circle: Circle, polygon: Polygon): boolean {
   // TODO: avoid object creation
-  const delta: Vector = {
-    x: circle.position.x - polygon.position.x,
-    y: circle.position.y - polygon.position.y,
-  };
+  function circleSAT(circle: Circle, polygon: Polygon): boolean {
+    delta.x = circle.position.x - polygon.position.x;
+    delta.y = circle.position.y - polygon.position.y;
 
-  const closest = {
-    distance: Number.POSITIVE_INFINITY,
-    delta: createVector(),
-  };
-
-  for (const point of polygon.points) {
-    const cDelta = {
-      x: point.x - delta.x,
-      y: point.y - delta.y,
+    const closest = {
+      distance: Number.POSITIVE_INFINITY,
+      delta: createVector(),
     };
-    const cDistance = getSquared(cDelta);
 
-    if (cDistance < closest.distance) {
-      closest.distance = cDistance;
-      closest.delta = cDelta;
+    for (const point of polygon.points) {
+      const cDelta = {
+        x: point.x - delta.x,
+        y: point.y - delta.y,
+      };
+      const cDistance = getSquared(cDelta);
+
+      if (cDistance < closest.distance) {
+        closest.distance = cDistance;
+        closest.delta = cDelta;
+      }
     }
+
+    normalize(closest.delta);
+    for (const axis of [...polygon.axes, closest.delta]) {
+      const dot = getDotProduct(delta, axis);
+
+      project(polygon, axis, 0);
+      projections[1].min = dot - circle.radius;
+      projections[1].max = dot + circle.radius;
+
+      if (
+        projections[0].max < projections[1].min ||
+        projections[1].max < projections[0].min
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
-  const projections = [
-    { min: 0, max: 0 },
-    { min: 0, max: 0 },
-  ];
-
-  normalize(closest.delta);
-  for (const axis of [...polygon.axes, closest.delta]) {
-    const dot = getDotProduct(delta, axis);
-
-    projections[0] = project(polygon, axis);
-    projections[1].min = dot - circle.radius;
-    projections[1].max = dot + circle.radius;
-
-    if (
-      projections[0].max < projections[1].min ||
-      projections[1].max < projections[0].min
-    ) {
-      return false;
-    }
-  }
-
-  return true;
+  return { SAT, circleSAT };
 }
 
 export function isPointInCircle(point: Vector, circle: Circle): boolean {

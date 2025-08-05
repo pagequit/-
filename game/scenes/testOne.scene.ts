@@ -11,7 +11,6 @@ import {
 import {
   type AABB,
   circleIntersectAABB,
-  circleSAT,
   createPolygon,
   isPointInAABB,
   type Polygon,
@@ -81,7 +80,7 @@ const polyC = createPolygon(
   ],
 );
 
-const sat = useSAT();
+const { SAT, circleSAT } = useSAT();
 
 function drawPoly(
   ctx: CanvasRenderingContext2D,
@@ -144,7 +143,7 @@ process((ctx, delta) => {
   polyA.position.x = hero.position.x;
   polyA.position.y = hero.position.y;
 
-  drawPoly(ctx, polyC, circleSAT(hero.collisionShape, polyC, ctx));
+  drawPoly(ctx, polyC, circleSAT(hero.collisionShape, polyC));
   drawRectangle(
     ctx,
     {
@@ -156,7 +155,7 @@ process((ctx, delta) => {
     "rbga(122, 122, 122, 0.4)",
   );
 
-  drawPoly(ctx, polyB, sat(polyA, polyB));
+  drawPoly(ctx, polyB, SAT(polyA, polyB));
   drawRectangle(
     ctx,
     {
