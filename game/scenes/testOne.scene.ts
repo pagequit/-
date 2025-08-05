@@ -14,8 +14,8 @@ import {
   createPolygon,
   isPointInAABB,
   type Polygon,
-  useSAT,
 } from "#/lib/collision.ts";
+import { useSAT } from "#/lib/SAT.ts";
 import { drawPoint, drawRectangle } from "#/game/misc.ts";
 import { loadImage } from "#/lib/loadImage.ts";
 import { focusViewport } from "#/lib/Viewport.ts";
