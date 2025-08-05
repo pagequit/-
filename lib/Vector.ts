@@ -33,10 +33,6 @@ export function getSquared(vector: Vector): number {
   return vector.x * vector.x + vector.y * vector.y;
 }
 
-export function getDistanceSquared(a: Vector, b: Vector): number {
-  return a.x * a.x + a.y * a.y - (b.x * b.x + b.y * b.y);
-}
-
 export function setDistanceNormal(normal: Vector, a: Vector, b: Vector): void {
   const dx = a.x - b.x;
   const dy = a.y - b.y;

@@ -11,6 +11,7 @@ import {
 import {
   type AABB,
   circleIntersectAABB,
+  circleSAT,
   createPolygon,
   isPointInAABB,
   type Polygon,
@@ -143,7 +144,7 @@ process((ctx, delta) => {
   polyA.position.x = hero.position.x;
   polyA.position.y = hero.position.y;
 
-  drawPoly(ctx, polyC, sat(polyA, polyC));
+  drawPoly(ctx, polyC, circleSAT(hero.collisionShape, polyC, ctx));
   drawRectangle(
     ctx,
     {
@@ -179,7 +180,7 @@ process((ctx, delta) => {
     "rbga(122, 122, 122, 0.4)",
   );
 
-  // drawHeroStuff(ctx);
+  drawHeroStuff(ctx);
 });
 
 console.log("testOne loaded");
