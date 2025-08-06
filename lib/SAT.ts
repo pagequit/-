@@ -1,7 +1,6 @@
 import {
   createVector,
   getDotProduct,
-  getSquared,
   normalize,
   type Vector,
 } from "./Vector.ts";
@@ -11,11 +10,13 @@ export function useSAT(): {
   SAT: (a: Polygon, b: Polygon) => boolean;
   circleSAT: (circle: Circle, polygon: Polygon) => boolean;
 } {
-  const delta = createVector();
   const projections = [
     { min: 0, max: 0 },
     { min: 0, max: 0 },
   ];
+
+  const delta = createVector();
+  const circleAxis = createVector();
 
   function project(polygon: Polygon, axis: Vector, index: number): void {
     let min = Number.POSITIVE_INFINITY;
@@ -68,31 +69,38 @@ export function useSAT(): {
     return true;
   }
 
-  // TODO: avoid object creation
   function circleSAT(circle: Circle, polygon: Polygon): boolean {
     delta.x = circle.position.x - polygon.position.x;
     delta.y = circle.position.y - polygon.position.y;
 
-    const closest = {
-      distance: Number.POSITIVE_INFINITY,
-      delta: createVector(),
-    };
-
+    let localDistance = Number.POSITIVE_INFINITY;
     for (const point of polygon.points) {
-      const cDelta = {
-        x: point.x - delta.x,
-        y: point.y - delta.y,
-      };
-      const cDistance = getSquared(cDelta);
+      const dx = point.x - delta.x;
+      const dy = point.y - delta.y;
+      const distance = dx * dx + dy * dy;
 
-      if (cDistance < closest.distance) {
-        closest.distance = cDistance;
-        closest.delta = cDelta;
+      if (distance < localDistance) {
+        localDistance = distance;
+        circleAxis.x = dx;
+        circleAxis.y = dy;
       }
     }
 
-    normalize(closest.delta);
-    for (const axis of [...polygon.axes, closest.delta]) {
+    normalize(circleAxis);
+    const dot = getDotProduct(delta, circleAxis);
+
+    project(polygon, circleAxis, 0);
+    projections[1].min = dot - circle.radius;
+    projections[1].max = dot + circle.radius;
+
+    if (
+      projections[0].max < projections[1].min ||
+      projections[1].max < projections[0].min
+    ) {
+      return false;
+    }
+
+    for (const axis of polygon.axes) {
       const dot = getDotProduct(delta, axis);
 
       project(polygon, axis, 0);
