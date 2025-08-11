@@ -260,6 +260,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  &:hover {
+    color: var(--c-fg-1);
+  }
 }
 
 .range-slider [type="range"] {
@@ -341,6 +345,9 @@
 .input-field {
   width: 100%;
   display: block;
+  background: var(--c-bg-2);
+  color: var(--c-fg-1);
+  border-radius: var(--sp-1);
 }
 
 .input-field input {
@@ -348,11 +355,57 @@
   height: 2em;
   font-size: medium;
   margin: 0;
-  padding: var(--sp-1) var(--sp-2);
+  padding: var(--sp-1);
   border: none;
   background: var(--c-bg-2);
-  color: var(--c-fg-1);
+  color: inherit;
   border-radius: var(--sp-1);
+}
+
+.input-field.icon {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  svg {
+    margin-left: var(--sp-1);
+    display: inline-block;
+  }
+
+  &:has(:focus) {
+    outline-width: 2px;
+    outline-style: solid;
+    outline-color: var(--c-primary);
+
+    input {
+      outline: none;
+    }
+  }
+}
+
+.tab-head {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.tab-head-item {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--sp-2) 0;
+  color: var(--c-fg-2);
+  border-bottom: 2px solid currentColor;
+  cursor: pointer;
+  background: var(--c-bg-1);
+
+  &.active {
+    color: var(--c-primary);
+  }
+
+  &:hover {
+    background: var(--c-bg-2);
+  }
 }
 
 .c-error {

@@ -9,6 +9,9 @@ import {
   Switch,
 } from "solid-js";
 import {
+  ArrowAutofitHeightIcon,
+  ArrowAutofitWidthIcon,
+  FileIcon,
   PencilIcon,
   PolygonIcon,
   RefreshAlertIcon,
@@ -316,6 +319,9 @@ export const TileWindow: Component = () => {
 
       <div class="tileset-src">
         <InputField
+          classList={{
+            icon: true,
+          }}
           name="tileset"
           type="text"
           value={tileset()}
@@ -325,27 +331,33 @@ export const TileWindow: Component = () => {
             checkSync(currentScene.data);
           }}
         >
-          <span>tileset</span>
+          <FileIcon />
         </InputField>
       </div>
 
       <div class="scene-ratio">
         <InputField
+          classList={{
+            icon: true,
+          }}
           name="xCount"
           type="number"
           value={xCount().toString()}
           onChange={handleXCountChange}
         >
-          <span>xCount</span>
+          <ArrowAutofitWidthIcon />
         </InputField>
 
         <InputField
+          classList={{
+            icon: true,
+          }}
           name="yCount"
           type="number"
           value={yCount().toString()}
           onChange={handleYCountChange}
         >
-          <span>yCount</span>
+          <ArrowAutofitHeightIcon />
         </InputField>
       </div>
     </div>

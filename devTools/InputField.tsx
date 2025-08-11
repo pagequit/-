@@ -5,10 +5,11 @@ export const InputField: Component<{
   type: string;
   value: string;
   children: JSX.Element;
+  classList?: { [key: string]: boolean };
   onChange?: (value: string) => void;
   onInput?: (value: string) => void;
 }> = (props) => (
-  <label class="input-field">
+  <label class="input-field" classList={props.classList}>
     {props.children}
     <input
       type={props.type}

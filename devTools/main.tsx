@@ -3,15 +3,21 @@ import {
   type Component,
   createEffect,
   createSignal,
+  Match,
   onCleanup,
   onMount,
+  Switch,
 } from "solid-js";
 import { render } from "solid-js/web";
 import { AssetBrowser } from "#/devTools/AssetBrowser.tsx";
 import { SceneBrowser } from "#/devTools/scene/SceneBrowser.tsx";
 import { handleDrawing, TileWindow } from "#/devTools/scene/TileWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
-import { ZoomScanIcon } from "#/devTools/icons/index.ts";
+import {
+  LayoutGridIcon,
+  PolygonIcon,
+  ZoomScanIcon,
+} from "#/devTools/icons/index.ts";
 import { type Viewport, zoomViewport } from "#/lib/Viewport.ts";
 import { currentScene } from "#/lib/Scene.ts";
 import { delta, viewport } from "#/game/game.ts";
@@ -75,6 +81,8 @@ const DevTools: Component<{
     adjustGameContainerStyle(gameContainer, newWidth);
   };
 
+  const [currentTab, setCurrentTab] = createSignal(0);
+
   onMount(() => {
     self.addEventListener("mouseup", stopResizeX);
     self.addEventListener("mousemove", handleResize);
@@ -107,7 +115,40 @@ const DevTools: Component<{
         </div>
         <hr />
 
-        <TileWindow />
+        <div class="tab-head">
+          <div
+            role="button"
+            class="tab-head-item"
+            classList={{
+              active: currentTab() === 0,
+            }}
+            onClick={() => setCurrentTab(0)}
+          >
+            <LayoutGridIcon />
+          </div>
+          <div
+            role="button"
+            class="tab-head-item"
+            classList={{
+              active: currentTab() === 1,
+            }}
+            onClick={() => setCurrentTab(1)}
+          >
+            <PolygonIcon />
+          </div>
+        </div>
+
+        <div class="tab-body">
+          <Switch>
+            <Match when={currentTab() === 0}>
+              <TileWindow />
+            </Match>
+            <Match when={currentTab() === 1}>
+              <div class="tab-body-item">WIP</div>
+            </Match>
+          </Switch>
+        </div>
+
         <hr />
 
         <SceneBrowser />

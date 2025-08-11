@@ -3,13 +3,10 @@ import {
   createResource,
   createSignal,
   Index,
-  Match,
   Show,
-  Switch,
 } from "solid-js";
 import {
-  FileDeltaIcon,
-  FileMusicIcon,
+  FileIcon,
   FileUnknownIcon,
   FolderIcon,
   FolderOpenIcon,
@@ -95,14 +92,7 @@ export const AssetBrowser: Component = () => {
   const AssetFile: Component<{ asset: AssetFile }> = ({ asset }) => {
     return (
       <div class="file-label" onClick={[preview, asset]}>
-        <Switch fallback={<FileUnknownIcon />}>
-          <Match when={asset.type === AssetType.Sound}>
-            <FileMusicIcon />
-          </Match>
-          <Match when={asset.type === AssetType.Image}>
-            <FileDeltaIcon />
-          </Match>
-        </Switch>
+        {asset.type === AssetType.Unkown ? <FileUnknownIcon /> : <FileIcon />}
         <span>{asset.name}</span>
       </div>
     );
