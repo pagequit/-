@@ -13,7 +13,6 @@ import {
   ArrowAutofitWidthIcon,
   FileIcon,
   PencilIcon,
-  PolygonIcon,
   RefreshAlertIcon,
   RefreshDotIcon,
   RefreshIcon,
@@ -34,24 +33,19 @@ import {
   setIsUnsynced,
   setSceneDataRef,
   setTileset,
+  setXCount,
+  setYCount,
   tileset,
   xCount,
   yCount,
 } from "./sceneHandler.ts";
-import { drawHeroStuff } from "#/game/Hero.ts";
 
 const [tileCoord, setTileCoord] = createSignal<Vector>(createVector());
 const [tilesetImage, setTilesetImage] = createSignal<HTMLImageElement>(
   await loadImage(currentScene.data.tileset),
 );
 
-enum DrawMode {
-  None,
-  Tileset,
-  Polygon,
-}
-
-const [drawMode, setDrawMode] = createSignal<DrawMode>(DrawMode.None);
+const [isDrawMode, setIsDrawMode] = createSignal(false);
 const mouse = createVector();
 const grid = createGrid(
   tileSize,
@@ -75,40 +69,31 @@ function isPointInDOMRect(point: Vector, rect: DOMRect): boolean {
 }
 
 export function handleDrawing(ctx: CanvasRenderingContext2D): void {
-  if (drawMode() === DrawMode.None) {
+  if (!isDrawMode()) {
     return;
   }
 
   drawTilemap(tilesetImage(), currentScene.data, ctx);
 
-  switch (drawMode()) {
-    case DrawMode.Tileset: {
-      if (pointer.isDown) {
-        const x = (pointer.position.x / tileSize) | 0;
-        const y = (pointer.position.y / tileSize) | 0;
-        currentScene.data.tilemap[y][x] = tileCoord();
-        checkSync(currentScene.data);
-      }
+  if (pointer.isDown) {
+    const x = (pointer.position.x / tileSize) | 0;
+    const y = (pointer.position.y / tileSize) | 0;
+    currentScene.data.tilemap[y][x] = tileCoord();
+    checkSync(currentScene.data);
+  }
 
-      if (isPointInDOMRect(mouse, ctx.canvas.getBoundingClientRect())) {
-        ctx.drawImage(
-          tilesetImage(),
-          tileCoord().x * pixelBase,
-          tileCoord().y * pixelBase,
-          pixelBase,
-          pixelBase,
-          ((pointer.position.x / tileSize) | 0) * tileSize,
-          ((pointer.position.y / tileSize) | 0) * tileSize,
-          tileSize,
-          tileSize,
-        );
-      }
-      break;
-    }
-    case DrawMode.Polygon: {
-      drawHeroStuff(ctx);
-      break;
-    }
+  if (isPointInDOMRect(mouse, ctx.canvas.getBoundingClientRect())) {
+    ctx.drawImage(
+      tilesetImage(),
+      tileCoord().x * pixelBase,
+      tileCoord().y * pixelBase,
+      pixelBase,
+      pixelBase,
+      ((pointer.position.x / tileSize) | 0) * tileSize,
+      ((pointer.position.y / tileSize) | 0) * tileSize,
+      tileSize,
+      tileSize,
+    );
   }
 
   drawGrid(grid, ctx);
@@ -126,34 +111,42 @@ export const TileWindow: Component = () => {
 
   const handleXCountChange = (value: string): void => {
     const xCount = parseInt(value);
-    if (currentScene.data.xCount > xCount) {
-      for (const row of currentScene.data.tilemap) {
-        row.pop();
-      }
-    } else {
-      for (const row of currentScene.data.tilemap) {
-        row.push(createVector());
+
+    while (currentScene.data.tilemap[0].length !== xCount) {
+      if (currentScene.data.xCount > xCount) {
+        for (const row of currentScene.data.tilemap) {
+          row.pop();
+        }
+      } else {
+        for (const row of currentScene.data.tilemap) {
+          row.push(createVector());
+        }
       }
     }
 
     currentScene.data.xCount = xCount;
     currentScene.data.width = xCount * tileSize;
+    setXCount(xCount);
     resizeBoundings();
     checkSync(currentScene.data);
   };
 
   const handleYCountChange = (value: string): void => {
     const yCount = parseInt(value);
-    if (currentScene.data.yCount > yCount) {
-      currentScene.data.tilemap.pop();
-    } else {
-      currentScene.data.tilemap.push(
-        [...Array(currentScene.data.xCount)].map(() => createVector()),
-      );
+
+    while (currentScene.data.tilemap.length !== yCount) {
+      if (currentScene.data.yCount > yCount) {
+        currentScene.data.tilemap.pop();
+      } else {
+        currentScene.data.tilemap.push(
+          [...Array(currentScene.data.xCount)].map(() => createVector()),
+        );
+      }
     }
 
     currentScene.data.yCount = yCount;
     currentScene.data.height = yCount * tileSize;
+    setYCount(yCount);
     resizeBoundings();
     checkSync(currentScene.data);
   };
@@ -167,7 +160,7 @@ export const TileWindow: Component = () => {
 
     switch (event.buttons) {
       case 2: {
-        if (drawMode() !== DrawMode.None) {
+        if (isDrawMode()) {
           panDelta.x = panOrigin.x - mouse.x;
           panDelta.y = panOrigin.y - mouse.y;
 
@@ -250,23 +243,6 @@ export const TileWindow: Component = () => {
             </Match>
           </Switch>
         </button>
-        <button
-          type="button"
-          class="btn"
-          classList={{
-            active: drawMode() === DrawMode.Polygon,
-          }}
-          onClick={() => {
-            setDrawMode(
-              drawMode() !== DrawMode.Polygon
-                ? DrawMode.Polygon
-                : DrawMode.None,
-            );
-            setIsPaused(drawMode() !== DrawMode.None);
-          }}
-        >
-          <PolygonIcon />
-        </button>
         <button type="button" class="btn">
           <StackBackwardIcon />
         </button>
@@ -277,15 +253,11 @@ export const TileWindow: Component = () => {
           type="button"
           class="btn"
           classList={{
-            active: drawMode() === DrawMode.Tileset,
+            active: isDrawMode(),
           }}
           onClick={() => {
-            setDrawMode(
-              drawMode() !== DrawMode.Tileset
-                ? DrawMode.Tileset
-                : DrawMode.None,
-            );
-            setIsPaused(drawMode() !== DrawMode.None);
+            setIsDrawMode(!isDrawMode());
+            setIsPaused(isDrawMode());
           }}
         >
           <PencilIcon />
@@ -325,7 +297,7 @@ export const TileWindow: Component = () => {
           name="tileset"
           type="text"
           value={tileset()}
-          onChange={(value) => {
+          onChange={(value: string) => {
             setTileset(value);
             currentScene.data.tileset = value;
             checkSync(currentScene.data);

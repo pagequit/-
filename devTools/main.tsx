@@ -12,6 +12,7 @@ import { render } from "solid-js/web";
 import { AssetBrowser } from "#/devTools/AssetBrowser.tsx";
 import { SceneBrowser } from "#/devTools/scene/SceneBrowser.tsx";
 import { handleDrawing, TileWindow } from "#/devTools/scene/TileWindow.tsx";
+import { ObjectWindow } from "./scene/ObjectWindow.tsx";
 import { RangeSlider } from "#/devTools/RangeSlider.tsx";
 import {
   LayoutGridIcon,
@@ -144,11 +145,10 @@ const DevTools: Component<{
               <TileWindow />
             </Match>
             <Match when={currentTab() === 1}>
-              <div class="tab-body-item">WIP</div>
+              <ObjectWindow />
             </Match>
           </Switch>
         </div>
-
         <hr />
 
         <SceneBrowser />
