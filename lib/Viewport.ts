@@ -51,6 +51,7 @@ export function resizeViewport(
   ctx.imageSmoothingQuality = imageSmoothing.imageSmoothingQuality;
 }
 
+// TODO: Try scaling via css container width/height, it might perform better!
 export function zoomViewport(
   viewport: Viewport,
   zoom: number,

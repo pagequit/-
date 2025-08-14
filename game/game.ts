@@ -52,7 +52,7 @@ export function isPaused(): boolean {
 }
 
 function animate(timestamp: number): void {
-  self.requestAnimationFrame(animate);
+  self.requestAnimationFrame(animate); // called as last ???
   resetViewport(viewport);
 
   if (paused) {
