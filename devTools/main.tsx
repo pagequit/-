@@ -39,10 +39,15 @@ function animate(): void {
   handleDrawing(viewport.ctx);
 }
 
-function adjustGameContainerStyle(container: HTMLElement, width: number): void {
-  container.style = `position: absolute; top: 0; left: ${width}px; width: ${
-    self.innerWidth - width
+function adjustGameContainerStyle(
+  appContainer: HTMLElement,
+  gameContainer: HTMLElement,
+  width: number,
+): void {
+  gameContainer.style = `position: relative; top: 0; left: ${width}px; width: ${
+    appContainer.offsetWidth - width
   }px;`;
+  self.dispatchEvent(new Event("resize"));
 }
 
 const DevTools: Component<{
@@ -64,7 +69,7 @@ const DevTools: Component<{
     ".game-container",
   ) as HTMLElement;
 
-  adjustGameContainerStyle(gameContainer, width());
+  adjustGameContainerStyle(appContainer, gameContainer, width());
 
   let resizeX = false;
   const stopResizeX = () => {
@@ -74,12 +79,12 @@ const DevTools: Component<{
   const handleResize = (event: MouseEvent | UIEvent): void => {
     let newWidth = width();
     if (resizeX) {
-      newWidth = (event as MouseEvent).clientX;
+      newWidth = (event as MouseEvent).clientX - appContainer.offsetLeft;
     }
-    newWidth = Math.min(newWidth, self.innerWidth);
+    newWidth = Math.min(newWidth, appContainer.offsetWidth);
 
     setWidth(newWidth);
-    adjustGameContainerStyle(gameContainer, newWidth);
+    adjustGameContainerStyle(appContainer, gameContainer, newWidth);
   };
 
   const [currentTab, setCurrentTab] = createSignal(0);
@@ -87,13 +92,11 @@ const DevTools: Component<{
   onMount(() => {
     self.addEventListener("mouseup", stopResizeX);
     self.addEventListener("mousemove", handleResize);
-    self.addEventListener("resize", handleResize);
   });
 
   onCleanup(() => {
     self.removeEventListener("mouseup", stopResizeX);
     self.removeEventListener("mousemove", handleResize);
-    self.removeEventListener("resize", handleResize);
   });
 
   return (

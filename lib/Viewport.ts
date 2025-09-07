@@ -42,16 +42,15 @@ export function resizeViewport(
   width: number,
   height: number,
 ): void {
-  const { ctx, scale, imageSmoothing } = viewport;
+  const { container, ctx, scale, imageSmoothing } = viewport;
 
-  ctx.canvas.width = Math.min(self.innerWidth, width * scale.x);
-  ctx.canvas.height = Math.min(self.innerHeight, height * scale.y);
+  ctx.canvas.width = Math.min(container.offsetWidth, width * scale.x);
+  ctx.canvas.height = Math.min(container.offsetHeight, height * scale.y);
 
   ctx.imageSmoothingEnabled = imageSmoothing.imageSmoothingEnabled;
   ctx.imageSmoothingQuality = imageSmoothing.imageSmoothingQuality;
 }
 
-// TODO: Try scaling via css container width/height, it might perform better!
 export function zoomViewport(
   viewport: Viewport,
   zoom: number,

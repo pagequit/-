@@ -52,7 +52,9 @@ export function isPaused(): boolean {
 }
 
 function animate(timestamp: number): void {
-  self.requestAnimationFrame(animate); // called as last ???
+  delta.value = timestamp - then;
+  then = timestamp;
+
   resetViewport(viewport);
 
   if (paused) {
@@ -67,8 +69,7 @@ function animate(timestamp: number): void {
     currentScene.process(ctx, delta.value);
   }
 
-  delta.value = timestamp - then;
-  then = timestamp;
+  self.requestAnimationFrame(animate);
 }
 
 export async function start(

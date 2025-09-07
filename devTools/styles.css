@@ -63,9 +63,13 @@
   --sp-6: 48px;
 
   height: 100%;
+  max-width: 100%;
   border-right: 1px solid var(--c-fg-3);
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   order: -1;
+  font-size: medium;
 
   *,
   *::after,
